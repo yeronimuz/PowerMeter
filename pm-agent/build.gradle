@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+version '1.0'
+
+repositories {
+	mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'PowerMeterP1',
+                   'Implementation-Version': version
+    }
+}
+
+mainClassName = 'com.lankheet.pmagent.PMAgent';
+
+dependencies {
+	compile 'org.scream3r:jssc:2.8.0'
+	compile 'org.apache.logging.log4j:log4j-core:2.4'
+	testCompile 'junit:junit:4.12'
+}
+
+eclipse {
+    project {
+        natures 'org.springsource.ide.eclipse.gradle.core.nature'
+    }
+}
