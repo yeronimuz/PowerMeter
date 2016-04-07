@@ -1,14 +1,17 @@
 package com.lankheet.pmagent;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.junit.Test;
+
+import com.lankheet.utils.JsonUtil;
 
 public class PmAgentTest {
 
@@ -20,11 +23,14 @@ public class PmAgentTest {
 		P1Datagram dg = P1Parser.parse(input);
 		assertThat(dg.getConsumedPowerTariff1(), is(equalTo(207.138)));
 		assertThat(dg.getConsumedPowerTariff2(), is(equalTo(27.545)));
-		assertThat(dg.getDeliveredPowerTariff1(), is(equalTo(269.06)));
+		assertThat(dg.getProducedPowerTariff1(), is(equalTo(269.06)));
 		assertThat(dg.getProducedPowerTariff2(), is(equalTo(74.828)));
 		assertThat(dg.getConsumedGas(), is(equalTo(86.298)));
 		assertThat(dg.getCurrentConsumedPwr(), is(equalTo(0.984)));
 		assertThat(dg.getCurrentDeliveredPwr(), is(equalTo(0.0)));
 		assertThat(dg.getCurrentTariff(), is(equalTo((byte)2)));
+		
+		String jsonString = JsonUtil.toJson(dg);
+		System.out.println(jsonString);
 	}
 }
