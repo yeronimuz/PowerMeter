@@ -7,16 +7,19 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.codahale.metrics.annotation.Timed;
 import com.lankheet.localstorage.LocalStorage;
 
-@Path("/powermeter")
+@Path("/about")
 @Produces(MediaType.APPLICATION_JSON)
-public class PMAgentResource {
+public class PMAboutResource {
 	
 	private LocalStorage localStorage;
 	
-	public PMAgentResource(LocalStorage localStorage) {
-		this.localStorage = localStorage;
+	private AboutPMAgent aboutPM;
+	
+	public PMAboutResource(AboutPMAgent aboutPM) {
+		this.aboutPM = aboutPM;
 	}
 
 	/**
@@ -25,6 +28,7 @@ public class PMAgentResource {
 	 * @throws IOException Manifest of this JAR could not be read
 	 */
 	@GET
+	@Timed
 	public AboutPMAgent aboutPowerMeter() throws IOException {
 		return new AboutPMAgent();
 	}

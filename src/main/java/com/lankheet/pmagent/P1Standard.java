@@ -9,7 +9,7 @@ package com.lankheet.pmagent;
  */
 public enum P1Standard {
 	VERSION_INFO("1-3:0.2.8", "VERSION_INFO"),
-	DATE_TIMESTAMP("0-0:1.0.0", ""),
+	DATE_TIMESTAMP("0-0:1.0.0", ""),	// 12 digit timestamp with S for summer and W for winter
 	EQUIPMENT_ID_01("0-1:96.1.0", ""),
 	EQUIPMENT_ID_00("0-0:96.1.1", ""),
 	CONSUMED_POWER_TARIFF_1("1-0:1.8.1", ""), 

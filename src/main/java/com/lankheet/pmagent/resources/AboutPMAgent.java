@@ -20,12 +20,12 @@ public class AboutPMAgent {
 	}
 
 	@JsonProperty
-	public String getVersion() {
-		return manifest.getMainAttributes().getValue("Implementation-Version");
-	}
-	
-	@JsonProperty
 	public String getApplicationTitle() {
 		return manifest.getMainAttributes().getValue("Implementation-Title");
+	}
+
+	@JsonProperty
+	public String getVersion() {
+		return manifest.getMainAttributes().getValue("Implementation-Version");
 	}
 }

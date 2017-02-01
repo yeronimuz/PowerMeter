@@ -1,12 +1,12 @@
 serialPort: /dev/ttyUSB0
 baudRate: 115200
 
-#server:
+server:
 #  softNofileLimit: 1000
 #  hardNofileLimit: 1000
-#  applicationConnectors:
-#    - type: http
-#      port: 8080
+  applicationConnectors:
+    - type: http
+      port: 8080
 #    - type: https
 #      port: 8443
 #      keyStorePath: example.keystore
@@ -16,13 +16,23 @@ baudRate: 115200
     #  port: 8445
     #  keyStorePath: example.keystore
     #  keyStorePassword: example
-#  adminConnectors:
-#    - type: http
-#      port: 8081
+  adminConnectors:
+    - type: http
+      port: 8081
 #    - type: https
 #      port: 8444
 #      keyStorePath: example.keystore
 #      keyStorePassword: example
+
+#jedisFactory:
+#  # The redis server's address; required.
+#  endpoint: localhost:6379
+#  # The minimum number of idle connections to maintain in the pool.  (default: 0)
+#  minIdle: 0
+#  # The maximum number of idle connections allowed in the pool.  (default: 0)
+#  maxIdle: 0
+#  # The maximum number of connections allowed in the pool.  (default: 1024)
+#  maxTotal: 1924    
 
 # Logging settings.
 logging:
@@ -36,21 +46,16 @@ logging:
     # Sets the level for 'com.example.app' to DEBUG.
     com.lankheet.pmagent: DEBUG
 
-    # Redirects SQL logs to a separate file
-    org.hibernate.SQL:
-      level: DEBUG
-
 # Logback's Time Based Rolling Policy - archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}.log.gz
 # Logback's Size and Time Based Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
 # Logback's Fixed Window Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%i.log.gz
 
   appenders:
     - type: console
-    - type: file
       threshold: INFO
       logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
-      currentLogFilename: /tmp/application.log
-      archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
-      archivedFileCount: 7
-      timeZone: UTC
-      maxFileSize: 10MB
+#      currentLogFilename: /tmp/application.log
+#      archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
+#      archivedFileCount: 7
+#      timeZone: UTC
+#      maxFileSize: 10MB
