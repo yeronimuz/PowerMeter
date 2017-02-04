@@ -3,7 +3,7 @@ package com.lankheet.localstorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.lankheet.pmagent.P1Datagram;
+import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.utils.JsonUtil;
 
 import redis.clients.jedis.Jedis;
