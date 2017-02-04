@@ -8,4 +8,4 @@ This project:
 
 Later, when I grow up, I'm going to:
 * make it send it's data to an mqtt server
-* will put a small UI on it in order to get daily stats of power consumpsion and production
+* put a small UI on it in order to get daily stats of power consumpsion and production
