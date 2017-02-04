@@ -1,10 +1,11 @@
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.p1;
 
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.lankheet.utils.JsonUtil;
 
 public class P1Datagram {
 	@JsonProperty(value = "version")
@@ -427,6 +428,11 @@ public class P1Datagram {
 
 	public void setConsumedGas(double consumedGas) {
 		this.consumedGas = consumedGas;
+	}
+	
+	@Override
+	public String toString() {
+		return JsonUtil.toJson(this);
 	}
 
 }

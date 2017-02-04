@@ -1,5 +1,6 @@
-serialPort: /dev/ttyUSB0
-baudRate: 115200
+serialPort:
+  uart: /dev/ttyUSB0
+  baudRate: 115200
 
 server:
 #  softNofileLimit: 1000
@@ -52,10 +53,11 @@ logging:
 
   appenders:
     - type: console
+    - type: file
       threshold: INFO
       logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
-#      currentLogFilename: /tmp/application.log
-#      archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
-#      archivedFileCount: 7
+      currentLogFilename: log/application.log
+      archivedLogFilenamePattern: log/application-%d{yyyy-MM-dd}-%i.log.gz
+      archivedFileCount: 7
 #      timeZone: UTC
-#      maxFileSize: 10MB
+      maxFileSize: 10MB

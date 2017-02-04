@@ -35,7 +35,7 @@ dependencies {
 	compile 'com.fasterxml.jackson.core:jackson-core:2.5.1'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.5.1'
 	compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.5.1'
-	compile 'io.dropwizard:dropwizard-core:1.0.5'
+	compile 'io.dropwizard:dropwizard-core:1.0.6'
  
  	testCompile 'info.cukes:cucumber-java:1.2.4'
  	testCompile 'info.cukes:cucumber-junit:1.2.4'

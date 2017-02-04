@@ -7,6 +7,8 @@ package com.lankheet.pmagent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.lankheet.pmagent.p1.P1Datagram;
+import com.lankheet.pmagent.p1.P1Parser;
 import com.lankheet.pmagent.resources.AboutPMAgent;
 import com.lankheet.pmagent.resources.PMAboutResource;
 
@@ -41,14 +43,14 @@ public class PMAgent extends Application<PMAgentConfig>{
 	public void run(PMAgentConfig configuration, Environment environment) throws Exception {
 		final PMAboutResource pmaResource = new PMAboutResource(new AboutPMAgent());
 		
-		serialPort = new SerialPort(configuration.getSerialPort());
+		serialPort = new SerialPort(configuration.getSerialPortConfig().getUart());
 		// serialPort = new SerialPort("/dev/ttyUSB0");
 		try {
 			if (!serialPort.openPort()) {
 				LOG.error("Serial port: Open port failed");
 				return;
 			}
-			serialPort.setParams(configuration.getBaudRate(), 8, 1, 0);
+			serialPort.setParams(configuration.getSerialPortConfig().getBaudRate(), 8, 1, 0);
 			int mask = SerialPort.MASK_RXCHAR;
 			if (!serialPort.setEventsMask(mask)) {
 				LOG.error("Serial port: Unable to set mask");
