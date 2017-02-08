@@ -7,7 +7,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
+/**
+ * P1 datagram parser
+ * Lankheet.com
+ */
 public class P1Parser {
+
+	private static final Logger LOG = LogManager.getLogger(P1Parser.class);
 
 	private static final String DECIMAL_PATTERN = "([0-9]*\\.[0-9]*)";
 
@@ -17,8 +23,6 @@ public class P1Parser {
 
 	// \\(([0-9]*\\.[0-9]*)\\)$
 	private static final String M3_PATTERN = "\\(" + DECIMAL_PATTERN + "\\)$";
-
-	private static final Logger LOG = LogManager.getLogger(P1Parser.class);
 
 	/**
 	 * Take one complete message and parse it into a P1Datagram object
@@ -149,7 +153,7 @@ public class P1Parser {
 		int second = Integer.valueOf(value.substring(10, 12));
 		DateTime dateTime = new DateTime(year, month, day, hour, minute);
 		dateTime = dateTime.plusSeconds(second);
+		
 		return dateTime;
 	}
-
 }

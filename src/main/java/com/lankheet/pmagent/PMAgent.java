@@ -28,7 +28,7 @@ import jssc.SerialPortException;
  */
 public class PMAgent extends Application<PMAgentConfig>{
 
-	private static final Logger LOG = LogManager.getLogger("PMAgent");
+	private static final Logger LOG = LogManager.getLogger(PMAgent.class);
 
 	/** P1 UART */
 	static SerialPort serialPort;

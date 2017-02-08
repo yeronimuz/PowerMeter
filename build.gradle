@@ -5,6 +5,8 @@ apply plugin: 'gradle-one-jar'
 
 version '0.1-SNAPSHOT'
 
+mainClassName = 'com.lankheet.pmagent.PMAgent'
+
 repositories {
 	mavenCentral()
 }
@@ -42,10 +44,4 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 	testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
 
-}
-
-eclipse {
-    project {
-        natures 'org.springsource.ide.eclipse.gradle.core.nature'
-    }
 }
