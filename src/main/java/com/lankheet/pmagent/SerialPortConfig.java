@@ -32,5 +32,4 @@ public class SerialPortConfig {
 	public void setBaudRate(int baudRate) {
 		this.baudRate = baudRate;
 	}
-
 }

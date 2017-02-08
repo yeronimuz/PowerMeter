@@ -1,6 +1,5 @@
 package com.lankheet.pmagent.p1;
 
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,6 +78,8 @@ public class P1Parser {
 				p1dg.setProducedPowerTariff2(parseGetDoubleValue(value, KWH_PATTERN));
 				break;
 			case DATE_TIMESTAMP:
+				// Set key with YYMMDDHH
+				p1dg.setKey(value.substring(0, value.length() - 1));
 				p1dg.setDateTimeStamp(parseDateTimeValue(value.substring(0, value.length() - 1)));
 				break;
 			case EQUIPMENT_ID_01:

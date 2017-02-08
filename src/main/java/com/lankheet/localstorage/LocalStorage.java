@@ -4,7 +4,7 @@ import com.lankheet.pmagent.p1.P1Datagram;
 
 public interface LocalStorage {
 	
-	void activate();
+	void activate(String path);
 	
 	void deactivate();
 	

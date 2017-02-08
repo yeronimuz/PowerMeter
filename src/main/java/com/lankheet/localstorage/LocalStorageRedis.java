@@ -30,7 +30,7 @@ public class LocalStorageRedis implements LocalStorage {
 		LocalStorageRedis.jedisPool = jedisPool;
 	}
 
-	public void activate() {
+	public void activate(String path) {
 		if (jedisPool == null) {
 			jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
 		}

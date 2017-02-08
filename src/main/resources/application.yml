@@ -1,3 +1,7 @@
+storageConfig:
+  storagePath: /home/jeroen/pmagent/data/
+  fileNamePattern: YYYYMMdd-HHmmss
+
 serialPort:
   uart: /dev/ttyUSB0
   baudRate: 115200
