@@ -32,6 +32,10 @@ public class LocalStorageFile implements LocalStorage {
 	public void deactivate() {
 	}
 
+	/**
+	 * Store the P1Datagram on disk
+	 * Use the timestamp from P1 as filename
+	 */
 	@Override
 	public void storeP1Measurement(P1Datagram datagram) {
 		String fileName = datagram.getKey() + ".json";
@@ -54,7 +58,5 @@ public class LocalStorageFile implements LocalStorage {
 		} catch (IOException e) {
 			LOG.error(e.getMessage());
 		}
-
 	}
-
 }
