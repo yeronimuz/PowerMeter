@@ -24,7 +24,7 @@ import jssc.SerialPortException;
 
 /**
  * The service reads datagrams from the P1 serial interface<br>
- * It saves the datagram on disk, location in config file<br>
+ * It saves the datagram on disk, location is specified in yml config file<br>
  */
 public class PMAgent extends Application<PMAgentConfig>{
 
@@ -56,7 +56,7 @@ public class PMAgent extends Application<PMAgentConfig>{
 		localStorage.activate(dirPath);
 		
 		serialPort = new SerialPort(configuration.getSerialPortConfig().getUart());
-		// serialPort = new SerialPort("/dev/ttyUSB0");
+		
 		try {
 			if (!serialPort.openPort()) {
 				LOG.error("Serial port: Open port failed");
@@ -109,7 +109,7 @@ public class PMAgent extends Application<PMAgentConfig>{
 		
 		private String evaluateAndSaveSerialData(String bufS) {
 			int start = bufS.indexOf("/XMX5LGBBFG1009021021");
-			int stop = bufS.indexOf('!');
+			int stop = bufS.indexOf('!'); // Followed by 3 or 4 characters (checksum)
 			
 			LOG.debug("Start: " + start + ", Stop: " + stop + ", String: " + bufS);
 			if ((start >= 0) && (stop >= 0) ) {

@@ -56,7 +56,6 @@ logging:
 # Logback's Fixed Window Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%i.log.gz
 
   appenders:
-    - type: console
     - type: file
       threshold: INFO
       logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
@@ -65,3 +64,9 @@ logging:
       archivedFileCount: 7
 #      timeZone: UTC
       maxFileSize: 10MB
+      
+  appenders:
+    - type: console
+      threshold: INFO
+      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
+    
