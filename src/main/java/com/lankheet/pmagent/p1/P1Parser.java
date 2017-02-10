@@ -1,5 +1,6 @@
 package com.lankheet.pmagent.p1;
 
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -143,7 +144,7 @@ public class P1Parser {
 	 * @param value String with time in format described above
 	 * @return DateTime containing year, month, day, hour, minute, second
 	 */
-	private static DateTime parseDateTimeValue(String value) {
+	private static LocalDateTime parseDateTimeValue(String value) {
 		// Format YYMMDDHHMMSS[W|S] e.g. 170204184835W
 		int year = Integer.valueOf(value.substring(0, 2));
 		int month = Integer.valueOf(value.substring(2, 4));
@@ -151,7 +152,7 @@ public class P1Parser {
 		int hour = Integer.valueOf(value.substring(6, 8));
 		int minute = Integer.valueOf(value.substring(8, 10));
 		int second = Integer.valueOf(value.substring(10, 12));
-		DateTime dateTime = new DateTime(year, month, day, hour, minute);
+		LocalDateTime dateTime = LocalDateTime.of(year, month, day, hour, minute);
 		dateTime = dateTime.plusSeconds(second);
 		
 		return dateTime;

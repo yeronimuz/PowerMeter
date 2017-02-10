@@ -8,26 +8,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SerialPortConfig {
 	@NotEmpty
-    private String serialPort = "/dev/ttyUSB0";
-	
+	private String serialPort = "/dev/ttyUSB0";
+
 	@NotNull
 	private Integer baudRate = 115200;
-	
+
 	@JsonProperty
-    public String getUart() {
-        return serialPort;
-    }
-	
+	public String getUart() {
+		return serialPort;
+	}
+
 	@JsonProperty
 	public void setUart(String serialPort) {
 		this.serialPort = serialPort;
 	}
 
 	@JsonProperty
-    public int getBaudRate() {
-        return baudRate;
-    }
-	
+	public int getBaudRate() {
+		return baudRate;
+	}
+
 	@JsonProperty
 	public void setBaudRate(int baudRate) {
 		this.baudRate = baudRate;
