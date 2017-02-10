@@ -1,6 +1,6 @@
 package com.lankheet.pmagent.p1;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,7 +12,7 @@ public class P1Datagram {
 	private byte versionInfo;
 
 	@JsonProperty(value = "ts")
-	private DateTime dateTimeStamp;
+	private LocalDateTime dateTimeStamp;
 
 	@JsonIgnore
 	private String equipmentId01;
@@ -65,10 +65,11 @@ public class P1Datagram {
 													// L1 -P
 	@JsonIgnore
 	private byte deviceType; // Device Type (003)
-	
+
 	@JsonIgnore
-	/** The key is actually not conforming to separation of concerns principle
-	 * It is used for local storage of datagrams (YYMMddHHss)
+	/**
+	 * The key is actually not conforming to separation of concerns principle It
+	 * is used for local storage of datagrams (YYMMddHHss)
 	 */
 	private String key;
 
@@ -79,14 +80,10 @@ public class P1Datagram {
 	}
 
 	@JsonCreator
-	public P1Datagram(@JsonProperty("ts") DateTime dateTimeStamp,
-			@JsonProperty("consPT1") double consumedPowerTariff1,
-			@JsonProperty("prodPT1") double producedPowerTariff1,
-			@JsonProperty("consPT2") double consumedPowerTariff2,
-			@JsonProperty("prodPT2") double producedPowerTariff2,
-			@JsonProperty("cT") byte currentTariff,
-			@JsonProperty("cconsP") double currentConsumedPwr,
-			@JsonProperty("cprodP") double currentDeliveredPwr,
+	public P1Datagram(@JsonProperty("ts") LocalDateTime dateTimeStamp, @JsonProperty("consPT1") double consumedPowerTariff1,
+			@JsonProperty("prodPT1") double producedPowerTariff1, @JsonProperty("consPT2") double consumedPowerTariff2,
+			@JsonProperty("prodPT2") double producedPowerTariff2, @JsonProperty("cT") byte currentTariff,
+			@JsonProperty("cconsP") double currentConsumedPwr, @JsonProperty("cprodP") double currentDeliveredPwr,
 			@JsonProperty("consG") double consumedGas) {
 		this.consumedPowerTariff1 = consumedPowerTariff1;
 		this.consumedPowerTariff2 = consumedPowerTariff2;
@@ -116,7 +113,7 @@ public class P1Datagram {
 	/**
 	 * @return the dateTimeStamp
 	 */
-	public DateTime getDateTimeStamp() {
+	public LocalDateTime getDateTimeStamp() {
 		return dateTimeStamp;
 	}
 
@@ -124,7 +121,7 @@ public class P1Datagram {
 	 * @param dateTimeStamp
 	 *            the dateTimeStamp to set
 	 */
-	public void setDateTimeStamp(DateTime dateTimeStamp) {
+	public void setDateTimeStamp(LocalDateTime dateTimeStamp) {
 		this.dateTimeStamp = dateTimeStamp;
 	}
 
@@ -435,15 +432,15 @@ public class P1Datagram {
 	public void setConsumedGas(double consumedGas) {
 		this.consumedGas = consumedGas;
 	}
-	
+
 	public String getKey() {
 		return key;
 	}
-	
+
 	public void setKey(String key) {
 		this.key = key;
 	}
-	
+
 	@Override
 	public String toString() {
 		return JsonUtil.toJson(this);
