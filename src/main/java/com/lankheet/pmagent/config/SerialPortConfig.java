@@ -1,4 +1,4 @@
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.config;
 
 import javax.validation.constraints.NotNull;
 

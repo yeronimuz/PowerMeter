@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.lankheet.localstorage.LocalStorage;
 import com.lankheet.localstorage.LocalStorageFile;
+import com.lankheet.pmagent.config.PMAgentConfig;
 import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.pmagent.p1.P1Parser;
 import com.lankheet.pmagent.resources.AboutPMAgent;
@@ -52,8 +53,16 @@ public class PMAgent extends Application<PMAgentConfig>{
 		String dirPath = configuration.getLocalStorageConfig().getStoragePath();
 		String pattern = configuration.getLocalStorageConfig().getFileNamePattern();
 		
+		String url = configuration.getDatabaseConfig().getUrl();
+		
+		DatabaseManager dbManager = new DatabaseManager(url);
+		
 		localStorage = new LocalStorageFile();
 		localStorage.activate(dirPath);
+		
+		// TODO: Start new thread (or something) that<BR>
+		// * reads data files
+		// * puts them in database
 		
 		serialPort = new SerialPort(configuration.getSerialPortConfig().getUart());
 		
@@ -76,6 +85,7 @@ public class PMAgent extends Application<PMAgentConfig>{
 		
 		environment.getApplicationContext().setContextPath("/api");
 		environment.jersey().register(pmaResource);
+		environment.lifecycle().manage(dbManager);
 	}
 
 	static class SerialPortReader implements SerialPortEventListener {

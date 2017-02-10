@@ -1,4 +1,4 @@
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.config;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +19,10 @@ public class PMAgentConfig extends Configuration {
     @NotNull
     private LocalStorageConfig storageConfig = new LocalStorageConfig();
     
+    @Valid
+    @NotNull
+    private DatabaseConfig databaseConfig = new DatabaseConfig();
+    
     @JsonProperty("storageConfig")
     public LocalStorageConfig getLocalStorageConfig() {
     	return storageConfig;
@@ -37,6 +41,16 @@ public class PMAgentConfig extends Configuration {
     @JsonProperty("serialPort")
     public void setSerialPortFactory(SerialPortConfig factory) {
         this.SerialPort = factory;
+    }
+    
+    @JsonProperty("database")
+    public DatabaseConfig getDatabaseConfig() {
+    	return databaseConfig;
+    }
+    
+    @JsonProperty("database")
+    public void setDatabaseConfig(DatabaseConfig config) {
+    	this.databaseConfig = config;
     }
 
     /**
