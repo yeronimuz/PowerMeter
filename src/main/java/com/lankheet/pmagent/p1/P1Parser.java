@@ -1,6 +1,5 @@
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.p1;
 
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,7 +7,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
+/**
+ * P1 datagram parser
+ * Lankheet.com
+ */
 public class P1Parser {
+
+	private static final Logger LOG = LogManager.getLogger(P1Parser.class);
 
 	private static final String DECIMAL_PATTERN = "([0-9]*\\.[0-9]*)";
 
@@ -18,8 +23,6 @@ public class P1Parser {
 
 	// \\(([0-9]*\\.[0-9]*)\\)$
 	private static final String M3_PATTERN = "\\(" + DECIMAL_PATTERN + "\\)$";
-
-	private static final Logger LOG = LogManager.getLogger(P1Parser.class);
 
 	/**
 	 * Take one complete message and parse it into a P1Datagram object
@@ -33,7 +36,7 @@ public class P1Parser {
 		P1Datagram p1dg = new P1Datagram();
 		String[] lines = tempS.split("[\\r\\n]+");
 		for (String line : lines) {
-			LOG.info(line);
+			// LOG.info(line);
 			if (line.startsWith("/") || line.startsWith("!")) {
 				// Ignore
 			} else {
@@ -79,8 +82,8 @@ public class P1Parser {
 				p1dg.setProducedPowerTariff2(parseGetDoubleValue(value, KWH_PATTERN));
 				break;
 			case DATE_TIMESTAMP:
-				// Format 123456789012S|W; 1..0 is TS in Secs, 12 is 100ths of
-				// secs
+				// Set key with YYMMDDHH
+				p1dg.setKey(value.substring(0, value.length() - 1));
 				p1dg.setDateTimeStamp(parseDateTimeValue(value.substring(0, value.length() - 1)));
 				break;
 			case EQUIPMENT_ID_01:
@@ -133,10 +136,24 @@ public class P1Parser {
 		return (matcher.find()) ? Double.parseDouble(matcher.group(1)) : 0;
 	}
 
+	/**
+	 * Return a DateTime object from the YYMMDDHHMMSS string (added with 'S' or
+	 * 'W' for summer, winter resp.
+	 * 
+	 * @param value String with time in format described above
+	 * @return DateTime containing year, month, day, hour, minute, second
+	 */
 	private static DateTime parseDateTimeValue(String value) {
-		// Value contains TS in seconds and last 3 digits hundreds of seconds
-		// and char 'S'
-		return new DateTime(Long.parseLong(value.replace('S', '0')));
+		// Format YYMMDDHHMMSS[W|S] e.g. 170204184835W
+		int year = Integer.valueOf(value.substring(0, 2));
+		int month = Integer.valueOf(value.substring(2, 4));
+		int day = Integer.valueOf(value.substring(4, 6));
+		int hour = Integer.valueOf(value.substring(6, 8));
+		int minute = Integer.valueOf(value.substring(8, 10));
+		int second = Integer.valueOf(value.substring(10, 12));
+		DateTime dateTime = new DateTime(year, month, day, hour, minute);
+		dateTime = dateTime.plusSeconds(second);
+		
+		return dateTime;
 	}
-
 }

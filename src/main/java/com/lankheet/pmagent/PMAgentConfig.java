@@ -1,38 +1,52 @@
 package com.lankheet.pmagent;
 
-import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.dropwizard.Configuration;
 
 public class PMAgentConfig extends Configuration {
-	
-	@NotEmpty
-    private String serialPort = "/dev/ttyUSB0";
-	
-	@NotNull
-	private Integer baudRate = 115200;
-	
-	@JsonProperty
-    public String getSerialPort() {
-        return serialPort;
+    @Valid
+    @NotNull
+    private SerialPortConfig SerialPort = new SerialPortConfig();
+    
+    @Valid
+    @NotNull
+    private LocalStorageConfig storageConfig = new LocalStorageConfig();
+    
+    @JsonProperty("storageConfig")
+    public LocalStorageConfig getLocalStorageConfig() {
+    	return storageConfig;
     }
-	
-	@JsonProperty
-	public void setSerialPort(String serialPort) {
-		this.serialPort = serialPort;
-	}
 
-	@JsonProperty
-    public int getBaudRate() {
-        return baudRate;
+    @JsonProperty("storageConfig")
+    public void setLocalStorageConfig(LocalStorageConfig storageConfig) {
+    	this.storageConfig = storageConfig;
     }
-	
-	@JsonProperty
-	public void setBaudRate(int baudRate) {
-		this.baudRate = baudRate;
+
+    @JsonProperty("serialPort")
+    public SerialPortConfig getSerialPortConfig() {
+        return SerialPort;
+    }
+
+    @JsonProperty("serialPort")
+    public void setSerialPortFactory(SerialPortConfig factory) {
+        this.SerialPort = factory;
+    }
+
+    /**
+     * Return a filename based on a specified pattern
+     * @param pattern {@link DateTimeFormatter}
+     * @return String containing fileName without extension
+     */
+	public String getFileNameFromPattern(String pattern) {
+		LocalDate date = LocalDate.now();
+		DateTimeFormatter fmt =  DateTimeFormatter.ofPattern(pattern);
+		return date.format(fmt);
 	}
 }

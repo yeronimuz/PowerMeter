@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.p1;
 
 /**
  * @author jeroen

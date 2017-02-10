@@ -1,10 +1,11 @@
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.p1;
 
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.lankheet.utils.JsonUtil;
 
 public class P1Datagram {
 	@JsonProperty(value = "version")
@@ -64,6 +65,12 @@ public class P1Datagram {
 													// L1 -P
 	@JsonIgnore
 	private byte deviceType; // Device Type (003)
+	
+	@JsonIgnore
+	/** The key is actually not conforming to separation of concerns principle
+	 * It is used for local storage of datagrams (YYMMddHHss)
+	 */
+	private String key;
 
 	@JsonProperty(value = "consG")
 	private double consumedGas; // (151009120000S)(00086.298*m3) // consumed gas
@@ -427,6 +434,19 @@ public class P1Datagram {
 
 	public void setConsumedGas(double consumedGas) {
 		this.consumedGas = consumedGas;
+	}
+	
+	public String getKey() {
+		return key;
+	}
+	
+	public void setKey(String key) {
+		this.key = key;
+	}
+	
+	@Override
+	public String toString() {
+		return JsonUtil.toJson(this);
 	}
 
 }

@@ -5,6 +5,8 @@ apply plugin: 'gradle-one-jar'
 
 version '0.1-SNAPSHOT'
 
+mainClassName = 'com.lankheet.pmagent.PMAgent'
+
 repositories {
 	mavenCentral()
 }
@@ -35,17 +37,11 @@ dependencies {
 	compile 'com.fasterxml.jackson.core:jackson-core:2.5.1'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.5.1'
 	compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.5.1'
-	compile 'io.dropwizard:dropwizard-core:1.0.5'
+	compile 'io.dropwizard:dropwizard-core:1.0.6'
  
  	testCompile 'info.cukes:cucumber-java:1.2.4'
  	testCompile 'info.cukes:cucumber-junit:1.2.4'
 	testCompile 'junit:junit:4.12'
 	testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
 
-}
-
-eclipse {
-    project {
-        natures 'org.springsource.ide.eclipse.gradle.core.nature'
-    }
 }
