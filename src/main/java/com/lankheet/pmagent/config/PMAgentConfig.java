@@ -1,4 +1,4 @@
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.config;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,32 +13,34 @@ import io.dropwizard.Configuration;
 public class PMAgentConfig extends Configuration {
     @Valid
     @NotNull
-    private SerialPortConfig SerialPort = new SerialPortConfig();
+    @JsonProperty
+    private SerialPortConfig serialPort = new SerialPortConfig();
     
     @Valid
     @NotNull
+    @JsonProperty
     private LocalStorageConfig storageConfig = new LocalStorageConfig();
     
-    @JsonProperty("storageConfig")
+//    @JsonProperty("storageConfig")
     public LocalStorageConfig getLocalStorageConfig() {
     	return storageConfig;
     }
 
-    @JsonProperty("storageConfig")
+//    @JsonProperty("storageConfig")
     public void setLocalStorageConfig(LocalStorageConfig storageConfig) {
     	this.storageConfig = storageConfig;
     }
 
-    @JsonProperty("serialPort")
+//    @JsonProperty("serialPort")
     public SerialPortConfig getSerialPortConfig() {
-        return SerialPort;
+        return serialPort;
     }
 
-    @JsonProperty("serialPort")
+//    @JsonProperty("serialPort")
     public void setSerialPortFactory(SerialPortConfig factory) {
-        this.SerialPort = factory;
+        this.serialPort = factory;
     }
-
+    
     /**
      * Return a filename based on a specified pattern
      * @param pattern {@link DateTimeFormatter}

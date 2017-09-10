@@ -4,12 +4,12 @@
 package com.lankheet.pmagent.p1;
 
 /**
- * @author jeroen
- *
+ * P1 standard ID's
  */
 public enum P1Standard {
 	VERSION_INFO("1-3:0.2.8", "VERSION_INFO"),
-	DATE_TIMESTAMP("0-0:1.0.0", ""),	// 12 digit timestamp with S for summer and W for winter
+	/** YYMMDDHHmmSS[S|W] S for summer and W for winter*/
+	DATE_TIMESTAMP("0-0:1.0.0", ""),	// 12 digit timestamp with 
 	EQUIPMENT_ID_01("0-1:96.1.0", ""),
 	EQUIPMENT_ID_00("0-0:96.1.1", ""),
 	CONSUMED_POWER_TARIFF_1("1-0:1.8.1", ""), 
