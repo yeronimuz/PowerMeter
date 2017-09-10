@@ -147,6 +147,8 @@ public class P1Parser {
 	private static LocalDateTime parseDateTimeValue(String value) {
 		// Format YYMMDDHHMMSS[W|S] e.g. 170204184835W
 		int year = Integer.valueOf(value.substring(0, 2));
+		// Only 2 digits for year, make it absolute
+		year += 2000;
 		int month = Integer.valueOf(value.substring(2, 4));
 		int day = Integer.valueOf(value.substring(4, 6));
 		int hour = Integer.valueOf(value.substring(6, 8));

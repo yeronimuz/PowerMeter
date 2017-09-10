@@ -1,8 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'gradle-one-jar'
+apply plugin: 'maven-publish'
 
-version '0.1-SNAPSHOT'
+version '0.2-SNAPSHOT'
 
 repositories {
 	mavenCentral()
@@ -14,6 +15,18 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'com.lankheet.iot'
+            artifactId 'power-meter'
+            version version
+
+            from components.java
+        }
     }
 }
 
@@ -29,11 +42,11 @@ task bigJar(type: OneJar) {
 dependencies {
 	compile 'org.scream3r:jssc:2.8.0'
 	compile 'org.apache.logging.log4j:log4j-core:2.4'
-	compile 'com.fasterxml.jackson.core:jackson-core:2.5.1'
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.5.1'
-	compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.5.1'
+	compile 'com.fasterxml.jackson.core:jackson-core:2.8.1'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.8.1'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.1'
 	compile 'io.dropwizard:dropwizard-core:1.0.6'
-    compile 'org.apache.derby:derby:10.13.1.1'
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
     
  	testCompile 'info.cukes:cucumber-java:1.2.4'
  	testCompile 'info.cukes:cucumber-junit:1.2.4'

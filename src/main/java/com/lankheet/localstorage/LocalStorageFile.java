@@ -13,6 +13,12 @@ import org.apache.logging.log4j.Logger;
 import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.utils.JsonUtil;
 
+/**
+ * Store the measurement in a file in JSON format
+ * 
+ * @author jeroen
+ *
+ */
 public class LocalStorageFile implements LocalStorage {
 	private static final Logger LOG = LogManager.getLogger(LocalStorageFile.class);
 
@@ -58,5 +64,17 @@ public class LocalStorageFile implements LocalStorage {
 		} catch (IOException e) {
 			LOG.error(e.getMessage());
 		}
+	}
+
+
+	/** 
+	 * Get the file-based stored datagrams 
+	 * This method returns all files in a given directory
+	 * @param path The directory where to look for the datagram files
+	 * @return Array with File object for each found file
+	 */
+	public File[] getStoredMeasurements(Path path) {
+		File[] files = path.toFile().listFiles();
+		return files;
 	}
 }

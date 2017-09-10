@@ -1,4 +1,4 @@
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.p1;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -15,7 +15,7 @@ import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.pmagent.p1.P1Parser;
 import com.lankheet.utils.JsonUtil;
 
-public class PmAgentTest {
+public class P1ParserTest {
 
 	@Test
 	public void test() throws IOException, URISyntaxException {

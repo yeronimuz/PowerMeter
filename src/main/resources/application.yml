@@ -29,9 +29,6 @@ server:
 #      keyStorePath: example.keystore
 #      keyStorePassword: example
 
-database:
-    url: jdbc:derby://localhost:1527/pmDB;create=true;user=me;password=mine
-
 # Logging settings.
 logging:
 

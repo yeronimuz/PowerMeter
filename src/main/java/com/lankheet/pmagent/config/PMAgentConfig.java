@@ -13,46 +13,34 @@ import io.dropwizard.Configuration;
 public class PMAgentConfig extends Configuration {
     @Valid
     @NotNull
-    private SerialPortConfig SerialPort = new SerialPortConfig();
+    @JsonProperty
+    private SerialPortConfig serialPort = new SerialPortConfig();
     
     @Valid
     @NotNull
+    @JsonProperty
     private LocalStorageConfig storageConfig = new LocalStorageConfig();
     
-    @Valid
-    @NotNull
-    private DatabaseConfig databaseConfig = new DatabaseConfig();
-    
-    @JsonProperty("storageConfig")
+//    @JsonProperty("storageConfig")
     public LocalStorageConfig getLocalStorageConfig() {
     	return storageConfig;
     }
 
-    @JsonProperty("storageConfig")
+//    @JsonProperty("storageConfig")
     public void setLocalStorageConfig(LocalStorageConfig storageConfig) {
     	this.storageConfig = storageConfig;
     }
 
-    @JsonProperty("serialPort")
+//    @JsonProperty("serialPort")
     public SerialPortConfig getSerialPortConfig() {
-        return SerialPort;
+        return serialPort;
     }
 
-    @JsonProperty("serialPort")
+//    @JsonProperty("serialPort")
     public void setSerialPortFactory(SerialPortConfig factory) {
-        this.SerialPort = factory;
+        this.serialPort = factory;
     }
     
-    @JsonProperty("database")
-    public DatabaseConfig getDatabaseConfig() {
-    	return databaseConfig;
-    }
-    
-    @JsonProperty("database")
-    public void setDatabaseConfig(DatabaseConfig config) {
-    	this.databaseConfig = config;
-    }
-
     /**
      * Return a filename based on a specified pattern
      * @param pattern {@link DateTimeFormatter}
