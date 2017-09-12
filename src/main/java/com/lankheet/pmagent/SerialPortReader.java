@@ -31,8 +31,11 @@ public class SerialPortReader implements SerialPortEventListener {
 	
 	private SerialPort serialPort;
 	
-	public SerialPortReader(SerialPort serialPort, LocalStorage localStorage) {
+	MeasurementListener measurementListener;
+	
+	public SerialPortReader(SerialPort serialPort, MeasurementListener listener) {
 		this.serialPort = serialPort;
+		this.measurementListener = listener;
 	}
 
 	public void serialEvent(SerialPortEvent event) {
@@ -88,18 +91,7 @@ public class SerialPortReader implements SerialPortEventListener {
 	private void publishDatagram(P1Datagram datagram) throws MqttException {
 		List<Measurement> measurementsList = MeasurementAdapter.convertP1Datagram(datagram);
 		measurementsList.forEach(measurement -> {
-			if (measurement.getValue() != 0.0) {
-				MessageQueueClient msgQclient = null;
-				System.out.println(measurement);
-				try {
-					msgQclient = new MessageQueueClient("tcp://192.168.2.10:1883");
-					msgQclient.connect();
-					msgQclient.publish(measurement);
-					msgQclient.disconnect();
-				} catch (Exception e) {
-					LOG.error(e.getMessage());
-				}
-			}
+			measurementListener.newMeasurement(measurement);
 		});
 	}
 }

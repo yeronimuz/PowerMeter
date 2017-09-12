@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.lankheet.localstorage.LocalStorage;
 import com.lankheet.localstorage.LocalStorageFile;
+import com.lankheet.pmagent.beans.Measurement;
 import com.lankheet.pmagent.config.PMAgentConfig;
 import com.lankheet.pmagent.resources.AboutPMAgent;
 import com.lankheet.pmagent.resources.PMAboutResource;
@@ -29,11 +30,6 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 	/** P1 UART */
 	static SerialPort serialPort;
 
-	/**
-	 * File storage for temporary saving data when the database is not available
-	 */
-	static LocalStorage localStorage;
-
 	public static void main(String[] args) throws Exception {
 		new PowerMeterAgent().run(args[0], args[1]);
 	}
@@ -46,11 +42,6 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 	@Override
 	public void run(PMAgentConfig configuration, Environment environment) throws Exception {
 		final PMAboutResource pmaResource = new PMAboutResource(new AboutPMAgent());
-
-		String dirPath = configuration.getLocalStorageConfig().getStoragePath();
-
-		localStorage = new LocalStorageFile();
-		localStorage.activate(dirPath);
 
 		// TODO: Start new thread (or something) that<BR>
 		// * reads data files
@@ -69,7 +60,8 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 				LOG.error("Serial port: Unable to set mask");
 				return;
 			}
-			serialPort.addEventListener(new SerialPortReader(serialPort, localStorage));
+			serialPort.addEventListener(
+					new SerialPortReader(serialPort, new MeasurementSender("tcp://192.168.2.10:1883")));
 
 		} catch (SerialPortException ex) {
 			LOG.error(ex.getMessage());
@@ -78,5 +70,4 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 		environment.getApplicationContext().setContextPath("/api");
 		environment.jersey().register(pmaResource);
 	}
-
 }

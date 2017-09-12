@@ -1,6 +1,6 @@
-storageConfig:
-  storagePath: /home/jeroen/pmagent/data/
-  fileNamePattern: YYYYMMdd-HHmmss
+# PowerMeterAgent configuration file
+mqttConfig:
+  url: tcp://192.168.2.11
 
 serialPort:
   uart: /dev/ttyUSB0

@@ -19,7 +19,7 @@ import com.lankheet.pmagent.beans.Measurement;
  */
 public class MeasurementAdapterTest {
 
-	@Test
+	// @Test
 	public void test() throws IOException, URISyntaxException {
 		String input = new String(Files.readAllBytes(Paths.get(getClass().getResource("/p1_2.log").toURI())));
 		System.out.println(input);
