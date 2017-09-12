@@ -16,7 +16,7 @@ public class PMAgentConfig extends Configuration {
     @Valid
     @NotNull
     @JsonProperty
-    private MqttConfig mqqtConfig = new MqttConfig();
+    private MqttConfig mqttConfig = new MqttConfig();
     
 	//    @JsonProperty("serialPort")
     public SerialPortConfig getSerialPortConfig() {
@@ -29,10 +29,10 @@ public class PMAgentConfig extends Configuration {
     }
 
     public MqttConfig getMqqtConfig() {
-    	return mqqtConfig;
+    	return mqttConfig;
     }
     
     public void setMqqtConfig(MqttConfig mqqtConfig) {
-    	this.mqqtConfig = mqqtConfig;
+    	this.mqttConfig = mqqtConfig;
     }
 }
