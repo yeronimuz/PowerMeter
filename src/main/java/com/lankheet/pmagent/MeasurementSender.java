@@ -4,7 +4,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import com.lankheet.pmagent.beans.Measurement;
+import com.lankheet.iot.datatypes.Measurement;
 
 public class MeasurementSender implements MeasurementListener {
 	private static final Logger LOG = LogManager.getLogger(MeasurementSender.class);

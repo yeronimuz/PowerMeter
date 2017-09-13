@@ -11,7 +11,8 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.lankheet.pmagent.p1.MeasurementType;
+import com.lankheet.iot.datatypes.Measurement;
+import com.lankheet.iot.datatypes.MeasurementType;
 import com.lankheet.utils.JsonUtil;
 
 public class MeasurementTest {

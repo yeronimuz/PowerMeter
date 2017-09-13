@@ -9,7 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
-import com.lankheet.pmagent.beans.Measurement;
+import com.lankheet.iot.datatypes.Measurement;
 import com.lankheet.utils.JsonUtil;
 
 /**

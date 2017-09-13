@@ -6,9 +6,6 @@ package com.lankheet.pmagent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.lankheet.localstorage.LocalStorage;
-import com.lankheet.localstorage.LocalStorageFile;
-import com.lankheet.pmagent.beans.Measurement;
 import com.lankheet.pmagent.config.PMAgentConfig;
 import com.lankheet.pmagent.resources.AboutPMAgent;
 import com.lankheet.pmagent.resources.PMAboutResource;

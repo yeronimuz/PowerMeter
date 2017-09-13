@@ -9,10 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.Test;
-
+import com.lankheet.iot.datatypes.Measurement;
 import com.lankheet.pmagent.MessageQueueClient;
-import com.lankheet.pmagent.beans.Measurement;
 
 /**
  * This test needs a local MQTT broker that is not secured

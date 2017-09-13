@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lankheet.pmagent.beans.Measurement;
+import com.lankheet.iot.datatypes.Measurement;
+import com.lankheet.iot.datatypes.MeasurementType;
 
 /**
  * Converts a P1 Measurement to single measurements<BR>

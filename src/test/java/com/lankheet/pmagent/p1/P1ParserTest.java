@@ -11,8 +11,6 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import com.lankheet.pmagent.p1.P1Datagram;
-import com.lankheet.pmagent.p1.P1Parser;
 import com.lankheet.utils.JsonUtil;
 
 public class P1ParserTest {

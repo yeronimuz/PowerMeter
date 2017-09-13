@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.lankheet.pmagent.beans.Measurement;
+import com.lankheet.iot.datatypes.Measurement;
 import com.lankheet.pmagent.p1.P1Datagram;
 
 public class JsonUtil {
