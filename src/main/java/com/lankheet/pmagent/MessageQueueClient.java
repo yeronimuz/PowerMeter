@@ -13,7 +13,7 @@ import com.lankheet.iot.datatypes.Measurement;
 import com.lankheet.utils.JsonUtil;
 
 /**
- * Wrapper class for IOT message queue client
+ * Wrapper class for Mqtt message queue client
  *
  */
 public class MessageQueueClient implements AutoCloseable {
@@ -39,9 +39,8 @@ public class MessageQueueClient implements AutoCloseable {
 		client.publish("test", message);
 	}
 	
-	public void disconnect() throws MqttException {
-		
-		
+	public void disconnect() throws Exception {
+		close();
 	}
 
 	@Override

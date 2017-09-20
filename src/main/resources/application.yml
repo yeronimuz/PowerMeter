@@ -1,6 +1,6 @@
 # PowerMeterAgent configuration file
 mqttConfig:
-  url: tcp://192.168.2.11
+  url: tcp://192.168.2.10:1883
 
 serialPort:
   uart: /dev/ttyUSB0

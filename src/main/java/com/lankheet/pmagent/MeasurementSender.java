@@ -20,6 +20,7 @@ public class MeasurementSender implements MeasurementListener {
 		MessageQueueClient msgQclient = null;
 		System.out.println(measurement);
 		try {
+			// TODO: Maybe don't disconnect, but keep connection alive
 			msgQclient.connect();
 			msgQclient.publish(measurement);
 			msgQclient.disconnect();

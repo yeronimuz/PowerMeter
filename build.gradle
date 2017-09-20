@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'gradle-one-jar'
 apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
 
 version '0.2-SNAPSHOT'
 
@@ -17,6 +18,11 @@ buildscript {
     dependencies {
         classpath 'com.github.rholder:gradle-one-jar:1.0.4'
     }
+}
+
+jacoco {
+    toolVersion = "0.7.6.201602180812"
+    reportsDir = file("$buildDir/customJacocoReportDir")
 }
 
 publishing {

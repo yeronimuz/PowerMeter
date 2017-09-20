@@ -57,8 +57,9 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 				LOG.error("Serial port: Unable to set mask");
 				return;
 			}
+			String url = configuration.getMqqtConfig().getUrl();
 			serialPort.addEventListener(
-					new SerialPortReader(serialPort, new MeasurementSender("tcp://192.168.2.10:1883")));
+					new SerialPortReader(serialPort, new MeasurementSender(url)));
 
 		} catch (SerialPortException ex) {
 			LOG.error(ex.getMessage());
