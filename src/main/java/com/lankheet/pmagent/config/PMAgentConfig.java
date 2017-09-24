@@ -28,11 +28,11 @@ public class PMAgentConfig extends Configuration {
         this.serialPort = factory;
     }
 
-    public MqttConfig getMqqtConfig() {
+    public MqttConfig getMqttConfig() {
     	return mqttConfig;
     }
     
-    public void setMqqtConfig(MqttConfig mqqtConfig) {
+    public void setMqttConfig(MqttConfig mqqtConfig) {
     	this.mqttConfig = mqqtConfig;
     }
 }

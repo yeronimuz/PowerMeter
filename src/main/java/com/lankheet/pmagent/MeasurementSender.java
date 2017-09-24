@@ -2,39 +2,34 @@ package com.lankheet.pmagent;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.lankheet.iot.datatypes.Measurement;
+import com.lankheet.utils.JsonUtil;
 
 public class MeasurementSender implements MeasurementListener {
 	private static final Logger LOG = LogManager.getLogger(MeasurementSender.class);
 
-	private MessageQueueClient msgQclient;
+	private MqttClient mqttClient;
+	
+	private String topic;
 
-	public MeasurementSender(String urlString) throws MqttException {
-		setMsgQclient(new MessageQueueClient(urlString /* "tcp://192.168.2.10:1883" */));
+	public MeasurementSender(MqttClient mqttClient, String string) throws MqttException {
+		this.mqttClient = mqttClient;
 	}
 
 	@Override
 	public void newMeasurement(Measurement measurement) {
-		MessageQueueClient msgQclient = null;
 		System.out.println(measurement);
 		try {
-			// TODO: Maybe don't disconnect, but keep connection alive
-			msgQclient.connect();
-			msgQclient.publish(measurement);
-			msgQclient.disconnect();
+			MqttMessage message = new MqttMessage();
+			message.setPayload(JsonUtil.toJson(measurement).getBytes());
+
+			mqttClient.publish(topic, message);
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
 		}
 	}
-
-	public MessageQueueClient getMsgQclient() {
-		return msgQclient;
-	}
-
-	public void setMsgQclient(MessageQueueClient msgQclient) {
-		this.msgQclient = msgQclient;
-	}
-
 }

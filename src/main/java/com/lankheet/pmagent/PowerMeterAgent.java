@@ -6,6 +6,7 @@ package com.lankheet.pmagent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.config.PMAgentConfig;
 import com.lankheet.pmagent.resources.AboutPMAgent;
 import com.lankheet.pmagent.resources.PMAboutResource;
@@ -38,8 +39,11 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 
 	@Override
 	public void run(PMAgentConfig configuration, Environment environment) throws Exception {
+		MqttConfig mqttConfig = configuration.getMqttConfig();
+		MqttClientManager mqttClientManager = new MqttClientManager(mqttConfig);
 		final PMAboutResource pmaResource = new PMAboutResource(new AboutPMAgent());
 
+		
 		// TODO: Start new thread (or something) that<BR>
 		// * reads data files
 		// * puts them in th queue
@@ -57,9 +61,8 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 				LOG.error("Serial port: Unable to set mask");
 				return;
 			}
-			String url = configuration.getMqqtConfig().getUrl();
-			serialPort.addEventListener(
-					new SerialPortReader(serialPort, new MeasurementSender(url)));
+			serialPort.addEventListener(new SerialPortReader(serialPort,
+					new MeasurementSender(mqttClientManager.getClient(), mqttConfig.getTopic())));
 
 		} catch (SerialPortException ex) {
 			LOG.error(ex.getMessage());

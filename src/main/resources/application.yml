@@ -1,6 +1,13 @@
 # PowerMeterAgent configuration file
 mqttConfig:
-  url: tcp://192.168.2.10:1883
+  url: tcp://localhost:1883
+  userName: jeroen
+  password: Ittes_2
+  caFilePath: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+  crtFilePath: null
+  clientKeyFilePath: null
+  topic: lnb/powermeter
+
 
 serialPort:
   uart: /dev/ttyUSB0
