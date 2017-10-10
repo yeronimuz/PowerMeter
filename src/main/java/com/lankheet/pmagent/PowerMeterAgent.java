@@ -23,6 +23,8 @@ import jssc.SerialPortException;
  */
 public class PowerMeterAgent extends Application<PMAgentConfig> {
 
+	private static final int SERIAL_DATA_BITS = 8;
+
 	private static final Logger LOG = LogManager.getLogger(PowerMeterAgent.class);
 
 	/** P1 UART */
@@ -36,6 +38,10 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 	public void initialize(Bootstrap<PMAgentConfig> bootstrap) {
 		LOG.info("P1 manager", "");
 	}
+	
+	public void setSerialPort(SerialPort serialPort) {
+		this.serialPort = serialPort;
+	}
 
 	@Override
 	public void run(PMAgentConfig configuration, Environment environment) throws Exception {
@@ -43,7 +49,6 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 		MqttClientManager mqttClientManager = new MqttClientManager(mqttConfig);
 		final PMAboutResource pmaResource = new PMAboutResource(new AboutPMAgent());
 
-		
 		// TODO: Start new thread (or something) that<BR>
 		// * reads data files
 		// * puts them in th queue
@@ -55,14 +60,14 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 				LOG.error("Serial port: Open port failed");
 				return;
 			}
-			serialPort.setParams(configuration.getSerialPortConfig().getBaudRate(), 8, 1, 0);
+			serialPort.setParams(configuration.getSerialPortConfig().getBaudRate(), SERIAL_DATA_BITS, 1, 0);
 			int mask = SerialPort.MASK_RXCHAR;
 			if (!serialPort.setEventsMask(mask)) {
 				LOG.error("Serial port: Unable to set mask");
 				return;
 			}
 			serialPort.addEventListener(new SerialPortReader(serialPort,
-					new MeasurementSender(mqttClientManager.getClient(), mqttConfig.getTopic())));
+					new MeasurementSender(mqttClientManager.getClient(), mqttConfig.getTopics())));
 
 		} catch (SerialPortException ex) {
 			LOG.error(ex.getMessage());

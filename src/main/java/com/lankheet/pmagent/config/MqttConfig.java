@@ -1,5 +1,7 @@
 package com.lankheet.pmagent.config;
 
+import java.util.List;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,7 +24,7 @@ public class MqttConfig {
 	
 	private String clientKeyFilePath;
 	
-	private String topic;
+	private List<MqttTopicConfig> topics;
 	
 	@JsonProperty
 	public String getUrl() {
@@ -85,12 +87,12 @@ public class MqttConfig {
 	}
 
 	@JsonProperty
-	public String getTopic() {
-		return topic;
+	public List<MqttTopicConfig> getTopics() {
+		return topics;
 	}
 	
 	@JsonProperty
-	public void setTopic(String topic) {
-		this.topic = topic;
+	public void setTopics(List<MqttTopicConfig> topics) {
+		this.topics = topics;
 	}
 }
