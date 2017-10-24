@@ -20,7 +20,6 @@ public class PowerMeterAgentConfigTest {
 	private static class PMAgentConfigTester extends Application<PMAgentConfig> {
 		private static PMAgentConfigTester instance = null;
 		private PMAgentConfig pmaConfig;
-		private Environment env;
 
 		private PMAgentConfigTester() {
 			// Do not allow instantiation through constructor
@@ -29,7 +28,6 @@ public class PowerMeterAgentConfigTest {
 		@Override
 		public void run(PMAgentConfig configuration, Environment environment) throws Exception {
 			this.pmaConfig = configuration;
-			this.env = environment;
 		}
 
 		public static PMAgentConfigTester getInstance() {

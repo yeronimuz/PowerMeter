@@ -40,7 +40,7 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 	}
 	
 	public void setSerialPort(SerialPort serialPort) {
-		this.serialPort = serialPort;
+		PowerMeterAgent.serialPort = serialPort;
 	}
 
 	@Override
