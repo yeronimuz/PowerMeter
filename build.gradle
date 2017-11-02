@@ -38,7 +38,7 @@ publishing {
 }
 
 task bigJar(type: OneJar) {
-    mainClass = 'com.lankheet.pmagent.PMAgent'
+    mainClass = 'com.lankheet.pmagent.PowerMeterAgent'
     manifest {
         attributes 'Implementation-Title': 'PowerMeterP1',
                    'Implementation-Version': version,
@@ -47,9 +47,9 @@ task bigJar(type: OneJar) {
 }
 
 dependencies {
-    compile 'com.lankheet.iot:lnb-domotics-datatypes:0.1+'
+    compile 'com.lankheet.iot:lnb-domotics-datatypes:0.2+'
 	compile 'org.scream3r:jssc:2.8.0'
-	compile 'org.apache.logging.log4j:log4j-core:2.4'
+	compile 'org.apache.logging.log4j:log4j-core:2.9.1'
 	compile 'com.fasterxml.jackson.core:jackson-core:2.8.1'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.8.1'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.1'

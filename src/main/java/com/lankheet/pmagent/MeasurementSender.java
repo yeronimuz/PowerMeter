@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.lankheet.iot.datatypes.Measurement;
@@ -20,26 +19,33 @@ public class MeasurementSender implements MeasurementListener {
 
 	private List<MqttTopicConfig> topics;
 
-	public MeasurementSender(MqttClient mqttClient, List<MqttTopicConfig> topics) throws MqttException {
+	/**
+	 * Constructor.
+	 * 
+	 * @param mqttClient The MQTT client that sends the measurements
+	 * @param topics The configured topics in the config file
+	 */
+	public MeasurementSender(MqttClient mqttClient, List<MqttTopicConfig> topics) {
 		this.mqttClient = mqttClient;
 		this.topics = topics;
 	}
 
 	@Override
 	public void newMeasurement(Measurement measurement) {
-		System.out.println(measurement);
+		LOG.trace("newMeasurement: " + measurement);
 		String mqttTopic = null;
 		TopicType topicType = getTopicTypeFromMeasurementType(measurement);
 		// Get the destination
 		for (MqttTopicConfig mtc : topics) {
-			if (mtc.getType().equals(topicType.getTopicName())) {
+			if (mtc.getType().getTopicName().equals(topicType.getTopicName())) {
 				mqttTopic = mtc.getTopic();
+				break;
 			}
 		}
 		try {
 			MqttMessage message = new MqttMessage();
 			message.setPayload(JsonUtil.toJson(measurement).getBytes());
-
+			LOG.info("Sending Topic: " + mqttTopic + ", Message: " + message);
 			mqttClient.publish(mqttTopic, message);
 		} catch (Exception e) {
 			LOG.error(e.getMessage());

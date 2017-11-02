@@ -24,7 +24,7 @@ public class MqttClientManager implements Managed {
 	public MqttClientManager(MqttConfig mqttConfig) throws MqttException {
 		String userName = mqttConfig.getUserName();
 		String password = mqttConfig.getPassword();
-		client = new MqttClient(mqttConfig.getUrl(), MqttClient.generateClientId());
+		client = new MqttClient(mqttConfig.getUrl(), MQTT_PM_CLIENT_ID);
 
 		client.setCallback(new PowerMeterMqttCallback(this));
 		MqttConnectOptions options = new MqttConnectOptions();

@@ -11,6 +11,17 @@ public class MqttTopicConfig {
 	@NotEmpty
 	private TopicType type;
 
+	/**
+	 * Constructor (for test purposes).
+	 * 
+	 * @param topic Mqtt topic
+	 * @param type Type from P1 domain
+	 */
+//	public MqttTopicConfig(String topic, TopicType type) {
+//		this.topic = topic;
+//		this.type = type;
+//	}
+	
 	@JsonProperty
 	public String getTopic() {
 		return topic;

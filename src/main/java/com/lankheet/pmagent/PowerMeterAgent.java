@@ -75,5 +75,6 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
 
 		environment.getApplicationContext().setContextPath("/api");
 		environment.jersey().register(pmaResource);
+		environment.lifecycle().manage(mqttClientManager);
 	}
 }
