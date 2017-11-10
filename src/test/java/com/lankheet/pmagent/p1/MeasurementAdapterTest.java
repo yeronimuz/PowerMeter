@@ -29,10 +29,11 @@ public class MeasurementAdapterTest {
 		System.out.println(input);
 
 		P1Datagram dg = P1Parser.parse(input);
-		List<Measurement> measurements = MeasurementAdapter.convertP1Datagram(dg);
+		List<Measurement> measurements = MeasurementAdapter.convertP1Datagram(1, dg);
 		assertThat(measurements.size(), is(7));
 		assertThat(measurements.get(0).getType(), is(MeasurementType.CONSUMED_POWER_T1));
 		assertThat(measurements.get(0).getValue(), is(207.138));
+		assertThat(measurements.get(0).getSensorId(), is(1));
 		assertThat(measurements.get(1).getType(), is(MeasurementType.PRODUCED_POWER_T1));
 		assertThat(measurements.get(1).getValue(), is(269.06));
 		assertThat(measurements.get(2).getType(), is(MeasurementType.CONSUMED_POWER_T2));
@@ -45,27 +46,6 @@ public class MeasurementAdapterTest {
 		assertThat(measurements.get(5).getValue(), is(0.0));
 		assertThat(measurements.get(6).getType(), is(MeasurementType.CONSUMED_GAS));
 		assertThat(measurements.get(6).getValue(), is(86.298));
-//		measurements.forEach(measurement -> {
-//			if (measurement.getValue() != 0.0) {
-//
-//				System.out.println(measurement);
-//				try {
-//					MqttClient  mqttClient = new MqttClient("tcp://localhost:1883", MqttClient.generateClientId());
-//					MqttConnectOptions options = new MqttConnectOptions();
-//					options.setConnectionTimeout(60);
-//					options.setKeepAliveInterval(60);
-//					options.setUserName("jeroen");
-//					options.setPassword("Ittes_2".toCharArray());
-//					mqttClient.connect(options);
-//					MqttMessage msg = new MqttMessage();
-//					msg.setPayload(JsonUtil.toJson(measurement).getBytes());
-//					mqttClient.publish("test", msg);
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		});
 	}
 
 }

@@ -7,8 +7,10 @@ import static org.junit.Assert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.lankheet.iot.datatypes.SensorType;
 import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.config.PMAgentConfig;
+import com.lankheet.pmagent.config.SensorConfig;
 import com.lankheet.pmagent.config.SerialPortConfig;
 
 import cucumber.api.java.After;
@@ -45,7 +47,7 @@ public class PowerMeterAgentConfigTest {
 
 	@After
 	public void tearDown() {
-		// pmaTester.
+
 	}
 
 	@Test
@@ -69,5 +71,14 @@ public class PowerMeterAgentConfigTest {
 		assertThat(mqttConfig.getTopics().get(0).getTopic(), is("lnb/eng/power"));
 		assertThat(mqttConfig.getTopics().get(1).getType().toString().toLowerCase(), is("gas"));
 		assertThat(mqttConfig.getTopics().get(1).getTopic(), is("lnb/eng/gas"));
+	}
+	
+	@Test
+	public void testSensorConfig() {
+		PMAgentConfigTester pmaTester = PMAgentConfigTester.getInstance();
+		SensorConfig sensorConfig = pmaTester.pmaConfig.getSensorConfig();
+		assertThat(sensorConfig.getSensorId(), is(1));
+		assertThat(sensorConfig.getSensorTypes().get(0), is(SensorType.POWER_METER));
+		assertThat(sensorConfig.getSensorTypes().get(1), is(SensorType.GAS_METER));
 	}
 }

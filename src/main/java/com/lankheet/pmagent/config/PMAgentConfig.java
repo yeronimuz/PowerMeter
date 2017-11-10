@@ -8,6 +8,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 
 public class PMAgentConfig extends Configuration {
+
+	@Valid
+    @NotNull
+    @JsonProperty
+    private SensorConfig sensorConfig = new SensorConfig();
+	
     @Valid
     @NotNull
     @JsonProperty
@@ -18,12 +24,10 @@ public class PMAgentConfig extends Configuration {
     @JsonProperty
     private MqttConfig mqttConfig = new MqttConfig();
     
-	//    @JsonProperty("serialPort")
     public SerialPortConfig getSerialPortConfig() {
         return serialPort;
     }
 
-//    @JsonProperty("serialPort")
     public void setSerialPortFactory(SerialPortConfig factory) {
         this.serialPort = factory;
     }
@@ -32,7 +36,8 @@ public class PMAgentConfig extends Configuration {
     	return mqttConfig;
     }
     
-    public void setMqttConfig(MqttConfig mqqtConfig) {
-    	this.mqttConfig = mqqtConfig;
+    public SensorConfig getSensorConfig() {
+    	return sensorConfig;
     }
+    
 }

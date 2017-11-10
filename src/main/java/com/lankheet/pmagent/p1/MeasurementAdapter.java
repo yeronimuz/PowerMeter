@@ -18,12 +18,12 @@ public class MeasurementAdapter {
 
 	/**
 	 * Takes one datagram and converts it into one or more single measurements <BR>
-	 * 
+	 * @param sensorId The configured sensorId that generated the measurement
 	 * @param datagram
 	 *            The datagram to convert
 	 * @return A list with single measurements
 	 */
-	public static List<Measurement> convertP1Datagram(P1Datagram datagram) {
+	public static List<Measurement> convertP1Datagram(int sensorId, P1Datagram datagram) {
 		LocalDateTime ts = datagram.getDateTimeStamp();
 		List<Measurement> measurementsList = new ArrayList<>();
 
@@ -31,18 +31,18 @@ public class MeasurementAdapter {
 		// hard coded
 
 		measurementsList
-				.add(new Measurement(0, ts, MeasurementType.CONSUMED_POWER_T1, datagram.getConsumedPowerTariff1()));
+				.add(new Measurement(sensorId, ts, MeasurementType.CONSUMED_POWER_T1, datagram.getConsumedPowerTariff1()));
 		measurementsList
-				.add(new Measurement(0, ts, MeasurementType.PRODUCED_POWER_T1, datagram.getProducedPowerTariff1()));
+				.add(new Measurement(sensorId, ts, MeasurementType.PRODUCED_POWER_T1, datagram.getProducedPowerTariff1()));
 		measurementsList
-				.add(new Measurement(0, ts, MeasurementType.CONSUMED_POWER_T2, datagram.getConsumedPowerTariff2()));
+				.add(new Measurement(sensorId, ts, MeasurementType.CONSUMED_POWER_T2, datagram.getConsumedPowerTariff2()));
 		measurementsList
-				.add(new Measurement(0, ts, MeasurementType.PRODUCED_POWER_T2, datagram.getProducedPowerTariff2()));
+				.add(new Measurement(sensorId, ts, MeasurementType.PRODUCED_POWER_T2, datagram.getProducedPowerTariff2()));
 		measurementsList
-				.add(new Measurement(0, ts, MeasurementType.ACTUAL_CONSUMED_POWER, datagram.getCurrentConsumedPwr()));
+				.add(new Measurement(sensorId, ts, MeasurementType.ACTUAL_CONSUMED_POWER, datagram.getCurrentConsumedPwr()));
 		measurementsList
-				.add(new Measurement(0, ts, MeasurementType.ACTUAL_PRODUCED_POWER, datagram.getCurrentDeliveredPwr()));
-		measurementsList.add(new Measurement(0, ts, MeasurementType.CONSUMED_GAS, datagram.getConsumedGas()));
+				.add(new Measurement(sensorId, ts, MeasurementType.ACTUAL_PRODUCED_POWER, datagram.getCurrentDeliveredPwr()));
+		measurementsList.add(new Measurement(sensorId, ts, MeasurementType.CONSUMED_GAS, datagram.getConsumedGas()));
 
 		return measurementsList;
 	}

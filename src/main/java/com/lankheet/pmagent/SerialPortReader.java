@@ -31,10 +31,13 @@ public class SerialPortReader implements SerialPortEventListener {
 	private SerialPort serialPort;
 	
 	MeasurementListener measurementListener;
+
+	private int sensorId;
 	
-	public SerialPortReader(SerialPort serialPort, MeasurementListener listener) {
+	public SerialPortReader(SerialPort serialPort, int sensorId, MeasurementListener listener) {
 		this.serialPort = serialPort;
 		this.measurementListener = listener;
+		this.sensorId = sensorId;
 	}
 
 	public void serialEvent(SerialPortEvent event) {
@@ -88,7 +91,7 @@ public class SerialPortReader implements SerialPortEventListener {
 	}
 
 	private void publishDatagram(P1Datagram datagram) throws MqttException {
-		List<Measurement> measurementsList = MeasurementAdapter.convertP1Datagram(datagram);
+		List<Measurement> measurementsList = MeasurementAdapter.convertP1Datagram(sensorId, datagram);
 		measurementsList.forEach(measurement -> {
 			measurementListener.newMeasurement(measurement);
 		});
