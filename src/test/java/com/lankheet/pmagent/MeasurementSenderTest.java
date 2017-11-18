@@ -1,9 +1,8 @@
 package com.lankheet.pmagent;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -11,12 +10,10 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.lankheet.iot.datatypes.Measurement;
 import com.lankheet.iot.datatypes.MeasurementType;
 import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
-
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.MockUp;
@@ -33,39 +30,39 @@ public class MeasurementSenderTest {
 
     @BeforeClass
     public static void doSetup() {
-	MqttTopicConfig configA = new MqttTopicConfig();
-	configA.setTopic("lnb/eng/test");
-	configA.setType(TopicType.POWER);
-	MqttTopicConfig configB = new MqttTopicConfig();
-	configB.setTopic("lng/eng/gas");
-	configB.setType(TopicType.GAS);
-	topics.add(configA);
-	topics.add(configB);
+        MqttTopicConfig configA = new MqttTopicConfig();
+        configA.setTopic("lnb/eng/test");
+        configA.setType(TopicType.POWER);
+        MqttTopicConfig configB = new MqttTopicConfig();
+        configB.setTopic("lng/eng/gas");
+        configB.setType(TopicType.GAS);
+        topics.add(configA);
+        topics.add(configB);
 
-	new MockUp<MqttClient>() {
-	    void publish(String topic, MqttMessage msg) {
-		System.out.println("publising...");
-	    }
-	};
+        new MockUp<MqttClient>() {
+            void publish(String topic, MqttMessage msg) {
+                System.out.println("publishing...");
+            }
+        };
     }
 
     @Test
     public void test() throws MqttException {
-	new Expectations() {
-	    {
-		LogManager.getLogger(MeasurementSender.class);
-		result = loggerMock;
-	    }
-	};
-	MeasurementSender measSender = new MeasurementSender(mqttClientMock, topics);
-	measSender.newMeasurement(new Measurement(0, LocalDateTime.now(), MeasurementType.ACTUAL_CONSUMED_POWER, 3.5));
+        new Expectations() {
+            {
+                LogManager.getLogger(MeasurementSender.class);
+                result = loggerMock;
+            }
+        };
+        MeasurementSender measSender = new MeasurementSender(mqttClientMock, topics);
+        measSender.newMeasurement(new Measurement(0, new Date(), MeasurementType.ACTUAL_CONSUMED_POWER.getId(), 3.5));
 
-	new Verifications() {
-	    {
-		loggerMock.error(anyString);
-		times = 0;
-	    }
-	};
+        new Verifications() {
+            {
+                loggerMock.error(anyString);
+                times = 0;
+            }
+        };
     }
 
 }

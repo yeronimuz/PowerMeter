@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import com.lankheet.iot.datatypes.Measurement;
+import com.lankheet.iot.datatypes.MeasurementType;
 import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
 import com.lankheet.utils.JsonUtil;
@@ -52,7 +53,7 @@ public class MeasurementSender implements MeasurementListener {
 
     private TopicType getTopicTypeFromMeasurementType(Measurement measurement) {
         TopicType returnType = null;
-        switch (measurement.getType()) {
+        switch (MeasurementType.getType(measurement.getType())) {
             case PRODUCED_POWER_T1:
             case PRODUCED_POWER_T2:
             case CONSUMED_POWER_T1:

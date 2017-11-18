@@ -1,4 +1,4 @@
-package com.lankheet.pmagent;
+package com.lankheet.pmagent.config;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
