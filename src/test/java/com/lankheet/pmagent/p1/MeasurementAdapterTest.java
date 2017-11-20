@@ -2,21 +2,14 @@ package com.lankheet.pmagent.p1;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.Test;
-
 import com.lankheet.iot.datatypes.Measurement;
 import com.lankheet.iot.datatypes.MeasurementType;
-import com.lankheet.utils.JsonUtil;
 
 /**
  * This test needs a local MQTT broker that is not secured

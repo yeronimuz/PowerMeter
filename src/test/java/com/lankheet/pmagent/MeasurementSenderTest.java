@@ -7,19 +7,21 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import com.lankheet.iot.datatypes.Measurement;
 import com.lankheet.iot.datatypes.MeasurementType;
 import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
 import mockit.Capturing;
 import mockit.Expectations;
-import mockit.MockUp;
 import mockit.Mocked;
+import mockit.Tested;
 import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
 
+@RunWith(JMockit.class)
 public class MeasurementSenderTest {
 
     private @Mocked MqttClient mqttClientMock;
@@ -38,12 +40,6 @@ public class MeasurementSenderTest {
         configB.setType(TopicType.GAS);
         topics.add(configA);
         topics.add(configB);
-
-        new MockUp<MqttClient>() {
-            void publish(String topic, MqttMessage msg) {
-                System.out.println("publishing...");
-            }
-        };
     }
 
     @Test

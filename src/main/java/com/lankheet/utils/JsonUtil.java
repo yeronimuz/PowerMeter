@@ -1,5 +1,6 @@
 package com.lankheet.utils;
 
+
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,10 +30,5 @@ public class JsonUtil {
 
     public static P1Datagram fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
         return mapper.readValue(json, P1Datagram.class);
-    }
-
-    public static Measurement measurementFromJson(String json)
-            throws JsonParseException, JsonMappingException, IOException {
-        return mapper.readValue(json, Measurement.class);
     }
 }

@@ -3,14 +3,11 @@ package com.lankheet.pmagent.p1;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import org.junit.Test;
-
 import com.lankheet.utils.JsonUtil;
 
 public class P1ParserTest {
