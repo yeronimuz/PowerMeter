@@ -4,7 +4,7 @@ apply plugin: 'gradle-one-jar'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
-version '0.2-SNAPSHOT'
+version '0.3-SNAPSHOT'
 
 repositories {
     mavenLocal()
@@ -28,7 +28,7 @@ jacoco {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId 'com.lankheet.iot'
+            groupId 'com.lankheet.pmagent'
             artifactId 'power-meter'
             version version
 
