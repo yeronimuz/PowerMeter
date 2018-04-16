@@ -31,8 +31,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lankheet.iot.datatypes.Measurement;
-import com.lankheet.iot.datatypes.MeasurementType;
+import com.lankheet.iot.datatypes.domotics.SensorNode;
+import com.lankheet.iot.datatypes.domotics.SensorValue;
+import com.lankheet.iot.datatypes.entities.MeasurementType;
+import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
 import mockit.Capturing;
@@ -66,12 +68,13 @@ public class MeasurementSenderTest {
     public void test() throws MqttException {
         new Expectations() {
             {
-                LoggerFactory.getLogger(MeasurementSender.class);
+                LoggerFactory.getLogger(SensorValueSender.class);
                 result = loggerMock;
             }
         };
-        MeasurementSender measSender = new MeasurementSender(mqttClientMock, topics);
-        measSender.newMeasurement(new Measurement(0, new Date(), MeasurementType.ACTUAL_CONSUMED_POWER.getId(), 3.5));
+        SensorValueSender sensorValueSender = new SensorValueSender(mqttClientMock, topics);
+        sensorValueSender.newSensorValue(new SensorValue(new SensorNode("01:02:03:04", SensorType.POWER_METER.getId()),
+                new Date(), MeasurementType.ACTUAL_CONSUMED_POWER.getId(), 3.5));
 
         new Verifications() {
             {

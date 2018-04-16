@@ -26,14 +26,15 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lankheet.iot.datatypes.Measurement;
-import com.lankheet.iot.datatypes.MeasurementType;
+import com.lankheet.iot.datatypes.domotics.SensorValue;
+import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
 import com.lankheet.utils.JsonUtil;
+import static com.lankheet.iot.datatypes.entities.SensorType.*;
 
-public class MeasurementSender implements MeasurementListener {
-    private static final Logger LOG = LoggerFactory.getLogger(MeasurementSender.class);
+public class SensorValueSender implements SensorValueListener {
+    private static final Logger LOG = LoggerFactory.getLogger(SensorValueSender.class);
 
     private MqttClient mqttClient;
 
@@ -45,16 +46,15 @@ public class MeasurementSender implements MeasurementListener {
      * @param mqttClient The MQTT client that sends the measurements
      * @param topics The configured topics in the config file
      */
-    public MeasurementSender(MqttClient mqttClient, List<MqttTopicConfig> topics) {
+    public SensorValueSender(MqttClient mqttClient, List<MqttTopicConfig> topics) {
         this.mqttClient = mqttClient;
         this.topics = topics;
     }
 
     @Override
-    public void newMeasurement(Measurement measurement) {
-        LOG.trace("newMeasurement: " + measurement);
+    public void newSensorValue(SensorValue sensorValue) {
         String mqttTopic = null;
-        TopicType topicType = getTopicTypeFromMeasurementType(measurement);
+        TopicType topicType = getTopicTypeFromSensorValueType(sensorValue);
         // Get the destination
         for (MqttTopicConfig mtc : topics) {
             if (mtc.getType().getTopicName().equals(topicType.getTopicName())) {
@@ -64,7 +64,7 @@ public class MeasurementSender implements MeasurementListener {
         }
         try {
             MqttMessage message = new MqttMessage();
-            message.setPayload(JsonUtil.toJson(measurement).getBytes());
+            message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
             LOG.info("Sending Topic: " + mqttTopic + ", Message: " + message);
             mqttClient.publish(mqttTopic, message);
         } catch (Exception e) {
@@ -72,18 +72,13 @@ public class MeasurementSender implements MeasurementListener {
         }
     }
 
-    private TopicType getTopicTypeFromMeasurementType(Measurement measurement) {
+    private TopicType getTopicTypeFromSensorValueType(SensorValue sensorValue) {
         TopicType returnType = null;
-        switch (MeasurementType.getType(measurement.getType())) {
-            case PRODUCED_POWER_T1:
-            case PRODUCED_POWER_T2:
-            case CONSUMED_POWER_T1:
-            case CONSUMED_POWER_T2:
-            case ACTUAL_CONSUMED_POWER:
-            case ACTUAL_PRODUCED_POWER:
+        switch (SensorType.getType(sensorValue.getSensorNode().getSensorType())) {
+            case POWER_METER:
                 returnType = TopicType.POWER;
                 break;
-            case CONSUMED_GAS:
+            case GAS_METER:
                 returnType = TopicType.GAS;
                 break;
             case HUMIDITY:
@@ -94,8 +89,7 @@ public class MeasurementSender implements MeasurementListener {
                 break;
             default:
                 LOG.error("There is no mapping for measurementType:"
-                        + measurement.getType().toString());
-                // return null
+                        + sensorValue.getSensorNode().getSensorType());
         }
         return returnType;
     }

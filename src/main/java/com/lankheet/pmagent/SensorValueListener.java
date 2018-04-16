@@ -21,15 +21,19 @@
 
 package com.lankheet.pmagent;
 
-import com.lankheet.iot.datatypes.Measurement;
+import com.lankheet.iot.datatypes.domotics.SensorValue;
 
 /**
- * MeasurementsListener listens for newMeasurements.<BR>
+ * SensorValueListener listens for new senosr values.<BR>
  * The measurements are coming (a.o.) from the P1 smart meter via the
- * MeasurementAdapter.<BR>
+ * SensorValueAdapter.<BR>
  */
-public interface MeasurementListener {
+public interface SensorValueListener {
 
-	void newMeasurement(Measurement measurement);
+    /**
+     * A new value has arrived.
+     * @param sensorValue The value coming from the sensor
+     */
+	void newSensorValue(SensorValue sensorValue);
 
 }

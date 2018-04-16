@@ -23,11 +23,14 @@ package com.lankheet.pmagent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.lankheet.iot.datatypes.domotics.SensorNode;
+import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.config.PMAgentConfig;
 import com.lankheet.pmagent.health.MqttHealthCheck;
 import com.lankheet.pmagent.resources.AboutPMAgent;
 import com.lankheet.pmagent.resources.PMAboutResource;
+import com.lankheet.utils.NetUtils;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -36,13 +39,12 @@ import jssc.SerialPortException;
 
 /**
  * The service reads datagrams from the P1 serial interface<br>
- * It saves the datagram on disk, location is specified in yml config file<br>
+ * It sends a series of SensorValue objects to an MQTT broker<br>
  */
 public class PowerMeterAgent extends Application<PMAgentConfig> {
+    private static final Logger LOG = LoggerFactory.getLogger(PowerMeterAgent.class);
 
     private static final int SERIAL_DATA_BITS = 8;
-
-    private static final Logger LOG = LoggerFactory.getLogger(PowerMeterAgent.class);
 
     /** P1 UART */
     static SerialPort serialPort;
@@ -65,7 +67,7 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
         MqttConfig mqttConfig = configuration.getMqttConfig();
         MqttClientManager mqttClientManager = new MqttClientManager(mqttConfig);
         final PMAboutResource pmaResource = new PMAboutResource(new AboutPMAgent());
-        final int sensorId = configuration.getSensorConfig().getSensorId();
+        final String nic = configuration.getSensorConfig().getNic();
 
         // TODO: Start new thread (or something) that<BR>
         // * reads data files
@@ -84,8 +86,10 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
                 LOG.error("Serial port: Unable to set mask");
                 return;
             }
-            serialPort.addEventListener(new SerialPortReader(serialPort, sensorId,
-                    new MeasurementSender(mqttClientManager.getClient(), mqttConfig.getTopics())));
+            SensorNode sensorNode =
+                    new SensorNode(NetUtils.getMacAddress(nic), SensorType.POWER_METER.getId());
+            serialPort.addEventListener(new SerialPortReader(serialPort, sensorNode,
+                    new SensorValueSender(mqttClientManager.getClient(), mqttConfig.getTopics())));
 
         } catch (SerialPortException ex) {
             LOG.error(ex.getMessage());

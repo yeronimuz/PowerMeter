@@ -26,7 +26,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.lankheet.iot.datatypes.SensorType;
+import com.lankheet.iot.datatypes.entities.SensorType;
 import cucumber.api.java.After;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
@@ -91,7 +91,7 @@ public class PowerMeterAgentConfigTest {
 	public void testSensorConfig() {
 		PMAgentConfigTester pmaTester = PMAgentConfigTester.getInstance();
 		SensorConfig sensorConfig = pmaTester.pmaConfig.getSensorConfig();
-		assertThat(sensorConfig.getSensorId(), is(1));
+		assertThat(sensorConfig.getNic(), is("wlo1"));
 		assertThat(sensorConfig.getSensorTypes().get(0), is(SensorType.POWER_METER));
 		assertThat(sensorConfig.getSensorTypes().get(1), is(SensorType.GAS_METER));
 	}

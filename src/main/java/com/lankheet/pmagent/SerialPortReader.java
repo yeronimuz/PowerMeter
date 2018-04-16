@@ -25,10 +25,11 @@ import java.util.List;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lankheet.iot.datatypes.Measurement;
-import com.lankheet.pmagent.p1.MeasurementAdapter;
+import com.lankheet.iot.datatypes.domotics.SensorNode;
+import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.pmagent.p1.P1Parser;
+import com.lankheet.pmagent.p1.SensorValueAdapter;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -48,14 +49,14 @@ public class SerialPortReader implements SerialPortEventListener {
 	
 	private SerialPort serialPort;
 	
-	MeasurementListener measurementListener;
+	SensorValueListener sensorValueListener;
 
-	private int sensorId;
+	private SensorNode sensorNode;
 	
-	public SerialPortReader(SerialPort serialPort, int sensorId, MeasurementListener listener) {
+	public SerialPortReader(SerialPort serialPort, SensorNode sensorNode, SensorValueListener listener) {
 		this.serialPort = serialPort;
-		this.measurementListener = listener;
-		this.sensorId = sensorId;
+		this.sensorValueListener = listener;
+		this.sensorNode = sensorNode;
 	}
 
 	public void serialEvent(SerialPortEvent event) {
@@ -109,9 +110,9 @@ public class SerialPortReader implements SerialPortEventListener {
 	}
 
 	private void publishDatagram(P1Datagram datagram) throws MqttException {
-		List<Measurement> measurementsList = MeasurementAdapter.convertP1Datagram(sensorId, datagram);
-		measurementsList.forEach(measurement -> {
-			measurementListener.newMeasurement(measurement);
+		List<SensorValue> sensorValueList = SensorValueAdapter.convertP1Datagram(sensorNode, datagram);
+		sensorValueList.forEach(sensorValue -> {
+			sensorValueListener.newSensorValue(sensorValue);
 		});
 	}
 }
