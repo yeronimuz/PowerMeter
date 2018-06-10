@@ -29,8 +29,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import org.junit.Test;
-import com.lankheet.iot.datatypes.Measurement;
-import com.lankheet.iot.datatypes.MeasurementType;
+import com.lankheet.iot.datatypes.domotics.SensorNode;
+import com.lankheet.iot.datatypes.domotics.SensorValue;
+import com.lankheet.iot.datatypes.entities.MeasurementType;
+import com.lankheet.iot.datatypes.entities.SensorType;
 
 /**
  * This test needs a local MQTT broker that is not secured
@@ -43,23 +45,23 @@ public class MeasurementAdapterTest {
 		System.out.println(input);
 
 		P1Datagram dg = P1Parser.parse(input);
-		List<Measurement> measurements = MeasurementAdapter.convertP1Datagram(1, dg);
-		assertThat(measurements.size(), is(7));
-		assertThat(measurements.get(0).getType(), is(MeasurementType.CONSUMED_POWER_T1.getId()));
-		assertThat(measurements.get(0).getValue(), is(207.138));
-		assertThat(measurements.get(0).getSensorId(), is(1));
-		assertThat(measurements.get(1).getType(), is(MeasurementType.PRODUCED_POWER_T1.getId()));
-		assertThat(measurements.get(1).getValue(), is(269.06));
-		assertThat(measurements.get(2).getType(), is(MeasurementType.CONSUMED_POWER_T2.getId()));
-		assertThat(measurements.get(2).getValue(), is(27.545));
-		assertThat(measurements.get(3).getType(), is(MeasurementType.PRODUCED_POWER_T2.getId()));
-		assertThat(measurements.get(3).getValue(), is(74.828));
-		assertThat(measurements.get(4).getType(), is(MeasurementType.ACTUAL_CONSUMED_POWER.getId()));
-		assertThat(measurements.get(4).getValue(), is(0.984));
-		assertThat(measurements.get(5).getType(), is(MeasurementType.ACTUAL_PRODUCED_POWER.getId()));
-		assertThat(measurements.get(5).getValue(), is(0.0));
-		assertThat(measurements.get(6).getType(), is(MeasurementType.CONSUMED_GAS.getId()));
-		assertThat(measurements.get(6).getValue(), is(86.298));
+		List<SensorValue> sensorValues = SensorValueAdapter.convertP1Datagram(new SensorNode("01:02", SensorType.POWER_METER.getId()), dg);
+		assertThat(sensorValues.size(), is(7));
+		assertThat(sensorValues.get(0).getMeasurementType(), is(MeasurementType.CONSUMED_POWER_T1.getId()));
+		assertThat(sensorValues.get(0).getValue(), is(207.138));
+		assertThat(sensorValues.get(0).getSensorNode().getSensorMac(), is("01:02"));
+		assertThat(sensorValues.get(1).getMeasurementType(), is(MeasurementType.PRODUCED_POWER_T1.getId()));
+		assertThat(sensorValues.get(1).getValue(), is(269.06));
+		assertThat(sensorValues.get(2).getMeasurementType(), is(MeasurementType.CONSUMED_POWER_T2.getId()));
+		assertThat(sensorValues.get(2).getValue(), is(27.545));
+		assertThat(sensorValues.get(3).getMeasurementType(), is(MeasurementType.PRODUCED_POWER_T2.getId()));
+		assertThat(sensorValues.get(3).getValue(), is(74.828));
+		assertThat(sensorValues.get(4).getMeasurementType(), is(MeasurementType.ACTUAL_CONSUMED_POWER.getId()));
+		assertThat(sensorValues.get(4).getValue(), is(0.984));
+		assertThat(sensorValues.get(5).getMeasurementType(), is(MeasurementType.ACTUAL_PRODUCED_POWER.getId()));
+		assertThat(sensorValues.get(5).getValue(), is(0.0));
+		assertThat(sensorValues.get(6).getMeasurementType(), is(MeasurementType.CONSUMED_GAS.getId()));
+		assertThat(sensorValues.get(6).getValue(), is(86.298));
 	}
 
 }

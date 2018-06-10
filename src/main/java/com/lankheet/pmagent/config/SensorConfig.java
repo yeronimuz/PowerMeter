@@ -25,18 +25,18 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lankheet.iot.datatypes.SensorType;
+import com.lankheet.iot.datatypes.entities.SensorType;
 
 public class SensorConfig {
     @NotNull
-    private Integer sensorId;
+    private String nic;
 
     @NotEmpty
     private List<SensorType> sensorTypes;
 
     @JsonProperty
-    public Integer getSensorId() {
-        return sensorId;
+    public String getNic() {
+        return nic;
     }
 
     @JsonProperty

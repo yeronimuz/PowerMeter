@@ -1,6 +1,6 @@
 # PowerMeterAgent configuration file
 sensorConfig:
-  sensorId: 1
+  nic: eth0
   sensorTypes: 
     - POWER_METER
     - GAS_METER
