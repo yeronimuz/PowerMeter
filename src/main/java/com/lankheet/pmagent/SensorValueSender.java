@@ -31,7 +31,6 @@ import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
 import com.lankheet.utils.JsonUtil;
-import static com.lankheet.iot.datatypes.entities.SensorType.*;
 
 public class SensorValueSender implements SensorValueListener {
     private static final Logger LOG = LoggerFactory.getLogger(SensorValueSender.class);
@@ -88,8 +87,7 @@ public class SensorValueSender implements SensorValueListener {
                 returnType = TopicType.TEMPERATURE;
                 break;
             default:
-                LOG.error("There is no mapping for measurementType:"
-                        + sensorValue.getSensorNode().getSensorType());
+                LOG.error("There is no mapping for measurementType:" + sensorValue.getSensorNode().getSensorType());
         }
         return returnType;
     }

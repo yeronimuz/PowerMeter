@@ -55,7 +55,6 @@ public class NetUtils {
         }
         macAddress = sb1.toString();
         return macAddress;
-
     }
 
 }

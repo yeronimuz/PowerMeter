@@ -56,6 +56,7 @@ task bigJar(type: OneJar) {
 
 dependencies {
     compile group: 'com.lankheet.iot', name: 'datatypes', version: dataTypesVersion
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 	compile 'org.scream3r:jssc:2.8.0'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion

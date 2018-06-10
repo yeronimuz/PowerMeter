@@ -29,14 +29,14 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.iot.datatypes.entities.MeasurementType;
 import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import mockit.Capturing;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -44,7 +44,7 @@ import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 
 @RunWith(JMockit.class)
-public class MeasurementSenderTest {
+public class SensorValueSenderTest {
 
     private @Mocked MqttClient mqttClientMock;
     private @Mocked LoggerFactory LoggerFactoryMock;

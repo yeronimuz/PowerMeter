@@ -69,9 +69,9 @@ public class PowerMeterAgent extends Application<PMAgentConfig> {
         final PMAboutResource pmaResource = new PMAboutResource(new AboutPMAgent());
         final String nic = configuration.getSensorConfig().getNic();
 
-        // TODO: Start new thread (or something) that<BR>
+        // TODO: Start new Dropwizard task that:<BR>
         // * reads data files
-        // * puts them in the queue
+        // * puts them in the mqtt queue
 
         serialPort = new SerialPort(configuration.getSerialPortConfig().getUart());
 
