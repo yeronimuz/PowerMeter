@@ -56,7 +56,6 @@ task bigJar(type: OneJar) {
 
 dependencies {
     compile group: 'com.lankheet.iot', name: 'datatypes', version: dataTypesVersion
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 	compile 'org.scream3r:jssc:2.8.0'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
@@ -66,7 +65,7 @@ dependencies {
     
  	testCompile 'info.cukes:cucumber-java:1.2.4'
  	testCompile 'info.cukes:cucumber-junit:1.2.4'
+	testCompile group: 'org.jmockit', name: 'jmockit', version: jmockitVersion
 	testCompile group: 'junit', name: 'junit', version: junitVersion
 	testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
-	testCompile group: 'org.jmockit', name: 'jmockit', version: jmockitVersion
 }

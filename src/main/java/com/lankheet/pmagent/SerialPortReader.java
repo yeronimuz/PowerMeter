@@ -81,6 +81,7 @@ public class SerialPortReader implements SerialPortEventListener {
                 LOG.debug(chunkS);
             } catch (SerialPortException ex) {
                 LOG.error(ex.getMessage());
+                return;
             }
             // Store
             if (numChars > 0) {
