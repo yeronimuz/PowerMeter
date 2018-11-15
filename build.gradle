@@ -1,31 +1,40 @@
+plugins {
+   id "com.github.johnrengelman.shadow" version "4.0.1"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'gradle-one-jar'
+apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
 version '0.3-SNAPSHOT'
 
-repositories {
-    mavenLocal()
-	mavenCentral()
-}
-
 ext {
-    dataTypesVersion = '0.4-SNAPSHOT'
-    junitVersion = '4.+'
-    slf4jVersion = '1.7.25'
-    jmockitVersion = '1.35'
-    jacksonVersion = '2.8.3'
+   dropWizardVersion = '1.3.7'
+   dataTypesVersion = '0.4-SNAPSHOT'
+   junitVersion = '4.+'
+   slf4jVersion = '1.7.25'
+   jmockitVersion = '1.35'
+   jacksonVersion = '2.8.3'
+   baseName = 'lnb-powermeter'
+   classifier = 'RC'
+   version = '0.3-SNAPSHOT'
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
-    }
+repositories {
+   mavenLocal()
+   mavenCentral()
+}
+
+mainClassName = 'com.lankheet.iot.webservice.WebService'
+
+shadowJar {
+   mergeServiceFiles()
+   mainClassName = mainClassName
+   baseName = project.ext.baseName
+   classifier = project.ext.classifier
+   version =  version
 }
 
 jacoco {
@@ -45,27 +54,18 @@ publishing {
     }
 }
 
-task bigJar(type: OneJar) {
-    mainClass = 'com.lankheet.pmagent.PowerMeterAgent'
-    manifest {
-        attributes 'Implementation-Title': 'PowerMeterP1',
-                   'Implementation-Version': version,
-                   'Main-Class': mainClass
-    }
-}
-
 dependencies {
     compile group: 'com.lankheet.iot', name: 'datatypes', version: dataTypesVersion
-	compile 'org.scream3r:jssc:2.8.0'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: jacksonVersion
-	compile 'io.dropwizard:dropwizard-core:1.3.1'
+    compile 'org.scream3r:jssc:2.8.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: jacksonVersion 
+    compile 'io.dropwizard:dropwizard-core:1.3.1'
     compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
     
- 	testCompile 'info.cukes:cucumber-java:1.2.4'
- 	testCompile 'info.cukes:cucumber-junit:1.2.4'
-	testCompile group: 'org.jmockit', name: 'jmockit', version: jmockitVersion
-	testCompile group: 'junit', name: 'junit', version: junitVersion
-	testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+ 	 testCompile 'info.cukes:cucumber-java:1.2.4'
+ 	 testCompile 'info.cukes:cucumber-junit:1.2.4'
+	 testCompile group: 'org.jmockit', name: 'jmockit', version: jmockitVersion
+	 testCompile group: 'junit', name: 'junit', version: junitVersion
+	 testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
 }
