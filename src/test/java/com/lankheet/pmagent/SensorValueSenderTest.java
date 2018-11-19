@@ -1,24 +1,3 @@
-/**
- * MIT License
- * 
- * Copyright (c) 2017 Lankheet Software and System Solutions
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 package com.lankheet.pmagent;
 
 import java.util.ArrayList;
@@ -49,7 +28,7 @@ public class SensorValueSenderTest {
     private @Mocked LoggerFactory LoggerFactoryMock;
     private @Capturing Logger loggerMock;
 
-    private static List<MqttTopicConfig> topics = new ArrayList<MqttTopicConfig>();
+    private static List<MqttTopicConfig> topics = new ArrayList<>();
 
     @BeforeClass
     public static void doSetup() {
@@ -64,22 +43,36 @@ public class SensorValueSenderTest {
     }
 
     @Test
-    public void test() throws MqttException {
-        new Expectations() {
-            {
-                LoggerFactory.getLogger(SensorValueSender.class);
-                result = loggerMock;
-            }
-        };
+    public void testSendMessage() throws MqttException {
+        new Expectations() {{
+            LoggerFactory.getLogger(SensorValueSender.class);
+            result = loggerMock;
+        }};
         SensorValueSender sensorValueSender = new SensorValueSender(mqttClientMock, topics);
         sensorValueSender.newSensorValue(new SensorValue(new SensorNode("01:02:03:04", SensorType.POWER_METER.getId()),
                 new Date(), MeasurementType.ACTUAL_CONSUMED_POWER.getId(), 3.5));
 
-        new Verifications() {
-            {
-                loggerMock.error(anyString);
-                times = 0;
-            }
-        };
+        new Verifications() {{
+            loggerMock.error(anyString);
+            times = 0;
+
+            mqttClientMock.publish(anyString, (MqttMessage) any);
+            times = 1;
+        }};
+    }
+
+    @Test
+    public void testRepeatedValues() throws MqttException {
+        SensorNode sensorNode = new SensorNode("01:02:03:04:05:06", 1);
+        SensorValueSender sensorValueSender = new SensorValueSender(mqttClientMock, topics);
+
+        sensorValueSender.newSensorValue(new SensorValue(sensorNode, new Date(), 1, 3.0 ));
+        sensorValueSender.newSensorValue(new SensorValue(sensorNode, new Date(), 1, 3.0 ));
+        sensorValueSender.newSensorValue(new SensorValue(sensorNode, new Date(), 1, 3.5 ));
+
+        new Verifications() {{
+            mqttClientMock.publish(anyString, (MqttMessage) any);
+            times = 2;
+        }};
     }
 }
