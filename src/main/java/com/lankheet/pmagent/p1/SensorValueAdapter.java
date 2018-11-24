@@ -27,7 +27,6 @@ public class SensorValueAdapter {
             {
                 // TODO: It should be possible to filter what needs to be sent. Now it's
                 // hard coded
-                // TODO: Repeated measurements should be filtered out
 
                 add(new SensorValue(sensorNode, ts, MeasurementType.CONSUMED_POWER_T1.getId(),
                         datagram.getConsumedPowerTariff1()));

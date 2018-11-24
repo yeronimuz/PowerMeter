@@ -25,6 +25,7 @@ public class SerialPortReader implements SerialPortEventListener {
     // TODO: externalize this key in config file
     private static final String PMETER_UNIQUE_KEY = "/XMX5LGBBFG1009021021";
     private static String buffS = "";
+    
     /**
      * The delay is determined to be accurate for receiving one datagram at a time.<BR>
      * Other values will lead to fragmentation of datagrams.

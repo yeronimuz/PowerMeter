@@ -11,20 +11,19 @@ apply plugin: 'jacoco'
 version '0.3-SNAPSHOT'
 
 ext {
-   dropWizardVersion = '1.3.7'
-   dataTypesVersion = '0.4-SNAPSHOT'
-   junitVersion = '4.+'
-   slf4jVersion = '1.7.25'
-   jmockitVersion = '1.35'
-   jacksonVersion = '2.8.3'
-   baseName = 'lnb-powermeter'
-   classifier = 'RC'
-   version = '0.3-SNAPSHOT'
+    baseName = 'lnb-powermeter'
+    classifier = 'RC'
+    dropWizardVersion = '1.3.7'
+    dataTypesVersion = '0.4-SNAPSHOT'
+    junitVersion = '4.+'
+    slf4jVersion = '1.7.25'
+    jmockitVersion = '1.35'
+    jacksonVersion = '2.8.3'
 }
 
 repositories {
-   mavenLocal()
-   mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
 
 mainClassName = 'com.lankheet.iot.webservice.WebService'

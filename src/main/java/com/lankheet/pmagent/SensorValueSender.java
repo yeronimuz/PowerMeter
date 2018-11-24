@@ -38,6 +38,7 @@ public class SensorValueSender implements SensorValueListener {
     @Override
     public void newSensorValue(SensorValue sensorValue) {
         if (!isRepeatedValue(sensorValue)) {
+            LOG.debug("new value: {}", sensorValue);
             String mqttTopic = null;
             TopicType topicType = getTopicTypeFromSensorValueType(sensorValue);
             // Get the destination
@@ -50,7 +51,7 @@ public class SensorValueSender implements SensorValueListener {
             try {
                 MqttMessage message = new MqttMessage();
                 message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
-                LOG.info("Sending Topic: " + mqttTopic + ", Message: " + message);
+                LOG.debug("Sending Topic: " + mqttTopic + ", Message: " + message);
                 mqttClient.publish(mqttTopic, message);
             }
             catch (Exception e) {
