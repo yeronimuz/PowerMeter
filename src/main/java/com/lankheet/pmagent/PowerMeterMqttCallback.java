@@ -2,6 +2,7 @@ package com.lankheet.pmagent;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
@@ -10,17 +11,18 @@ import org.slf4j.LoggerFactory;
 public class PowerMeterMqttCallback implements MqttCallback {
 	private static final Logger LOG = LoggerFactory.getLogger(PowerMeterMqttCallback.class);
 	
-	private MqttClientManager mqttClientManager;
+	private MqttClient mqttClient;
 	
-	public PowerMeterMqttCallback(MqttClientManager mqttClientManager) {
-		this.mqttClientManager = mqttClientManager;
+	public PowerMeterMqttCallback(MqttClient mqttClient) {
+		this.mqttClient = mqttClient;
 	}
 
 	@Override
 	public void connectionLost(Throwable cause) {
 		LOG.error("Connection loss: {}", cause.getMessage());
 		try {
-			mqttClientManager.getClient().reconnect();
+		    // TODO: How many times, and what delay?
+			mqttClient.reconnect();
 		} catch (MqttException e) {
 			LOG.error("Reconnection Mqtt client failed: {}", e.getMessage());
 		}

@@ -1,16 +1,12 @@
 package com.lankheet.pmagent.config;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lankheet.iot.datatypes.entities.SensorType;
 
 public class SensorConfig {
-    @NotNull
-    private String nic;
+     private String nic;
 
-    @NotEmpty
     private List<SensorType> sensorTypes;
 
     @JsonProperty
@@ -21,5 +17,21 @@ public class SensorConfig {
     @JsonProperty
     public List<SensorType> getSensorTypes() {
         return sensorTypes;
+    }
+
+    /**
+     * Set nic.
+     * @param nic the nic to set
+     */
+    public void setNic(String nic) {
+        this.nic = nic;
+    }
+
+    /**
+     * Set sensorTypes.
+     * @param sensorTypes the sensorTypes to set
+     */
+    public void setSensorTypes(List<SensorType> sensorTypes) {
+        this.sensorTypes = sensorTypes;
     }
 }

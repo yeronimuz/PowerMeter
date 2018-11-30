@@ -1,26 +1,33 @@
 package com.lankheet.pmagent;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import com.lankheet.iot.datatypes.domotics.SensorNode;
+import java.util.concurrent.BlockingQueue;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.iot.datatypes.entities.SensorType;
+import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
 import com.lankheet.utils.JsonUtil;
 
-public class SensorValueSender implements SensorValueListener {
+public class SensorValueSender implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SensorValueSender.class);
+    
+    // TODO: Read from yaml file
+    private static final String MQTT_PM_CLIENT_ID = "PM_CS1F08";
+
+    private final BlockingQueue<SensorValue> queue;
 
     private MqttClient mqttClient;
 
-    private List<MqttTopicConfig> topics;
+    private MqttConfig mqttConfig;
 
     private Map<SensorNode, Map<Integer, Double>> lastMeasuredMap = new HashMap<>();
 
@@ -30,21 +37,57 @@ public class SensorValueSender implements SensorValueListener {
      * @param mqttClient The MQTT client that sends the measurements
      * @param topics The configured topics in the config file
      */
-    public SensorValueSender(MqttClient mqttClient, List<MqttTopicConfig> topics) {
-        this.mqttClient = mqttClient;
-        this.topics = topics;
+    public SensorValueSender(BlockingQueue<SensorValue> queue, MqttConfig mqttConfig) {
+        this.queue = queue;
+        this.mqttConfig = mqttConfig;
     }
 
     @Override
+    public void run() {
+        try {
+            connectToBroker(mqttConfig);
+        } catch (MqttException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        while(true) {
+            try {
+                newSensorValue(queue.take());
+            } catch (InterruptedException e) {
+                LOG.error("Reading queue was interrupted");
+            }
+        }
+        
+        // TODO put next lines in cleanup
+        // mqttClient.disconnect();
+        // mqttClient.close();
+    }
+
+    private void connectToBroker(MqttConfig mqttConfig) throws MqttException {
+        String userName = mqttConfig.getUserName();
+        String password = mqttConfig.getPassword();
+        mqttClient = new MqttClient(mqttConfig.getUrl(), MQTT_PM_CLIENT_ID);
+
+        MqttConnectOptions options = new MqttConnectOptions();
+        mqttClient.setCallback(new PowerMeterMqttCallback(mqttClient));
+        options.setConnectionTimeout(60);
+        options.setKeepAliveInterval(60);
+        options.setUserName(userName);
+        options.setPassword(password.toCharArray());
+        
+        mqttClient.connect(options);
+    }
+
     public void newSensorValue(SensorValue sensorValue) {
-        if (!isRepeatedValue(sensorValue)) {
+        // if (!isRepeatedValue(sensorValue)) {
             LOG.debug("new value: {}", sensorValue);
             String mqttTopic = null;
             TopicType topicType = getTopicTypeFromSensorValueType(sensorValue);
             // Get the destination
-            for (MqttTopicConfig mtc : topics) {
-                if (mtc.getType().getTopicName().equals(topicType.getTopicName())) {
-                    mqttTopic = mtc.getTopic();
+            for (MqttTopicConfig mqttTopicConfig : mqttConfig.getTopics()) {
+                if (mqttTopicConfig.getType().getTopicName().equals(topicType.getTopicName())) {
+                    mqttTopic = mqttTopicConfig.getTopic();
                     break;
                 }
             }
@@ -53,24 +96,22 @@ public class SensorValueSender implements SensorValueListener {
                 message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
                 LOG.debug("Sending Topic: " + mqttTopic + ", Message: " + message);
                 mqttClient.publish(mqttTopic, message);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 LOG.error(e.getMessage());
             }
-        }
+        // }
     }
 
 
-    private boolean isRepeatedValue(SensorValue sensorValue)
-    {
+    private boolean isRepeatedValue(SensorValue sensorValue) {
         boolean isRepeated = false;
         SensorNode sensorNode = sensorValue.getSensorNode();
+
         Map<Integer, Double> typeValueMap = new HashMap<>();
 
-        if (lastMeasuredMap.keySet().isEmpty() ||
-           !lastMeasuredMap.containsKey(sensorNode)) {
+        if (lastMeasuredMap.keySet().isEmpty() || !lastMeasuredMap.containsKey(sensorNode)) {
             typeValueMap.put(sensorValue.getMeasurementType(), sensorValue.getValue());
-            lastMeasuredMap.put(sensorValue.getSensorNode(), typeValueMap);
+            lastMeasuredMap.put(sensorNode, typeValueMap);
         } else {
             // Check for type in map
             double lastValue = lastMeasuredMap.get(sensorNode).get(sensorValue.getMeasurementType());
@@ -78,6 +119,7 @@ public class SensorValueSender implements SensorValueListener {
                 isRepeated = true;
             } else {
                 typeValueMap.put(sensorValue.getMeasurementType(), sensorValue.getValue());
+                // TODO: Store new value
             }
         }
         return isRepeated;

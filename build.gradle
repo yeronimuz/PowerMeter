@@ -8,12 +8,11 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
-version '0.3-SNAPSHOT'
+version '0.4-SNAPSHOT'
 
 ext {
     baseName = 'lnb-powermeter'
-    classifier = 'RC'
-    dropWizardVersion = '1.3.7'
+    classifier = 'ALPHA'
     dataTypesVersion = '0.4-SNAPSHOT'
     junitVersion = '4.+'
     slf4jVersion = '1.7.25'
@@ -26,7 +25,7 @@ repositories {
     mavenCentral()
 }
 
-mainClassName = 'com.lankheet.iot.webservice.WebService'
+mainClassName = 'com.lankheet.pmagent.PowerMeterAgent'
 
 shadowJar {
    mergeServiceFiles()
@@ -55,11 +54,12 @@ publishing {
 
 dependencies {
     compile group: 'com.lankheet.iot', name: 'datatypes', version: dataTypesVersion
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.21'
+    compile group: 'org.reflections', name: 'reflections', version: '0.9.11'
     compile 'org.scream3r:jssc:2.8.0'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: jacksonVersion 
-    compile 'io.dropwizard:dropwizard-core:1.3.1'
     compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
     
  	 testCompile 'info.cukes:cucumber-java:1.2.4'

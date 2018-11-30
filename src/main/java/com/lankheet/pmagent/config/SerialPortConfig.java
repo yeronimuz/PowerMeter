@@ -1,14 +1,11 @@
 package com.lankheet.pmagent.config;
 
-import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SerialPortConfig {
-	@NotEmpty
-	private String serialPort = "/dev/ttyUSB0";
 
-	@NotNull
+    private String serialPort = "/dev/ttyUSB0";
+
 	private Integer baudRate = 115200;
 
 	@JsonProperty

@@ -1,13 +1,11 @@
 package com.lankheet.pmagent.config;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MqttTopicConfig {
-    @NotEmpty
+ 
     private String topic;
 
-    @NotEmpty
     private TopicType type;
 
     @JsonProperty

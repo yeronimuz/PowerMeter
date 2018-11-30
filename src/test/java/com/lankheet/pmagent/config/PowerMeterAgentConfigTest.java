@@ -27,13 +27,12 @@ import static org.junit.Assert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.lankheet.iot.datatypes.entities.SensorType;
+import com.lankheet.pmagent.PowerMeterAgent;
 import cucumber.api.java.After;
-import io.dropwizard.Application;
-import io.dropwizard.setup.Environment;
 
 public class PowerMeterAgentConfigTest {
 	// Prepare the SUT
-	private static class PMAgentConfigTester extends Application<PMAgentConfig> {
+	private static class PMAgentConfigTester extends PowerMeterAgent {
 		private static PMAgentConfigTester instance = null;
 		private PMAgentConfig pmaConfig;
 
@@ -41,9 +40,8 @@ public class PowerMeterAgentConfigTest {
 			// Do not allow instantiation through constructor
 		}
 
-		@Override
-		public void run(PMAgentConfig configuration, Environment environment) throws Exception {
-			this.pmaConfig = configuration;
+		public void run(String configFileName) throws Exception {
+			this.pmaConfig = this.loadConfigurationFromFile(configFileName);
 		}
 
 		public static PMAgentConfigTester getInstance() {
@@ -56,7 +54,7 @@ public class PowerMeterAgentConfigTest {
 
 	@BeforeClass
 	public static void setup() throws Exception {
-		PMAgentConfigTester.getInstance().run("server", "src/test/resources/application.yml");
+		PMAgentConfigTester.getInstance().run("src/test/resources/application.yml");
 	}
 
 	@After
