@@ -47,8 +47,9 @@ public class SensorValueSender implements Runnable {
         try {
             connectToBroker(mqttConfig);
         } catch (MqttException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Cannot connect: " + e.getMessage());
+            // TODO: Make recoverable
+            System.exit(-1);
         }
         
         while(true) {
@@ -80,6 +81,7 @@ public class SensorValueSender implements Runnable {
     }
 
     public void newSensorValue(SensorValue sensorValue) {
+        // TODO: Fix repeated values
         // if (!isRepeatedValue(sensorValue)) {
             LOG.debug("new value: {}", sensorValue);
             String mqttTopic = null;
@@ -91,14 +93,31 @@ public class SensorValueSender implements Runnable {
                     break;
                 }
             }
+            boolean isConnectionOk = true;
+            MqttMessage message = new MqttMessage();
+            message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
+            LOG.debug("Sending Topic: " + mqttTopic + ", Message: " + message);
+            do {
             try {
-                MqttMessage message = new MqttMessage();
-                message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
-                LOG.debug("Sending Topic: " + mqttTopic + ", Message: " + message);
                 mqttClient.publish(mqttTopic, message);
+                isConnectionOk = true;
             } catch (Exception e) {
                 LOG.error(e.getMessage());
+                isConnectionOk = false;
+                
+                try {
+                    mqttClient.reconnect();
+                } catch (MqttException e1) {
+                    // NOP
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) {
+                    // NOP
+                }
             }
+            } while (!isConnectionOk);
+            
         // }
     }
 
@@ -128,6 +147,7 @@ public class SensorValueSender implements Runnable {
 
     private TopicType getTopicTypeFromSensorValueType(SensorValue sensorValue) {
         TopicType returnType = null;
+        // FIXME: Gas measurement is mapped to lnb/eng/power instead of lnb/eng/gas
         switch (SensorType.getType(sensorValue.getSensorNode().getSensorType())) {
             case POWER_METER:
                 returnType = TopicType.POWER;

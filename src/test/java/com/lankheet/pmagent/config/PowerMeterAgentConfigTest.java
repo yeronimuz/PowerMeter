@@ -41,7 +41,7 @@ public class PowerMeterAgentConfigTest {
 		}
 
 		public void run(String configFileName) throws Exception {
-			this.pmaConfig = this.loadConfigurationFromFile(configFileName);
+			this.pmaConfig = PMAgentConfig.loadConfigurationFromFile(configFileName);
 		}
 
 		public static PMAgentConfigTester getInstance() {
@@ -77,6 +77,7 @@ public class PowerMeterAgentConfigTest {
 		
 		MqttConfig mqttConfig = pmaTester.pmaConfig.getMqttConfig();
 		assertThat(mqttConfig, is(notNullValue()));
+		assertThat(mqttConfig.getClientName(), is("PM_CS1F08"));
 		assertThat(mqttConfig.getUserName(), is("johndoe"));
 		assertThat(mqttConfig.getTopics().size(), is(2));
 		assertThat(mqttConfig.getTopics().get(0).getType().toString().toLowerCase(), is("power"));

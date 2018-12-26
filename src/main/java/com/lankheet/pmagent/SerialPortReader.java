@@ -25,8 +25,7 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
 
     private static final int SERIAL_DATA_BITS = 8;
     private static final char STOP_TOKEN = '!';
-    // TODO: externalize this key in config file
-    private static final String PMETER_UNIQUE_KEY = "/XMX5LGBBFG1009021021";
+    private static String PMETER_UNIQUE_KEY;
     private static String buffS = "";
 
     /**
@@ -50,8 +49,11 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
 
     @Override
     public void run() {
+        PMETER_UNIQUE_KEY = serialPortConfig.getP1Key();
         serialPort = new SerialPort(serialPortConfig.getUart());
         try {
+            // FIXME: When port cannot be opened, retry in endless loop
+            // Don't return, but retry indefinitely
             if (!serialPort.openPort()) {
                 LOG.error("Serial port: Open port failed");
                 return;
@@ -74,7 +76,6 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
                 LOG.error(e.getMessage());
             }
         }
-
     }
 
     @Override

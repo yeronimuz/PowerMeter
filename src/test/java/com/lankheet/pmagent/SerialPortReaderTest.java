@@ -2,11 +2,13 @@ package com.lankheet.pmagent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
+import com.lankheet.pmagent.config.SerialPortConfig;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortException;
@@ -19,18 +21,26 @@ public class SerialPortReaderTest {
 
     @Mocked
     private SerialPort serialPortMock;
-
     @Mocked
     private SensorValueListener sensorValueListenerMock;
-
     @Mocked
     private SensorNode sensorNodeMock;
-    private @Mocked LoggerFactory LoggerFactoryMock;
-    private @Capturing Logger loggerMock;
+    @Mocked
+    private BlockingQueue<SensorValue> queueMock;
+    @Mocked
+    private LoggerFactory LoggerFactoryMock;
+    @Capturing 
+    private Logger loggerMock;
+
+    private SerialPortConfig serialPortConfig = new SerialPortConfig() {{
+        setBaudRate(115200);
+        setUart("/dev/ttySomething");
+    }};
 
 
     @Test
     public void testOneDatagram() throws SerialPortException {
+        
         List<SerialPortEvent> serialPortEventList = new ArrayList<SerialPortEvent>() {
             {
                 add(new SerialPortEvent("", SerialPortEvent.RXCHAR, 200 /* nr_of_bytes */));
@@ -52,7 +62,7 @@ public class SerialPortReaderTest {
             }
         };
         SerialPortReader serialPortReader =
-                new SerialPortReader(serialPortMock, sensorNodeMock, sensorValueListenerMock);
+                new SerialPortReader(queueMock, serialPortConfig, sensorNodeMock);
         serialPortReader.serialEvent(serialPortEventList.get(0));
 
         new Verifications() {
@@ -73,7 +83,7 @@ public class SerialPortReaderTest {
         };
         
         SerialPortReader serialPortReader =
-                new SerialPortReader(serialPortMock, sensorNodeMock, sensorValueListenerMock);
+                new SerialPortReader(queueMock, serialPortConfig, sensorNodeMock);
         serialPortReader.serialEvent(new SerialPortEvent("", SerialPortEvent.RXCHAR, 200 /* nr_of_bytes */));
 
 

@@ -4,6 +4,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MqttConfig {
+    
+    private String clientName;
 	
 	private String url;
 	
@@ -52,4 +54,14 @@ public class MqttConfig {
 	public void setTopics(List<MqttTopicConfig> topics) {
 		this.topics = topics;
 	}
+
+    @JsonProperty
+    public String getClientName() {
+        return clientName;
+    }
+
+    @JsonProperty
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
 }

@@ -6,6 +6,7 @@ sensorConfig:
     - GAS_METER
     
 mqttConfig:
+  clientName: CS1F08_PM1
   url: tcp://localhost:1883
   userName: johndoe
   password: secret
@@ -16,5 +17,6 @@ mqttConfig:
       type: GAS
 
 serialPort:
+  p1Key: /XMXunique_key
   uart: /dev/ttyUSB0
   baudRate: 115200
