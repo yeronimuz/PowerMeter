@@ -64,4 +64,13 @@ public class MqttConfig {
     public void setClientName(String clientName) {
         this.clientName = clientName;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "MqttConfig [clientName=" + clientName + ", url=" + url + ", userName=" + userName + ", password="
+                + password + ", topics=" + topics + "]";
+    }  
 }

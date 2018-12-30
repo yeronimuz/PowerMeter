@@ -27,4 +27,12 @@ public class MqttTopicConfig {
     public void setType(TopicType type) {
         this.type = type;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "MqttTopicConfig [topic=" + topic + ", type=" + type + "]";
+    }
 }

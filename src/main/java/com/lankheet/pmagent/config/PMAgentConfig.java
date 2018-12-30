@@ -82,18 +82,24 @@ public class PMAgentConfig {
         TypeDescription pmAgentConfigTypeDescription = new TypeDescription(PMAgentConfig.class);
         pmAgentConfigTypeDescription.addPropertyParameters("sensorConfig", SensorConfig.class);
         pmAgentConfigTypeDescription.addPropertyParameters("mqttConfig", MqttConfig.class);
+        
         TypeDescription sensorConfigTypeDescription = new TypeDescription(SensorConfig.class);
         sensorConfigTypeDescription.addPropertyParameters("nic", String.class);
         sensorConfigTypeDescription.addPropertyParameters("sensorTypes", SensorType.class);
+        
         TypeDescription mqttConfigTypeDescription = new TypeDescription(MqttConfig.class);
         mqttConfigTypeDescription.addPropertyParameters("topics", MqttTopicConfig.class);
         mqttConfigTypeDescription.addPropertyParameters("url", String.class);
         mqttConfigTypeDescription.addPropertyParameters("userName", String.class);
         mqttConfigTypeDescription.addPropertyParameters("password", String.class);
+        mqttConfigTypeDescription.addPropertyParameters("clientName", String.class);
         TypeDescription mqttTopicConfigTypeDescription = new TypeDescription(MqttTopicConfig.class);
         mqttTopicConfigTypeDescription.addPropertyParameters("topic", String.class);
         mqttTopicConfigTypeDescription.addPropertyParameters("type", TopicType.class);
         TypeDescription serialPortConfigTypeDescription = new TypeDescription(SerialPortConfig.class);
+        serialPortConfigTypeDescription.addPropertyParameters("p1Key", String.class);
+        serialPortConfigTypeDescription.addPropertyParameters("uart", String.class);
+        serialPortConfigTypeDescription.addPropertyParameters("baudRate", String.class);
         constructor.addTypeDescription(pmAgentConfigTypeDescription);
         constructor.addTypeDescription(sensorConfigTypeDescription);
         constructor.addTypeDescription(mqttConfigTypeDescription);

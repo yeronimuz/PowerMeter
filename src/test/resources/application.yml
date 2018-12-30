@@ -17,6 +17,6 @@ mqttConfig:
       type: GAS
 
 serialPort:
-  p1Key: /XMX<to-be-read-using-serial-port-reader>
+  p1Key: /XMX5LGBBFG1009021021
   uart: /dev/ttyUSB0
   baudRate: 115200

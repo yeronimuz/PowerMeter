@@ -34,4 +34,12 @@ public class SensorConfig {
     public void setSensorTypes(List<SensorType> sensorTypes) {
         this.sensorTypes = sensorTypes;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "SensorConfig [nic=" + nic + ", sensorTypes=" + sensorTypes + "]";
+    }
 }

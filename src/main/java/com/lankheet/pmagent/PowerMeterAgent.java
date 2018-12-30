@@ -52,6 +52,7 @@ public class PowerMeterAgent {
     public void run(String configFileName) throws Exception {
         BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(1000);
         PMAgentConfig configuration = PMAgentConfig.loadConfigurationFromFile(configFileName);
+        LOG.info("Configuration: " + configuration.toString());
 
         MqttConfig mqttConfig = configuration.getMqttConfig();
         SensorValueSender sensorValueSender = new SensorValueSender(queue, mqttConfig);

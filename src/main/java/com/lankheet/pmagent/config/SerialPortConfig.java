@@ -39,4 +39,12 @@ public class SerialPortConfig {
     public void setP1Key(String p1Key) {
         this.p1Key = p1Key;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "SerialPortConfig [p1Key=" + p1Key + ", serialPort=" + serialPort + ", baudRate=" + baudRate + "]";
+    }
 }

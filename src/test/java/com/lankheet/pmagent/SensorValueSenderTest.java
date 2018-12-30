@@ -9,6 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lankheet.iot.datatypes.domotics.SensorNode;
@@ -21,12 +22,16 @@ import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
+import mockit.integration.junit4.JMockit;
 
 public class SensorValueSenderTest {
 
-    private @Mocked LoggerFactory LoggerFactoryMock;
-    private @Mocked MqttClient mqttClientMock;
-    private @Capturing Logger loggerMock;
+    @Mocked
+    private  LoggerFactory LoggerFactoryMock;
+    @Mocked 
+    private MqttClient mqttClientMock;
+    @Capturing 
+    private Logger loggerMock;
 
     private static PMAgentConfig config; 
 
@@ -37,16 +42,16 @@ public class SensorValueSenderTest {
 
     @Test
     public void testSendMessage() throws Exception {
-        new Expectations() {{
+       new Expectations() {{
             LoggerFactory.getLogger(SensorValueSender.class);
             result = loggerMock;
             
             mqttClientMock.publish(anyString, (MqttMessage) any);
-            
         }};
         BlockingQueue<SensorValue> queue = new ArrayBlockingQueue(1000);
         SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttConfig());
         Deencapsulation.setField(sensorValueSender, "mqttClient", mqttClientMock);
+        
         sensorValueSender.newSensorValue(new SensorValue(new SensorNode("01:02:03:04", SensorType.POWER_METER.getId()),
                 new Date(), MeasurementType.ACTUAL_CONSUMED_POWER.getId(), 3.5));
 
@@ -59,17 +64,21 @@ public class SensorValueSenderTest {
         }};
     }
 
-    // @Test
+    @Test
     public void testRepeatedValues() throws MqttException {
         BlockingQueue<SensorValue> queue = new ArrayBlockingQueue(1000);
         SensorNode sensorNode = new SensorNode("01:02:03:04:05:06", 1);
         SensorNode anotherNode = new SensorNode("02:03:04:05:06:07", 2);
         SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttConfig());
+        Deencapsulation.setField(sensorValueSender, "mqttClient", mqttClientMock);
+        SensorValueCache svCache = new SensorValueCache();
+        Deencapsulation.setField(sensorValueSender, "sensorValueCache", svCache);
+        
 
         sensorValueSender.newSensorValue(new SensorValue(sensorNode, new Date(), 1, 3.0 ));
         sensorValueSender.newSensorValue(new SensorValue(sensorNode, new Date(), 1, 3.0 ));
         sensorValueSender.newSensorValue(new SensorValue(sensorNode, new Date(), 1, 3.5 ));
-        sensorValueSender.newSensorValue(new SensorValue(anotherNode, new Date(), 2, 3.0));
+        sensorValueSender.newSensorValue(new SensorValue(anotherNode, new Date(), 2, 3.5 ));
 
         new Verifications() {{
             mqttClientMock.publish(anyString, (MqttMessage) any);

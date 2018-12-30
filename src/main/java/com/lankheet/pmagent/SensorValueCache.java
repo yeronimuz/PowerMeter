@@ -24,7 +24,7 @@ public class SensorValueCache {
         SensorNode sensorNode = sensorValue.getSensorNode();
         List<SensorValue> sensorValues = new ArrayList<>();
 
-        if (!latch.isEmpty() || latch.containsKey(sensorValue.getSensorNode())) {
+        if (!latch.isEmpty() && latch.containsKey(sensorValue.getSensorNode())) {
             for (SensorValue sensorValueLatch : latch.get(sensorNode)) {
                 isRepeated |= sensorValueLatch.equals(sensorValue);
             }
@@ -50,8 +50,5 @@ public class SensorValueCache {
         System.out.println("================");
         System.out.println(builder.toString());
         return builder.toString();
-
     }
-
-
 }
