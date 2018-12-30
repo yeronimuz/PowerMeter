@@ -47,8 +47,6 @@ public class SensorValueCache {
                 builder.append(String.format("{type = %d, value = %f}\n", val.getMeasurementType(), val.getValue()));
             });
         });
-        System.out.println("================");
-        System.out.println(builder.toString());
         return builder.toString();
     }
 }
