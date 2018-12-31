@@ -21,16 +21,24 @@ public class SensorValueCache {
 
     public boolean isRepeatedValue(SensorValue sensorValue) {
         boolean isRepeated = false;
+        int indexToBeReplaced = -1;
         SensorNode sensorNode = sensorValue.getSensorNode();
         List<SensorValue> sensorValues = new ArrayList<>();
 
         if (!latch.isEmpty() && latch.containsKey(sensorValue.getSensorNode())) {
-            for (SensorValue sensorValueLatch : latch.get(sensorNode)) {
+            sensorValues = latch.get(sensorNode);
+            for (SensorValue sensorValueLatch : sensorValues) {
                 isRepeated |= sensorValueLatch.equals(sensorValue);
+                if(sensorValueLatch.equalsInType(sensorValue)) {
+                    // Only value differs, store new value
+                    indexToBeReplaced = sensorValues.indexOf(sensorValueLatch);
+                }
+            }
+            if (indexToBeReplaced != -1) {
+                sensorValues.set(indexToBeReplaced, sensorValue);
             }
         }
-        // WARNING: SensorNode may differ in subsequent calls
-        if (!isRepeated) {
+        if (!isRepeated && indexToBeReplaced == -1) {
             sensorValues.add(sensorValue);
             latch.put(sensorNode, sensorValues);
         }
@@ -48,5 +56,13 @@ public class SensorValueCache {
             });
         });
         return builder.toString();
+    }
+
+    /**
+     * Get latch.
+     * @return the latch
+     */
+    public Map<SensorNode, List<SensorValue>> getLatch() {
+        return latch;
     }
 }
