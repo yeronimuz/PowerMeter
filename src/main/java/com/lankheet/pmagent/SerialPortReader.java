@@ -1,11 +1,13 @@
 package com.lankheet.pmagent;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
+import com.lankheet.pmagent.config.SerialPortConfig;
 import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.pmagent.p1.P1Parser;
 import com.lankheet.pmagent.p1.SensorValueAdapter;
@@ -15,35 +17,81 @@ import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
 /**
- * Wrapper around SerialPort Reader
- *
+ * Wrapper around SerialPort Reader.
+ * It runs in it's own thread and puts sensorValue objects in a queue.
  */
-public class SerialPortReader implements SerialPortEventListener {
+public class SerialPortReader implements SerialPortEventListener, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SerialPortReader.class);
+    private static final int NR_OF_LOOPS_FOR_RETRY = 10;
 
+    private static final int SERIAL_PORT_READER_LOOP_WAIT_MS = 100;
+
+
+    private static final int SERIAL_DATA_BITS = 8;
     private static final char STOP_TOKEN = '!';
-    // TODO: externalize this key in config file
-    private static final String PMETER_UNIQUE_KEY = "/XMX5LGBBFG1009021021";
+    private static String powerMeterUniqueKey;
     private static String buffS = "";
-    
+
     /**
      * The delay is determined to be accurate for receiving one datagram at a time.<BR>
      * Other values will lead to fragmentation of datagrams.
      */
     private static final int WAIT_FOR_DATA = 500;
 
+    private final BlockingQueue<SensorValue> queue;
     private SerialPort serialPort;
-
-    SensorValueListener sensorValueListener;
+    private SerialPortConfig serialPortConfig;
 
     private SensorNode sensorNode;
 
-    public SerialPortReader(SerialPort serialPort, SensorNode sensorNode, SensorValueListener listener) {
-        this.serialPort = serialPort;
-        this.sensorValueListener = listener;
+    public SerialPortReader(BlockingQueue<SensorValue> queue, SerialPortConfig serialPortConfig,
+            SensorNode sensorNode) {
+        this.queue = queue;
+        this.serialPortConfig = serialPortConfig;
         this.sensorNode = sensorNode;
     }
 
+    @Override
+    public void run() {
+        powerMeterUniqueKey = serialPortConfig.getP1Key();
+        serialPort = new SerialPort(serialPortConfig.getUart());
+        try {
+            // FIXME: When port cannot be opened, retry in endless loop
+            // Don't return, but retry indefinitely
+            if (!serialPort.openPort()) {
+                LOG.error("Serial port: Open port failed");
+                return;
+            }
+            serialPort.setParams(serialPortConfig.getBaudRate(), SERIAL_DATA_BITS, 1, 0);
+            int mask = SerialPort.MASK_RXCHAR;
+            if (!serialPort.setEventsMask(mask)) {
+                LOG.error("Serial port: Unable to set mask");
+                return;
+            }
+            serialPort.addEventListener(this);
+        } catch (SerialPortException ex) {
+            LOG.error(ex.getMessage());
+        }
+        int counter = 0;
+        while (true) {
+            counter++;
+            if (!serialPort.isOpened() && (counter % NR_OF_LOOPS_FOR_RETRY) == 0) {
+                try {
+                    serialPort.openPort();
+                } catch (SerialPortException e) {
+                    LOG.error("Unable to re-open serial port: " + e.getMessage());;
+                }
+            }
+            // The serial port triggers a new event and is handled by serialEvent
+            try {
+                Thread.sleep(SERIAL_PORT_READER_LOOP_WAIT_MS);
+            } catch (InterruptedException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+    }
+
+    @Override
     public void serialEvent(SerialPortEvent event) {
 
         String chunkS = null;
@@ -72,7 +120,7 @@ public class SerialPortReader implements SerialPortEventListener {
     }
 
     private String evaluateAndSaveSerialData(String bufS) {
-        int start = bufS.indexOf(PMETER_UNIQUE_KEY);
+        int start = bufS.indexOf(powerMeterUniqueKey);
         int stop = bufS.indexOf(STOP_TOKEN); // Followed by 3 or 4 characters
         // (checksum)
 
@@ -82,26 +130,25 @@ public class SerialPortReader implements SerialPortEventListener {
             LOG.debug("Parse:" + bufS.substring(start, stop + 4));
 
             P1Datagram datagram = P1Parser.parse(bufS.substring(start, stop + 4));
-            try {
-                publishDatagram(datagram);
-            } catch (MqttException e) {
-                // TODO: Set health status to unhealthy
-                LOG.error(e.getMessage());
-            }
-            LOG.info("Saved: " + datagram);
+            publishDatagram(datagram);
+             LOG.info("Saved: " + datagram);
             return bufS.substring(stop + 4); // sometimes only 3 chars.
                                              // CR/LF not taken into
                                              // account
         }
         // else wait for another event
-        // TODO: Reset health status to healthy
         return bufS;
     }
 
-    private void publishDatagram(P1Datagram datagram) throws MqttException {
+    private void publishDatagram(P1Datagram datagram) {
         List<SensorValue> sensorValueList = SensorValueAdapter.convertP1Datagram(sensorNode, datagram);
-        sensorValueList.forEach(sensorValue -> {
-            sensorValueListener.newSensorValue(sensorValue);
-        });
+        LOG.debug("Putting " + sensorValueList.size() + " values in the queue...");
+        for (SensorValue sensorValue : sensorValueList) {
+            try {
+                queue.put(sensorValue);
+            } catch (InterruptedException e) {
+                LOG.error("Putting data in queue was interrupted");
+            }
+        }
     }
 }

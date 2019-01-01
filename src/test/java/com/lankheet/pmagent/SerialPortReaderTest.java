@@ -1,41 +1,51 @@
 package com.lankheet.pmagent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
+import com.lankheet.pmagent.config.SerialPortConfig;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortException;
-import mockit.Capturing;
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
+
 
 public class SerialPortReaderTest {
 
     @Mocked
     private SerialPort serialPortMock;
-
     @Mocked
     private SensorValueListener sensorValueListenerMock;
-
     @Mocked
     private SensorNode sensorNodeMock;
-    private @Mocked LoggerFactory LoggerFactoryMock;
-    private @Capturing Logger loggerMock;
+    @Mocked
+    private BlockingQueue<SensorValue> queueMock;
+    @Mocked
+    private LoggerFactory LoggerFactoryMock;
+    @Mocked
+    private Logger loggerMock;
+
+    private SerialPortConfig serialPortConfig = new SerialPortConfig() {
+        {
+            setBaudRate(115200);
+            setUart("/dev/ttySomething");
+            setP1Key("/XMX5LGBBFG1009021021");
+        }
+    };
 
 
     @Test
-    public void testOneDatagram() throws SerialPortException {
-        List<SerialPortEvent> serialPortEventList = new ArrayList<SerialPortEvent>() {
-            {
-                add(new SerialPortEvent("", SerialPortEvent.RXCHAR, 200 /* nr_of_bytes */));
-            }
-        };
+    public void testOneDatagram() throws SerialPortException, InterruptedException {
+
+        SerialPortReader serialPortReader = new SerialPortReader(queueMock, serialPortConfig, sensorNodeMock);
+        Deencapsulation.setField(serialPortReader, "serialPort", serialPortMock);
+        Deencapsulation.setField(serialPortReader, "powerMeterUniqueKey", "/XMX5LGBBFG1009021021");
 
         new Expectations() {
             {
@@ -51,29 +61,35 @@ public class SerialPortReaderTest {
                         + "0-1:24.2.1(151009120000S)(00086.298*m3)\n" + "!99CF").getBytes();
             }
         };
-        SerialPortReader serialPortReader =
-                new SerialPortReader(serialPortMock, sensorNodeMock, sensorValueListenerMock);
-        serialPortReader.serialEvent(serialPortEventList.get(0));
+
+        serialPortReader.serialEvent(new SerialPortEvent("", SerialPortEvent.RXCHAR, 200 /* nr_of_bytes */));
 
         new Verifications() {
             {
-                sensorValueListenerMock.newSensorValue((SensorValue) any);
+                queueMock.put((SensorValue) any);;
                 times = 7;
+
+                loggerMock.error(anyString);
+                times = 0;
             }
         };
     }
 
     @Test
     public void testErrorReadingSerialPort() throws SerialPortException {
+        SerialPortReader serialPortReader = new SerialPortReader(queueMock, serialPortConfig, sensorNodeMock);
+        Deencapsulation.setField(serialPortReader, "serialPort", serialPortMock);
         new Expectations() {
             {
+//                LoggerFactory.getLogger(SerialPortReader.class);
+//                result = loggerMock;
+
                 serialPortMock.readBytes(200);
                 result = new SerialPortException("tty", "that was a fault", "third");
             }
         };
-        
-        SerialPortReader serialPortReader =
-                new SerialPortReader(serialPortMock, sensorNodeMock, sensorValueListenerMock);
+
+
         serialPortReader.serialEvent(new SerialPortEvent("", SerialPortEvent.RXCHAR, 200 /* nr_of_bytes */));
 
 
@@ -84,11 +100,11 @@ public class SerialPortReaderTest {
             }
         };
     }
-    
+
     public void testShortChunksFromSerialPort() {
         // TODO
     }
-    
+
     public void testFlowAfterExceptionWithLotsOfChunks() {
         // TODO
     }

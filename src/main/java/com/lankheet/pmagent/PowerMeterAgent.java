@@ -1,82 +1,80 @@
 package com.lankheet.pmagent;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lankheet.iot.datatypes.domotics.SensorNode;
+import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.config.PMAgentConfig;
-import com.lankheet.pmagent.health.MqttHealthCheck;
-import com.lankheet.pmagent.resources.AboutPMAgent;
-import com.lankheet.pmagent.resources.PMAboutResource;
 import com.lankheet.utils.NetUtils;
-import io.dropwizard.Application;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
-import jssc.SerialPort;
-import jssc.SerialPortException;
 
 /**
  * The service reads datagrams from the P1 serial interface<br>
  * It sends a series of SensorValue objects to an MQTT broker<br>
  */
-public class PowerMeterAgent extends Application<PMAgentConfig> {
+public class PowerMeterAgent {
     private static final Logger LOG = LoggerFactory.getLogger(PowerMeterAgent.class);
 
-    private static final int SERIAL_DATA_BITS = 8;
-
-    /** P1 UART */
-    static SerialPort serialPort;
 
     public static void main(String[] args) throws Exception {
-        new PowerMeterAgent().run(args[0], args[1]);
-    }
+        InputStream is = PowerMeterAgent.class.getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF");
+        Manifest manifest = new Manifest(is);
+        Attributes mainAttrs = manifest.getMainAttributes();
+        String title = mainAttrs.getValue("Implementation-Title");
+        String version = mainAttrs.getValue("Implementation-Version");
+        String classifier = mainAttrs.getValue("Implementation-Classifier");
 
-    @Override
-    public void initialize(Bootstrap<PMAgentConfig> bootstrap) {
-        LOG.info("P1 manager", "");
-    }
-
-    public void setSerialPort(SerialPort serialPort) {
-        PowerMeterAgent.serialPort = serialPort;
-    }
-
-    @Override
-    public void run(PMAgentConfig configuration, Environment environment) throws Exception {
-        MqttConfig mqttConfig = configuration.getMqttConfig();
-        MqttClientManager mqttClientManager = new MqttClientManager(mqttConfig);
-        final PMAboutResource pmaResource = new PMAboutResource(new AboutPMAgent());
-        final String nic = configuration.getSensorConfig().getNic();
-
-        // TODO: Start new Dropwizard task that:<BR>
-        // * reads data files
-        // * puts them in the mqtt queue
-
-        serialPort = new SerialPort(configuration.getSerialPortConfig().getUart());
-
-        try {
-            if (!serialPort.openPort()) {
-                LOG.error("Serial port: Open port failed");
-                return;
+        showBanner();
+        LOG.info("Starting " + title + ": " + version + "-" + classifier);
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                LOG.warn("Shutdown Hook is cleaning up!");
             }
-            serialPort.setParams(configuration.getSerialPortConfig().getBaudRate(), SERIAL_DATA_BITS, 1, 0);
-            int mask = SerialPort.MASK_RXCHAR;
-            if (!serialPort.setEventsMask(mask)) {
-                LOG.error("Serial port: Unable to set mask");
-                return;
-            }
-            SensorNode sensorNode =
-                    new SensorNode(NetUtils.getMacAddress(nic), SensorType.POWER_METER.getId());
-            serialPort.addEventListener(new SerialPortReader(serialPort, sensorNode,
-                    new SensorValueSender(mqttClientManager.getClient(), mqttConfig.getTopics())));
-
-        } catch (SerialPortException ex) {
-            LOG.error(ex.getMessage());
+        });
+        if (args.length < 1) {
+            showUsage(version, classifier);
+            return;
         }
+        new PowerMeterAgent().run(args[0]);
+    }
 
-        environment.getApplicationContext().setContextPath("/api");
-        environment.jersey().register(pmaResource);
-        environment.lifecycle().manage(mqttClientManager);
-        environment.healthChecks().register("mqtt", new MqttHealthCheck(mqttClientManager.getClient()));
+    private static void showBanner() throws URISyntaxException, IOException {
+        String text = new Scanner(PowerMeterAgent.class.getResourceAsStream("/banner.txt"), "UTF-8").useDelimiter("\\A").next();
+        System.out.println(text);
+    }
+
+    private static void showUsage(String version, String classifier) {
+        System.out.println("Missing configuration file!");
+        System.out.println("Usage:");
+        System.out.println("java -jar lnb-powermeter-" + version + "-" + classifier + " config.yml");;
+    }
+
+    public void run(String configFileName) throws Exception {
+        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(1000);
+        PMAgentConfig configuration = PMAgentConfig.loadConfigurationFromFile(configFileName);
+        LOG.info("Configuration: " + configuration.toString());
+
+        MqttConfig mqttConfig = configuration.getMqttConfig();
+        SensorValueSender sensorValueSender = new SensorValueSender(queue, mqttConfig);
+        final String nic = configuration.getSensorConfig().getNic();
+        SensorNode sensorNode = new SensorNode(NetUtils.getMacAddress(nic), SensorType.POWER_METER.getId());
+
+        SerialPortReader serialPortReader =
+                new SerialPortReader(queue, configuration.getSerialPortConfig(), sensorNode);
+
+        new Thread(sensorValueSender).start();
+        new Thread(serialPortReader).start();
     }
 }

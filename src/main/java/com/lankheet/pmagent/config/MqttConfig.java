@@ -1,26 +1,17 @@
 package com.lankheet.pmagent.config;
 
 import java.util.List;
-import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MqttConfig {
+    
+    private String clientName;
 	
-	@NotEmpty
 	private String url;
 	
-	@NotEmpty
 	private String userName;
 	
-	@NotEmpty
 	private String password;
-	
-	@NotEmpty
-	private String caFilePath;
-	
-	private String crtFilePath;
-	
-	private String clientKeyFilePath;
 	
 	private List<MqttTopicConfig> topics;
 	
@@ -34,36 +25,6 @@ public class MqttConfig {
 		this.url = url;
 	}
 	
-	@JsonProperty
-	public String getCaFilePath() {
-		return caFilePath;
-	}
-	
-	@JsonProperty
-	public void setCaFilePath(String caFilePath) {
-		this.caFilePath = caFilePath;
-	}
-	
-	@JsonProperty
-	public String getCrtFilePath() {
-		return crtFilePath;
-	}
-	
-	@JsonProperty
-	public void setCrtFilePath(String crtFilePath) {
-		this.crtFilePath = crtFilePath;
-	}
-	
-	@JsonProperty
-	public String getClientKeyFilePath() {
-		return clientKeyFilePath;
-	}
-
-	@JsonProperty
-	public void setClientKeyFilePath(String clientKeyFilePath) {
-		this.clientKeyFilePath = clientKeyFilePath;
-	}
-
 	@JsonProperty
 	public String getUserName() {
 		return userName;
@@ -93,4 +54,23 @@ public class MqttConfig {
 	public void setTopics(List<MqttTopicConfig> topics) {
 		this.topics = topics;
 	}
+
+    @JsonProperty
+    public String getClientName() {
+        return clientName;
+    }
+
+    @JsonProperty
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "MqttConfig [clientName=" + clientName + ", url=" + url + ", userName=" + userName + ", password="
+                + password + ", topics=" + topics + "]";
+    }  
 }

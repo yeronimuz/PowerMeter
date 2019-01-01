@@ -1,14 +1,13 @@
 package com.lankheet.pmagent.config;
 
-import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SerialPortConfig {
-	@NotEmpty
-	private String serialPort = "/dev/ttyUSB0";
+    private String p1Key; // /XMX5LGBBFG1009021021
 
-	@NotNull
+
+    private String serialPort = "/dev/ttyUSB0";
+
 	private Integer baudRate = 115200;
 
 	@JsonProperty
@@ -30,4 +29,22 @@ public class SerialPortConfig {
 	public void setBaudRate(int baudRate) {
 		this.baudRate = baudRate;
 	}
+
+    @JsonProperty
+    public String getP1Key() {
+        return p1Key;
+    }
+
+    @JsonProperty
+    public void setP1Key(String p1Key) {
+        this.p1Key = p1Key;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "SerialPortConfig [p1Key=" + p1Key + ", serialPort=" + serialPort + ", baudRate=" + baudRate + "]";
+    }
 }

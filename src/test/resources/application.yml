@@ -6,73 +6,17 @@ sensorConfig:
     - GAS_METER
     
 mqttConfig:
+  clientName: PM_unique_client_name
   url: tcp://localhost:1883
   userName: johndoe
   password: noaccess
-  caFilePath: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
-  crtFilePath: null
-  clientKeyFilePath: null
   topics: 
     - topic: lnb/eng/power
-      type: power
+      type: POWER
     - topic: lnb/eng/gas
-      type: gas
+      type: GAS
 
 serialPort:
+  p1Key: /XMX5LGBBFG1009021021
   uart: /dev/ttyUSB0
   baudRate: 115200
-
-server:
-#  softNofileLimit: 1000
-#  hardNofileLimit: 1000
-  applicationConnectors:
-    - type: http
-      port: 8080
-#    - type: https
-#      port: 8443
-#      keyStorePath: example.keystore
-#      keyStorePassword: example
-    #this requires the alpn-boot library on the JVM's boot classpath
-    #- type: h2
-    #  port: 8445
-    #  keyStorePath: example.keystore
-    #  keyStorePassword: example
-  adminConnectors:
-    - type: http
-      port: 8081
-#    - type: https
-#      port: 8444
-#      keyStorePath: example.keystore
-#      keyStorePassword: example
-
-# Logging settings.
-logging:
-
-  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
-  level: INFO
-
-  # Logger-specific levels.
-  loggers:
-
-    # Sets the level for 'com.example.app' to DEBUG.
-    com.lankheet.pmagent: DEBUG
-
-# Logback's Time Based Rolling Policy - archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}.log.gz
-# Logback's Size and Time Based Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
-# Logback's Fixed Window Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%i.log.gz
-
-  appenders:
-    - type: file
-      threshold: INFO
-      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
-      currentLogFilename: log/application.log
-      archivedLogFilenamePattern: log/application-%d{yyyy-MM-dd}-%i.log.gz
-      archivedFileCount: 7
-#      timeZone: UTC
-      maxFileSize: 10MB
-      
-  appenders:
-    - type: console
-      threshold: INFO
-      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
-    

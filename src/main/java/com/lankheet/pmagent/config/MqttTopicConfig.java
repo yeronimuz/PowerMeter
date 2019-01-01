@@ -1,13 +1,11 @@
 package com.lankheet.pmagent.config;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MqttTopicConfig {
-    @NotEmpty
+ 
     private String topic;
 
-    @NotEmpty
     private TopicType type;
 
     @JsonProperty
@@ -28,5 +26,13 @@ public class MqttTopicConfig {
     @JsonProperty
     public void setType(TopicType type) {
         this.type = type;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "MqttTopicConfig [topic=" + topic + ", type=" + type + "]";
     }
 }
