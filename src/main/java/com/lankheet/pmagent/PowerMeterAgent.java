@@ -1,6 +1,12 @@
 package com.lankheet.pmagent;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.jar.Attributes;
@@ -29,7 +35,8 @@ public class PowerMeterAgent {
         String title = mainAttrs.getValue("Implementation-Title");
         String version = mainAttrs.getValue("Implementation-Version");
         String classifier = mainAttrs.getValue("Implementation-Classifier");
-        
+
+        showBanner();
         LOG.info("Starting " + title + ": " + version + "-" + classifier);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -41,6 +48,11 @@ public class PowerMeterAgent {
             return;
         }
         new PowerMeterAgent().run(args[0]);
+    }
+
+    private static void showBanner() throws URISyntaxException, IOException {
+        String text = new Scanner(PowerMeterAgent.class.getResourceAsStream("/banner.txt"), "UTF-8").useDelimiter("\\A").next();
+        System.out.println(text);
     }
 
     private static void showUsage(String version, String classifier) {

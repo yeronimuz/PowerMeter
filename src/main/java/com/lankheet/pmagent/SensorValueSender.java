@@ -77,7 +77,7 @@ public class SensorValueSender implements Runnable {
     }
 
     public void newSensorValue(SensorValue sensorValue) {
-        // TODO: Fix repeated values
+
         if (!sensorValueCache.isRepeatedValue(sensorValue)) {
             LOG.debug("new value: {}", sensorValue);
             String mqttTopic = null;
@@ -100,7 +100,6 @@ public class SensorValueSender implements Runnable {
                 } catch (Exception e) {
                     LOG.error(e.getMessage());
                     isConnectionOk = false;
-                    // TODO: Create a loop for trying to reconnect every 1 s.
                     try {
                         mqttClient.reconnect();
                         Thread.sleep(500);

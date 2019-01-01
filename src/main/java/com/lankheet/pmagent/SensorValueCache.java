@@ -19,6 +19,12 @@ public class SensorValueCache {
 
     private Map<SensorNode, List<SensorValue>> latch = new HashMap<>();
 
+    /**
+     * Worker method for this class.
+     * @param sensorValue The sensor value that is to be inspected
+     * 
+     * @return true: The value was already processed, false: new value
+     */
     public boolean isRepeatedValue(SensorValue sensorValue) {
         boolean isRepeated = false;
         int indexToBeReplaced = -1;
@@ -44,6 +50,13 @@ public class SensorValueCache {
         }
         LOG.debug(toString());
         return isRepeated;
+    }
+
+    /**
+     * In order to be able to resend repeated values when requested, this reset is needed.
+     */
+    public void resetLatch() {
+        latch = new HashMap<>();
     }
 
     public String toString() {
