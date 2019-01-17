@@ -1,11 +1,8 @@
 package com.lankheet.pmagent;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -25,6 +22,7 @@ import com.lankheet.utils.NetUtils;
  * It sends a series of SensorValue objects to an MQTT broker<br>
  */
 public class PowerMeterAgent {
+    private static final int QUEUE_SIZE = 1000;
     private static final Logger LOG = LoggerFactory.getLogger(PowerMeterAgent.class);
 
 
@@ -62,7 +60,7 @@ public class PowerMeterAgent {
     }
 
     public void run(String configFileName) throws Exception {
-        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(1000);
+        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
         PMAgentConfig configuration = PMAgentConfig.loadConfigurationFromFile(configFileName);
         LOG.info("Configuration: " + configuration.toString());
 
