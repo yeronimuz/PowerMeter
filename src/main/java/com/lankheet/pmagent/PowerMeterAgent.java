@@ -20,6 +20,10 @@ import com.lankheet.utils.NetUtils;
 /**
  * The service reads datagrams from the P1 serial interface<br>
  * It sends a series of SensorValue objects to an MQTT broker<br>
+ * The serial port reader is separated from the sending thread and coupled via a queue.<br>
+ * The capacity of the queue is QUEUE_SIZE / (VALUE_LOOP * NR_VALUES_PER_LOOP * LOOPS_IN_MINUTE)<br>
+ * which is 25 minutes with 7 new measurements in a 10 seconds value loop.<br>
+ * So there is at least half an hour time when the MQTT connection is dropped for re-establishing.
  */
 public class PowerMeterAgent {
     private static final int QUEUE_SIZE = 1000;

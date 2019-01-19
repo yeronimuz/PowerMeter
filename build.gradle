@@ -13,8 +13,8 @@ version '0.4'
 
 ext {
     baseName = 'lnb-powermeter'
-    classifier = 'BETA'
-    dataTypesVersion = '0.4-SNAPSHOT'
+    classifier = 'FINAL'
+    dataTypesVersion = '0.4-FINAL'
     junitVersion = '4.+'
     slf4jVersion = '1.7.25'
     jmockitVersion = '1.35'

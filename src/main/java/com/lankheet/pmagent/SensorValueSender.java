@@ -14,6 +14,12 @@ import com.lankheet.pmagent.config.MqttTopicConfig;
 import com.lankheet.pmagent.config.TopicType;
 import com.lankheet.utils.JsonUtil;
 
+/**
+ * Worker thread for sending SensorValue objects to an MQTT broker.<BR>
+ * <ul><li>It reads SensorValues from a Queue.
+ * <li>It sends the values to an MQTT broker.
+ * </ul>
+ */
 public class SensorValueSender implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SensorValueSender.class);
 

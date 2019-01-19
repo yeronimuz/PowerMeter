@@ -17,8 +17,10 @@ import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
 /**
- * Wrapper around SerialPort Reader.
- * It runs in it's own thread and puts sensorValue objects in a queue.
+ * Wrapper around SerialPort Reader. It runs in it's own thread and puts sensorValue objects in a
+ * queue.<BR>
+ * When disconnected, a retry mechanism will reconnect periodically (NR_OF_LOOPS_FOR_RETRY *
+ * SERIAL_PORT_READER_LOOP_WAIT_MS) ms
  */
 public class SerialPortReader implements SerialPortEventListener, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SerialPortReader.class);
@@ -131,7 +133,7 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
 
             P1Datagram datagram = P1Parser.parse(bufS.substring(start, stop + 4));
             publishDatagram(datagram);
-             LOG.info("Saved: " + datagram);
+            LOG.info("Saved: " + datagram);
             return bufS.substring(stop + 4); // sometimes only 3 chars.
                                              // CR/LF not taken into
                                              // account
