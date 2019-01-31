@@ -46,7 +46,7 @@ public class SensorValueSenderTest {
             mqttClientMock.publish(anyString, (MqttMessage) any);
         }};
         BlockingQueue<SensorValue> queue = new ArrayBlockingQueue(1000);
-        SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttConfig());
+        SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttConfig(), 10000);
         Deencapsulation.setField(sensorValueSender, "mqttClient", mqttClientMock);
         
         sensorValueSender.newSensorValue(new SensorValue(new SensorNode("01:02:03:04", SensorType.POWER_METER.getId()),

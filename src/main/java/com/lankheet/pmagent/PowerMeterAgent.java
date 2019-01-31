@@ -64,12 +64,12 @@ public class PowerMeterAgent {
     }
 
     public void run(String configFileName) throws Exception {
-        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
         PMAgentConfig configuration = PMAgentConfig.loadConfigurationFromFile(configFileName);
         LOG.info("Configuration: " + configuration.toString());
-
+        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(configuration.getInternalQueueSize());
+        
         MqttConfig mqttConfig = configuration.getMqttConfig();
-        SensorValueSender sensorValueSender = new SensorValueSender(queue, mqttConfig);
+        SensorValueSender sensorValueSender = new SensorValueSender(queue, mqttConfig, configuration.getRepeatValuesAfter());
         final String nic = configuration.getSensorConfig().getNic();
         SensorNode sensorNode = new SensorNode(NetUtils.getMacAddress(nic), SensorType.POWER_METER.getId());
 

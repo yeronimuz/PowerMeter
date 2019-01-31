@@ -9,12 +9,12 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
-version '0.4'
+version '0.5.0'
 
 ext {
     baseName = 'lnb-powermeter'
     classifier = 'FINAL'
-    dataTypesVersion = '0.4-FINAL'
+    dataTypesVersion = '0.5-FINAL'
     junitVersion = '4.+'
     slf4jVersion = '1.7.25'
     jmockitVersion = '1.35'

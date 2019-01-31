@@ -1,4 +1,9 @@
-
+# Repeat 'identical' values after <repeatValuesAfter> 'ms'
+repeatValuesAfter: 3600000
+# Items that can be queued. When a connection drops, it does not lead to immediate failure.
+# For one minute of queueing, 7 values * 6 (10 seconds loop) = 42 values can be queued. 
+# For size 1000 about 23 minutes can be stored, at least. Depending on repeated values it can be more.
+internalQueueSize: 10000
 sensorConfig:
   nic: eth0
   sensorTypes: 

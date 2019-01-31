@@ -1,12 +1,17 @@
 package com.lankheet.pmagent;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
+
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.MqttConfig;
@@ -30,16 +35,20 @@ public class SensorValueSender implements Runnable {
     private MqttConfig mqttConfig;
 
     private SensorValueCache sensorValueCache = new SensorValueCache();
+    
+    private long repeatValuesAfter;
 
     /**
      * Constructor.
      * 
-     * @param mqttClient The MQTT client that sends the measurements
-     * @param topics The configured topics in the config file
+     * @param queue The blocking queue that is filled with sensor values.
+     * @param mqttConfig The mqtt configuration.
+     * @param repeatValuesAfter TODO
      */
-    public SensorValueSender(BlockingQueue<SensorValue> queue, MqttConfig mqttConfig) {
+    public SensorValueSender(BlockingQueue<SensorValue> queue, MqttConfig mqttConfig, long repeatValuesAfter) {
         this.queue = queue;
         this.mqttConfig = mqttConfig;
+        this.repeatValuesAfter = repeatValuesAfter;
     }
 
     @Override
@@ -51,6 +60,19 @@ public class SensorValueSender implements Runnable {
             // TODO: Make recoverable
             System.exit(-1);
         }
+        
+        TimerTask repeatedTask = new TimerTask() {
+            public void run() {
+                LOG.info("Latch reset task performed on " + new Date());
+                sensorValueCache.resetLatch();
+            }
+        };
+        Timer timer = new Timer("Timer");
+         
+        long period = repeatValuesAfter;
+        long delay = period;
+
+        timer.scheduleAtFixedRate(repeatedTask, delay, period);
 
         while (true) {
             try {

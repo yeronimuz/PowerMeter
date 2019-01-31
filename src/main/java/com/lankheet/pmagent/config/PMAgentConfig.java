@@ -12,6 +12,12 @@ import com.lankheet.iot.datatypes.entities.SensorType;
 
 public class PMAgentConfig {
 
+	@JsonProperty
+	private long repeatValuesAfter;
+	
+	@JsonProperty
+	private int internalQueueSize;
+	
     @JsonProperty
     private SensorConfig sensorConfig = new SensorConfig();
 	
@@ -21,7 +27,23 @@ public class PMAgentConfig {
     @JsonProperty
     private MqttConfig mqttConfig = new MqttConfig();
     
-    /**
+    public long getRepeatValuesAfter() {
+		return repeatValuesAfter;
+	}
+
+	public void setRepeatValuesAfter(long repeatValuesAfter) {
+		this.repeatValuesAfter = repeatValuesAfter;
+	}
+
+	public int getInternalQueueSize() {
+		return internalQueueSize;
+	}
+
+	public void setInternalQueueSize(int internalQueueSize) {
+		this.internalQueueSize = internalQueueSize;
+	}
+
+	/**
      * Get serialPort.
      * @return the serialPort
      */
@@ -80,6 +102,8 @@ public class PMAgentConfig {
     public static PMAgentConfig loadConfigurationFromFile(String configFileName) throws IOException {
         Constructor constructor = new Constructor(PMAgentConfig.class);
         TypeDescription pmAgentConfigTypeDescription = new TypeDescription(PMAgentConfig.class);
+        pmAgentConfigTypeDescription.addPropertyParameters("repeatValuesAfter", PMAgentConfig.class);
+        pmAgentConfigTypeDescription.addPropertyParameters("internalQueueSize", PMAgentConfig.class);
         pmAgentConfigTypeDescription.addPropertyParameters("sensorConfig", SensorConfig.class);
         pmAgentConfigTypeDescription.addPropertyParameters("mqttConfig", MqttConfig.class);
         

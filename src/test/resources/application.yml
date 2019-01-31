@@ -1,4 +1,6 @@
 # PowerMeterAgent configuration file
+repeatValuesAfter: 3600000
+internalQueueSize: 10000
 sensorConfig:
   nic: wlo1
   sensorTypes: 

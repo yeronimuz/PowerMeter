@@ -40,6 +40,13 @@ public class PowerMeterAgentConfigTest {
 	public void tearDown() {
 
 	}
+	
+	@Test
+	public void testPmAgentParameters() {
+		PMAgentConfigTester pmaTester = PMAgentConfigTester.getInstance();
+		assertThat(pmaTester.pmaConfig.getRepeatValuesAfter(), is(3600000L));
+		assertThat(pmaTester.pmaConfig.getInternalQueueSize(), is(10000));
+	}
 
 	@Test
 	public void testConfigSerial() throws Exception {
