@@ -1,20 +1,25 @@
 package com.lankheet.pmagent;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.iot.datatypes.entities.MeasurementType;
 import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.PMAgentConfig;
+
 import mockit.Capturing;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -55,6 +60,10 @@ public class SensorValueSenderTest {
         new Verifications() {{
             loggerMock.error(anyString);
             times = 0;
+            
+            List<String> debugMessages = new ArrayList<>();
+            loggerMock.debug( withCapture(debugMessages));
+            debugMessages.forEach(System.out::println);
 
             mqttClientMock.publish(anyString, (MqttMessage) any);
             times = 1;

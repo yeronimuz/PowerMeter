@@ -34,21 +34,47 @@ import com.lankheet.utils.JsonUtil;
 public class P1ParserTest {
 
 	@Test
-	public void test() throws IOException, URISyntaxException {
+	public void testHome1() throws IOException, URISyntaxException {
 		String input = new String(Files.readAllBytes(Paths.get(getClass().getResource("/p1_2.log").toURI())));
 		System.out.println(input);
 		
 		P1Datagram dg = P1Parser.parse(input);
 		assertThat(dg.getConsumedPowerTariff1(), is(equalTo(207.138)));
-		assertThat(dg.getConsumedPowerTariff2(), is(equalTo(27.545)));
-		assertThat(dg.getProducedPowerTariff1(), is(equalTo(269.06)));
+		assertThat(dg.getConsumedPowerTariff2(), is(equalTo(269.06)));
+		assertThat(dg.getProducedPowerTariff1(), is(equalTo(27.545)));
 		assertThat(dg.getProducedPowerTariff2(), is(equalTo(74.828)));
 		assertThat(dg.getConsumedGas(), is(equalTo(86.298)));
-		assertThat(dg.getCurrentConsumedPwr(), is(equalTo(0.984)));
-		assertThat(dg.getCurrentDeliveredPwr(), is(equalTo(0.0)));
+		assertThat(dg.getActualConsumedPwr(), is(equalTo(0.984)));
+		assertThat(dg.getActualDeliveredPwr(), is(equalTo(0.0)));
 		assertThat(dg.getCurrentTariff(), is(equalTo((byte)2)));
 		
 		String jsonString = JsonUtil.toJson(dg);
 		System.out.println(jsonString);
 	}
+
+    @Test
+    public void testAnotherHome() throws IOException, URISyntaxException {
+        String input = new String(Files.readAllBytes(Paths.get(getClass().getResource("/p1w.cap").toURI())));
+        System.out.println(input);
+        
+        P1Datagram dg = P1Parser.parse(input);
+        assertThat(dg.getConsumedPowerTariff1(), is(2527.633));
+        assertThat(dg.getConsumedPowerTariff2(), is(3108.891));
+        assertThat(dg.getProducedPowerTariff1(), is(0.0));
+        assertThat(dg.getProducedPowerTariff2(), is(0.0));
+        assertThat(dg.getConsumedGas(), is(3561.545));
+        assertThat(dg.getActualConsumedPwr(), is(0.176));
+        assertThat(dg.getActualDeliveredPwr(), is(0.0));
+        assertThat(dg.getCurrentTariff(), is((byte)1));
+        
+        String jsonString = JsonUtil.toJson(dg);
+        System.out.println(jsonString);
+    }
+    
+    @Test
+    public void TestDouble() {
+        String doubleToParse = "2527.633";
+        double dVal = Double.parseDouble(doubleToParse);
+        assertThat(dVal, is(2527.633));
+    }
 }

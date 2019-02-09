@@ -4,8 +4,8 @@
 0-0:1.0.0(151009123245S)    // date-time stamp of P1 message
 0-0:96.1.1(4530303331303033303331323532363135)  // equipment identifier
 1-0:1.8.1(000207.138*kWh)   // consumed power tariff 1
-1-0:1.8.2(000269.060*kWh)   // delivered power tariff 1
-1-0:2.8.1(000027.545*kWh)   // consumed power tariff 2
+1-0:1.8.2(000269.060*kWh)   // consumed power tariff 2
+1-0:2.8.1(000027.545*kWh)   // produced power tariff 1
 1-0:2.8.2(000074.828*kWh)   // produced power tariff 2
 0-0:96.14.0(0002)           // current tariff
 1-0:1.7.0(00.984*kW)        // current consumed pwr

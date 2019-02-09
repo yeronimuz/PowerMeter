@@ -6,16 +6,16 @@ package com.lankheet.pmagent.p1;
 public enum P1Standard {
     VERSION_INFO("1-3:0.2.8", "VERSION_INFO"),
     /** YYMMDDHHmmSS[S|W] S for summer and W for winter */
-    DATE_TIMESTAMP("0-0:1.0.0", ""), // 12 digit timestamp
-    EQUIPMENT_ID_01("0-1:96.1.0", ""),
-    EQUIPMENT_ID_00("0-0:96.1.1", ""),
-    CONSUMED_POWER_TARIFF_1("1-0:1.8.1", ""),
-    DELIVERED_POWER_TARIFF_1("1-0:1.8.2", ""),
-    CONSUMED_POWER_TARIFF_2("1-0:2.8.1", ""),
-    PRODUCED_POWER_TARIFF_2("1-0:2.8.2", ""),
+    DATE_TIMESTAMP("0-0:1.0.0", "Date-time stamp of the P1 message"), // 12 digit timestamp
+    EQUIPMENT_ID_01("0-1:96.1.0", "Equipment identifier"),
+    EQUIPMENT_ID_00("0-0:96.1.1", "Equipment identifier"),
+    CONSUMED_POWER_TARIFF_1("1-0:1.8.1", "consumed power T1"),
+    CONSUMED_POWER_TARIFF_2("1-0:1.8.2", "consumed power T2"),
+    DELIVERED_POWER_TARIFF_1("1-0:2.8.1", "produced power T1"),
+    DELIVERED_POWER_TARIFF_2("1-0:2.8.2", "produced power T2"),
     CURRENT_TARIFF("0-0:96.14.0", ""), // 2
-    CURRENT_CONSUMED_PWR("1-0:1.7.0", ""), // kW
-    CURREN_TDELIVERED_PWR("1-0:2.7.0", ""), // kW
+    ACTUAL_CONSUMED_PWR("1-0:1.7.0", ""), // kW
+    ACTUAL_DELIVERED_PWR("1-0:2.7.0", ""), // kW
     /** nr.of. power failures in any phase */
     NR_OF_POWER_FAILURES_IN_ANY_PHASE("0-0:96.7.21", ""),
     NR_OF_LONG_POWER_FAILURES_IN_ANY_PHASE("0-0:96.7.9", ""),

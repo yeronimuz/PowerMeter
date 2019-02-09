@@ -16,13 +16,6 @@ public class P1Parser {
 
     private static final String DECIMAL_PATTERN = "([0-9]*\\.[0-9]*)";
 
-    private static final String KW_PATTERN = DECIMAL_PATTERN + "\\*kW";
-
-    private static final String KWH_PATTERN = KW_PATTERN + "h";
-
-    // \\(([0-9]*\\.[0-9]*)\\)$
-    private static final String M3_PATTERN = "\\(" + DECIMAL_PATTERN + "\\)$";
-
     /**
      * Take one complete message and parse it into a P1Datagram object
      * 
@@ -63,16 +56,17 @@ public class P1Parser {
                     p1dg.setVersionInfo(Byte.parseByte(value));
                     break;
                 case CONSUMED_POWER_TARIFF_1:
-                    p1dg.setConsumedPowerTariff1(parseGetDoubleValue(value, KWH_PATTERN));
+                    double dVal = parseGetDoubleValue(value);
+                    p1dg.setConsumedPowerTariff1(dVal);
                     break;
                 case CONSUMED_POWER_TARIFF_2:
-                    p1dg.setConsumedPowerTariff2(parseGetDoubleValue(value, KWH_PATTERN));
+                    p1dg.setConsumedPowerTariff2(parseGetDoubleValue(value));
                     break;
                 case DELIVERED_POWER_TARIFF_1:
-                    p1dg.setProducedPowerTariff1(parseGetDoubleValue(value, KWH_PATTERN));
+                    p1dg.setProducedPowerTariff1(parseGetDoubleValue(value));
                     break;
-                case PRODUCED_POWER_TARIFF_2:
-                    p1dg.setProducedPowerTariff2(parseGetDoubleValue(value, KWH_PATTERN));
+                case DELIVERED_POWER_TARIFF_2:
+                    p1dg.setProducedPowerTariff2(parseGetDoubleValue(value));
                     break;
                 case DATE_TIMESTAMP:
                     // Set key with YYMMDDHH
@@ -85,11 +79,11 @@ public class P1Parser {
                 case CURRENT_TARIFF: // 2
                     p1dg.setCurrentTariff(Byte.parseByte(value));
                     break;
-                case CURRENT_CONSUMED_PWR: // kW
-                    p1dg.setCurrentConsumedPwr(parseGetDoubleValue(value, KW_PATTERN));
+                case ACTUAL_CONSUMED_PWR: // kW
+                    p1dg.setActualConsumedPwr(parseGetDoubleValue(value));
                     break;
-                case CURREN_TDELIVERED_PWR: // kW
-                    p1dg.setCurrentDeliveredPwr(parseGetDoubleValue(value, KW_PATTERN));
+                case ACTUAL_DELIVERED_PWR: // kW
+                    p1dg.setActualDeliveredPwr(parseGetDoubleValue(value));
                     break;
                 /** nr.of. power failures in any phase */
                 case NR_OF_POWER_FAILURES_IN_ANY_PHASE:
@@ -128,11 +122,9 @@ public class P1Parser {
         return value;
     }
 
-    private static double parseGetDoubleValue(String value, String sPattern) {
-        Pattern pattern = Pattern.compile(sPattern);
-        Matcher matcher = pattern.matcher(value);
-
-        return (matcher.find()) ? Double.parseDouble(matcher.group(1)) : 0;
+    private static double parseGetDoubleValue(String value) {
+        String value2Parse = value.substring(0, value.indexOf('*'));
+        return Double.parseDouble(value2Parse);
     }
 
     private static double parseM3(String value) {

@@ -37,9 +37,9 @@ public class SensorValueAdapter {
                 add(new SensorValue(sensorNode, ts, MeasurementType.PRODUCED_POWER_T2.getId(),
                         datagram.getProducedPowerTariff2()));
                 add(new SensorValue(sensorNode, ts, MeasurementType.ACTUAL_CONSUMED_POWER.getId(),
-                        datagram.getCurrentConsumedPwr()));
+                        datagram.getActualConsumedPwr()));
                 add(new SensorValue(sensorNode, ts, MeasurementType.ACTUAL_PRODUCED_POWER.getId(),
-                        datagram.getCurrentDeliveredPwr()));
+                        datagram.getActualDeliveredPwr()));
                 add(new SensorValue(sensorNode, ts, MeasurementType.CONSUMED_GAS.getId(), datagram.getConsumedGas()));
             }
         };

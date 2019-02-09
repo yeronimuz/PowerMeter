@@ -35,10 +35,10 @@ public class P1Datagram {
     private byte currentTariff; // 2
 
     @JsonProperty(value = "cconsP")
-    private double currentConsumedPwr; // kW
+    private double actualConsumedPwr; // kW
 
     @JsonProperty(value = "cprodP")
-    private double currentDeliveredPwr; // kW
+    private double actualDeliveredPwr; // kW
 
     /** nr.of. power failures in any phase */
     @JsonIgnore
@@ -81,15 +81,15 @@ public class P1Datagram {
     public P1Datagram(@JsonProperty("ts") LocalDateTime dateTimeStamp,
             @JsonProperty("consPT1") double consumedPowerTariff1, @JsonProperty("prodPT1") double producedPowerTariff1,
             @JsonProperty("consPT2") double consumedPowerTariff2, @JsonProperty("prodPT2") double producedPowerTariff2,
-            @JsonProperty("cT") byte currentTariff, @JsonProperty("cconsP") double currentConsumedPwr,
-            @JsonProperty("cprodP") double currentDeliveredPwr, @JsonProperty("consG") double consumedGas) {
+            @JsonProperty("cT") byte currentTariff, @JsonProperty("cconsP") double actualConsumedPwr,
+            @JsonProperty("cprodP") double actualDeliveredPwr, @JsonProperty("consG") double consumedGas) {
         this.consumedPowerTariff1 = consumedPowerTariff1;
         this.consumedPowerTariff2 = consumedPowerTariff2;
         this.producedPowerTariff1 = producedPowerTariff1;
         this.producedPowerTariff2 = producedPowerTariff2;
         this.currentTariff = currentTariff;
-        this.currentConsumedPwr = currentConsumedPwr;
-        this.currentDeliveredPwr = currentDeliveredPwr;
+        this.actualConsumedPwr = actualConsumedPwr;
+        this.actualDeliveredPwr = actualDeliveredPwr;
         this.consumedGas = consumedGas;
     }
 
@@ -222,29 +222,29 @@ public class P1Datagram {
     /**
      * @return the currentConsumedPwr
      */
-    public double getCurrentConsumedPwr() {
-        return currentConsumedPwr;
+    public double getActualConsumedPwr() {
+        return actualConsumedPwr;
     }
 
     /**
      * @param currentConsumedPwr the currentConsumedPwr to set
      */
-    public void setCurrentConsumedPwr(double currentConsumedPwr) {
-        this.currentConsumedPwr = currentConsumedPwr;
+    public void setActualConsumedPwr(double currentConsumedPwr) {
+        this.actualConsumedPwr = currentConsumedPwr;
     }
 
     /**
      * @return the currentDeliveredPwr
      */
-    public double getCurrentDeliveredPwr() {
-        return currentDeliveredPwr;
+    public double getActualDeliveredPwr() {
+        return actualDeliveredPwr;
     }
 
     /**
      * @param currentDeliveredPwr the currentDeliveredPwr to set
      */
-    public void setCurrentDeliveredPwr(double currentDeliveredPwr) {
-        this.currentDeliveredPwr = currentDeliveredPwr;
+    public void setActualDeliveredPwr(double currentDeliveredPwr) {
+        this.actualDeliveredPwr = currentDeliveredPwr;
     }
 
     /**
