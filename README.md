@@ -7,14 +7,24 @@ This project:
 * this meter produces a p1 datagram each 10 seconds
 * the data is read, parsed and pushed to an mqtt broker (configurable in application.yml)
 * Currently, only produced and consumed power are sent as well as the consumed gas
+* Repeated values for a sensor, type combination are ignored. A value latch is used. This latch is currently reset by a timer loop. The timer period is configurable.
+* Readings are buffered in a blocking queue. The capacity is configurable but defaults to 10000 readings. At max, 7 readings are produced per 10 seconds. 7 * 6 * 60 = 2520 readings per hour. So little less than 4 hours of readings are stored when the mqtt broker is not reachable any longer. Note that when the mqtt connection is resumed, all readings are processed without delay
+* Initial mqtt connection setup is done only once. When the connection is not available at startup time, the application will exit.
+* The NIC adapter to bind to is configurable. The MAC address of the NIC will be used to identify the sensor in the domotics system.
 
 Expect the following features:
-* Authentication
-* make it auto-recoverable. When the service is not processing measurements anymore, an agent must restart the service. This will most probably be an external service.
 * deliver operational data in order to report health (either via email or through a dedicated channel)
 * Create a dynamic filter that can determine what items to send to the mqtt broker
 
-Current bugs:
-* Fix unit tests
-* filter repeating values is broken. It produces an NPE
+Current issues:
+* Unit test coverage is poor
 * TOPIC gas is not sent as TOPIC gas but under topic POWER
+
+
+## Release notes
+0.5.1 Released on 2019-02-10
+* Fixed a bug in the P1 definition; delivered and consumed power were mixed up for T1, prod and T2
+* Made the internal storage queue size configurable
+
+0.5 Released on 2019-01-22
+* First final release
