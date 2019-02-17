@@ -14,7 +14,7 @@ version '0.5.1'
 ext {
     baseName = 'lnb-powermeter'
     classifier = 'FINAL'
-    dataTypesVersion = '0.5-FINAL'
+    dataTypesVersion = '0.5-SNAPSHOT'
     junitVersion = '4.+'
     slf4jVersion = '1.7.25'
     jmockitVersion = '1.35'
@@ -34,6 +34,13 @@ shadowJar {
    baseName = project.ext.baseName
    classifier = project.ext.classifier
    version =  version
+}
+
+if (hasProperty('buildScan')) {
+    buildScan {
+        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+        termsOfServiceAgree = 'yes'
+    }
 }
 
 jar {
