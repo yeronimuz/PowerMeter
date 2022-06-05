@@ -2,7 +2,7 @@ package com.lankheet.pmagent;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import org.eclipse.paho.client.mqttv3.MqttException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lankheet.iot.datatypes.domotics.SensorNode;
@@ -10,7 +10,7 @@ import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.pmagent.config.SerialPortConfig;
 import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.pmagent.p1.P1Parser;
-import com.lankheet.pmagent.p1.SensorValueAdapter;
+import com.lankheet.pmagent.p1.DatagramToSensorValueMapper;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -31,8 +31,8 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
 
     private static final int SERIAL_DATA_BITS = 8;
     private static final char STOP_TOKEN = '!';
-    private static String powerMeterUniqueKey;
-    private static String buffS = "";
+    private String powerMeterUniqueKey;
+    private String buffS = "";
 
     /**
      * The delay is determined to be accurate for receiving one datagram at a time.<BR>
@@ -42,9 +42,9 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
 
     private final BlockingQueue<SensorValue> queue;
     private SerialPort serialPort;
-    private SerialPortConfig serialPortConfig;
+    private final SerialPortConfig serialPortConfig;
 
-    private SensorNode sensorNode;
+    private final SensorNode sensorNode;
 
     public SerialPortReader(BlockingQueue<SensorValue> queue, SerialPortConfig serialPortConfig,
             SensorNode sensorNode) {
@@ -76,12 +76,13 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
         }
         int counter = 0;
         while (true) {
+            // This process runs forever, until killed
             counter++;
             if (!serialPort.isOpened() && (counter % NR_OF_LOOPS_FOR_RETRY) == 0) {
                 try {
                     serialPort.openPort();
                 } catch (SerialPortException e) {
-                    LOG.error("Unable to re-open serial port: " + e.getMessage());;
+                    LOG.error("Unable to re-open serial port: {}", e.getMessage());
                 }
             }
             // The serial port triggers a new event and is handled by serialEvent
@@ -95,8 +96,8 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
 
     @Override
     public void serialEvent(SerialPortEvent event) {
-
         String chunkS = null;
+
         if (event.isRXCHAR()) {
             try {
                 // Wait to get bigger data chunks
@@ -106,7 +107,7 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
             }
             int numChars = event.getEventValue();
             try {
-                byte buf[] = serialPort.readBytes(numChars);
+                byte[] buf = serialPort.readBytes(numChars);
                 chunkS = new String(buf);
                 LOG.debug(chunkS);
             } catch (SerialPortException ex) {
@@ -126,14 +127,15 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
         int stop = bufS.indexOf(STOP_TOKEN); // Followed by 3 or 4 characters
         // (checksum)
 
-        LOG.debug("Start: " + start + ", Stop: " + stop + ", String: " + bufS);
+        LOG.debug("Start: {}, Stop: {}, String {}", start, stop, bufS);
         if ((start >= 0) && (stop >= 0)) {
             // Enough captured, parse the datagram part, save the remainder
-            LOG.debug("Parse:" + bufS.substring(start, stop + 4));
+            String stringToParse = bufS.substring(start, stop + 4);
+            LOG.debug("Parse: {}", stringToParse);
 
-            P1Datagram datagram = P1Parser.parse(bufS.substring(start, stop + 4));
+            P1Datagram datagram = P1Parser.parse(stringToParse);
             publishDatagram(datagram);
-            LOG.info("Saved: " + datagram);
+            LOG.info("Saved: {}", datagram);
             return bufS.substring(stop + 4); // sometimes only 3 chars.
                                              // CR/LF not taken into
                                              // account
@@ -143,8 +145,8 @@ public class SerialPortReader implements SerialPortEventListener, Runnable {
     }
 
     private void publishDatagram(P1Datagram datagram) {
-        List<SensorValue> sensorValueList = SensorValueAdapter.convertP1Datagram(sensorNode, datagram);
-        LOG.debug("Putting " + sensorValueList.size() + " values in the queue...");
+        List<SensorValue> sensorValueList = DatagramToSensorValueMapper.convertP1Datagram(sensorNode, datagram);
+        LOG.debug("Putting {} values in the queue...", sensorValueList.size());
         for (SensorValue sensorValue : sensorValueList) {
             try {
                 queue.put(sensorValue);

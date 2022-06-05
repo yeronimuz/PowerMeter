@@ -1,4 +1,6 @@
-plugins {
+import java.text.SimpleDateFormat
+
+plugins{
    id "com.github.johnrengelman.shadow" version "4.0.1"
    id 'net.nemerosa.versioning' version '2.6.1'
 }
@@ -11,84 +13,81 @@ apply plugin: 'jacoco'
 
 version '0.5.1'
 
-ext {
-    baseName = 'lnb-powermeter'
-    classifier = 'FINAL'
-    dataTypesVersion = '0.5-SNAPSHOT'
-    junitVersion = '4.+'
-    slf4jVersion = '1.7.25'
-    jmockitVersion = '1.35'
-    jacksonVersion = '2.8.3'
+ext{
+   baseName = 'lnb-powermeter'
+   classifier = 'FINAL'
+   junitVersion = '4.+'
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
+repositories{
+   mavenLocal()
+   mavenCentral()
 }
 
 mainClassName = 'com.lankheet.pmagent.PowerMeterAgent'
 
-shadowJar {
+shadowJar{
    mergeServiceFiles()
    mainClassName = mainClassName
    baseName = project.ext.baseName
    classifier = project.ext.classifier
-   version =  version
+   version = version
 }
 
-if (hasProperty('buildScan')) {
-    buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
-    }
-}
-
-jar {
-   manifest {
-       attributes (
-        'Implementation-Title': 'Powermeter Agent',
-        'Implementation-Version': version,
-        'Implementation-Classifier': project.ext.classifier,
-        'Built-By'       : System.properties['user.name'],
-        'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
-        'Build-Revision' : versioning.info.commit,
-        'Created-By'     : "Gradle ${gradle.gradleVersion}",
-        'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-        'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
-        )
+if (hasProperty('buildScan'))
+{
+   buildScan{
+      termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+      termsOfServiceAgree = 'yes'
    }
 }
 
-jacoco {
-    toolVersion = "0.7.6.201602180812"
-    reportsDir = file("$buildDir/customJacocoReportDir")
+jar{
+   manifest{
+      attributes(
+         'Implementation-Title': 'Powermeter Agent',
+         'Implementation-Version': version,
+         'Implementation-Classifier': project.ext.classifier,
+         'Built-By': System.properties['user.name'],
+         'Build-Timestamp': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+         'Build-Revision': versioning.info.commit,
+         'Created-By': "Gradle ${gradle.gradleVersion}",
+         'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+         'Build-OS': "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+      )
+   }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId 'com.lankheet.pmagent'
-            artifactId 'power-meter'
-            version version
-
-            from components.java
-        }
-    }
+jacoco{
+   toolVersion = "0.7.6.201602180812"
+   reportsDir = file("$buildDir/customJacocoReportDir")
 }
 
-dependencies {
-    compile group: 'com.lankheet.iot', name: 'datatypes', version: dataTypesVersion
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.21'
-    compile group: 'org.reflections', name: 'reflections', version: '0.9.11'
-    compile 'org.scream3r:jssc:2.8.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: jacksonVersion 
-    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
-    
- 	 testCompile 'info.cukes:cucumber-java:1.2.4'
- 	 testCompile 'info.cukes:cucumber-junit:1.2.4'
-	 testCompile group: 'org.jmockit', name: 'jmockit', version: jmockitVersion
-	 testCompile group: 'junit', name: 'junit', version: junitVersion
-	 testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+publishing{
+   publications{
+      maven(MavenPublication){
+         groupId 'com.lankheet.pmagent'
+         artifactId 'power-meter'
+         version version
+
+         from components.java
+      }
+   }
+}
+
+dependencies{
+   implementation group: 'com.lankheet.iot', name: 'datatypes', version: '0.5.1-SNAPSHOT'
+   implementation group: 'org.yaml', name: 'snakeyaml', version: '1.30'
+   implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
+   implementation 'org.scream3r:jssc:2.8.0'
+   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.3'
+   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.3'
+   implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
+   implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
+
+   testImplementation 'info.cukes:cucumber-java:1.2.6'
+   testImplementation 'info.cukes:cucumber-junit:1.2.6'
+   testImplementation group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.7.1'
+   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.2'
+   testImplementation group: 'org.jmockit', name: 'jmockit', version: '1.41'
 }
