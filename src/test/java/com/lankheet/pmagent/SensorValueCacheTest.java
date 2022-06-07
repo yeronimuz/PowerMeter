@@ -2,12 +2,10 @@ package com.lankheet.pmagent;
 
 import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
-import mockit.Capturing;
-import mockit.Mocked;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,15 +18,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(JUnitPlatform.class)
-public class SensorValueCacheTest {
+class SensorValueCacheTest {
 
-    @Mocked
+    @Mock
     private LoggerFactory LoggerFactoryMock;
-    @Capturing
+    @Mock
     private Logger loggerMock;
 
     @Test
-    public void testRepeatedValues() throws MqttException {
+    void testRepeatedValues() {
         BlockingQueue<SensorValue> queue = new ArrayBlockingQueue(1000);
         SensorNode sensorNode = new SensorNode("01:02:03:04:05:06", 1);
         SensorNode anotherNode = new SensorNode("02:03:04:05:06:07", 1);

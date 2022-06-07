@@ -20,9 +20,11 @@ import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.iot.datatypes.entities.MeasurementType;
 import com.lankheet.iot.datatypes.entities.SensorType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -36,12 +38,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test class for {@link DatagramToSensorValueMapper}
  */
-@RunWith(JUnitPlatform.class)
-public class DatagramToSensorValueMapperTest
+@ExtendWith(MockitoExtension.class)
+class DatagramToSensorValueMapperTest
 {
-
    @Test
-   public void test()
+   void test()
       throws IOException, URISyntaxException
    {
       String input = new String(Files.readAllBytes(Paths.get(Objects.requireNonNull(getClass().getResource("/p1_2.log")).toURI())));
@@ -51,18 +52,25 @@ public class DatagramToSensorValueMapperTest
       List<SensorValue> sensorValues = DatagramToSensorValueMapper.convertP1Datagram(new SensorNode("01:02", SensorType.POWER_METER.getId()), p1Datagram);
       assertEquals(7, sensorValues.size());
       assertEquals(MeasurementType.CONSUMED_POWER_T1.getId(), sensorValues.get(0).getMeasurementType());
+
       assertEquals(207.138, sensorValues.get(0).getValue());
       assertEquals("01:02", sensorValues.get(0).getSensorNode().getSensorMac());
+
       assertEquals(MeasurementType.PRODUCED_POWER_T1.getId(), sensorValues.get(1).getMeasurementType());
-      assertEquals(269.06, sensorValues.get(1).getValue());
+      assertEquals(27.545, sensorValues.get(1).getValue());
+
       assertEquals(MeasurementType.CONSUMED_POWER_T2.getId(), sensorValues.get(2).getMeasurementType());
-      assertEquals(27.545, sensorValues.get(2).getValue());
+      assertEquals(269.06, sensorValues.get(2).getValue());
+
       assertEquals(MeasurementType.PRODUCED_POWER_T2.getId(), sensorValues.get(3).getMeasurementType());
       assertEquals(74.828, sensorValues.get(3).getValue());
+
       assertEquals(MeasurementType.ACTUAL_CONSUMED_POWER.getId(), sensorValues.get(4).getMeasurementType());
       assertEquals(0.984, sensorValues.get(4).getValue());
+
       assertEquals(MeasurementType.ACTUAL_PRODUCED_POWER.getId(), sensorValues.get(5).getMeasurementType());
       assertEquals(0.0, sensorValues.get(5).getValue());
+
       assertEquals(MeasurementType.CONSUMED_GAS.getId(), sensorValues.get(6).getMeasurementType());
       assertEquals(86.298, sensorValues.get(6).getValue());
    }

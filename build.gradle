@@ -89,5 +89,12 @@ dependencies{
    testImplementation 'info.cukes:cucumber-junit:1.2.6'
    testImplementation group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.7.1'
    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.2'
-   testImplementation group: 'org.jmockit', name: 'jmockit', version: '1.41'
+   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '4.5.1'
+   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.5.1'
+}
+
+test{
+   ignoreFailures = !project.hasProperty('release')
+   // Workaround voor als Intellij je testen niet kan vinden wanneer je Gradle als executer gebruikt.
+   useJUnitPlatform()
 }
