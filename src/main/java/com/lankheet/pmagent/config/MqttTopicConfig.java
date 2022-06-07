@@ -2,37 +2,48 @@ package com.lankheet.pmagent.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class MqttTopicConfig {
- 
-    private String topic;
+public class MqttTopicConfig
+{
 
-    private TopicType type;
+   private String topic;
 
-    @JsonProperty
-    public String getTopic() {
-        return topic;
-    }
+   private TopicType type;
 
-    @JsonProperty
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
 
-    @JsonProperty
-    public TopicType getType() {
-        return type;
-    }
+   @JsonProperty
+   public String getTopic()
+   {
+      return topic;
+   }
 
-    @JsonProperty
-    public void setType(TopicType type) {
-        this.type = type;
-    }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "MqttTopicConfig [topic=" + topic + ", type=" + type + "]";
-    }
+   @JsonProperty
+   public void setTopic(String topic)
+   {
+      this.topic = topic;
+   }
+
+
+   @JsonProperty
+   public TopicType getType()
+   {
+      return type;
+   }
+
+
+   @JsonProperty
+   public void setType(TopicType type)
+   {
+      this.type = type;
+   }
+
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString()
+   {
+      return "MqttTopicConfig [topic=" + topic + ", type=" + type + "]";
+   }
 }

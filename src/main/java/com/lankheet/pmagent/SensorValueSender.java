@@ -133,7 +133,7 @@ public class SensorValueSender implements Runnable
          Optional<MqttTopicConfig> mqttTopicConfigOptional = mqttConfig.getTopics().stream()
             .filter((MqttTopicConfig topicConfig) ->
                        topicConfig.getType().getTopicName().equals(topicType.getTopicName())).findFirst();
-          mqttTopic = mqttTopicConfigOptional.map(MqttTopicConfig::getTopic).orElse(null);
+         mqttTopic = mqttTopicConfigOptional.map(MqttTopicConfig::getTopic).orElse(null);
 
          boolean isConnectionOk = true;
          MqttMessage message = new MqttMessage();
