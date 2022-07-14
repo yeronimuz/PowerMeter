@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -30,9 +29,7 @@ import static org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversal
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SensorValueSenderTest
@@ -64,7 +61,7 @@ class SensorValueSenderTest
    {
       doNothing().when(mqttClientMock).publish(anyString(), any(MqttMessage.class));
       BlockingQueue<SensorValue> queue = new ArrayBlockingQueue(1000);
-      SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttConfig(), 10000);
+      SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttConfig());
       setField(sensorValueSender, "mqttClient", mqttClientMock);
 
       sensorValueSender.newSensorValue(new SensorValue(new SensorNode("01:02:03:04", SensorType.POWER_METER.getId()),
@@ -72,6 +69,7 @@ class SensorValueSenderTest
 
       verify(mqttClientMock).publish(anyString(), any(MqttMessage.class));
    }
+
 
    private void setField(SensorValueSender sensorValueSender, String fieldName, Object object)
       throws IllegalAccessException

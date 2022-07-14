@@ -11,9 +11,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+/**
+ * Configuration object for PowerMeterAgent
+ */
 public class PMAgentConfig
 {
-
    @JsonProperty
    private long repeatValuesAfter;
 
@@ -169,5 +171,18 @@ public class PMAgentConfig
 
       PMAgentConfig pmAgentConfig = (PMAgentConfig)yaml.load(inputStream);
       return pmAgentConfig;
+   }
+
+
+   @Override
+   public String toString()
+   {
+      return "PMAgentConfig{" +
+         "repeatValuesAfter=" + repeatValuesAfter +
+         ", internalQueueSize=" + internalQueueSize +
+         ", sensorConfig=" + sensorConfig +
+         ", serialPortConfig=" + serialPortConfig +
+         ", mqttConfig=" + mqttConfig +
+         '}';
    }
 }

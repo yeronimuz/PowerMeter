@@ -13,10 +13,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -33,25 +30,21 @@ public class SensorValueSender implements Runnable
 
    private MqttClient mqttClient;
 
-   private MqttConfig mqttConfig;
+   private final MqttConfig mqttConfig;
 
-   private SensorValueCache sensorValueCache = new SensorValueCache();
-
-   private long repeatValuesAfter;
+   private final SensorValueCache sensorValueCache = new SensorValueCache();
 
 
    /**
     * Constructor.
     *
-    * @param queue             The blocking queue that is filled with sensor values.
-    * @param mqttConfig        The mqtt configuration.
-    * @param repeatValuesAfter TODO
+    * @param queue      The blocking queue that is filled with sensor values.
+    * @param mqttConfig The mqtt configuration.
     */
-   public SensorValueSender(BlockingQueue<SensorValue> queue, MqttConfig mqttConfig, long repeatValuesAfter)
+   public SensorValueSender(BlockingQueue<SensorValue> queue, MqttConfig mqttConfig)
    {
       this.queue = queue;
       this.mqttConfig = mqttConfig;
-      this.repeatValuesAfter = repeatValuesAfter;
    }
 
 
@@ -64,25 +57,10 @@ public class SensorValueSender implements Runnable
       }
       catch (MqttException e)
       {
-         LOG.error("Cannot connect: " + e.getMessage());
+         LOG.error("Cannot connect: {}", e.getMessage());
          // TODO: Make recoverable
          System.exit(-1);
       }
-
-      TimerTask repeatedTask = new TimerTask()
-      {
-         public void run()
-         {
-            LOG.info("Latch reset task performed on " + new Date());
-            sensorValueCache.resetLatch();
-         }
-      };
-      Timer timer = new Timer("Timer");
-
-      long period = repeatValuesAfter;
-      long delay = period;
-
-      timer.scheduleAtFixedRate(repeatedTask, delay, period);
 
       while (true)
       {
@@ -105,7 +83,7 @@ public class SensorValueSender implements Runnable
    private void connectToBroker(MqttConfig mqttConfig)
       throws MqttException
    {
-      LOG.info("Mqtt broker connection starting: " + mqttConfig);
+      LOG.info("Mqtt broker connection starting: {}", mqttConfig);
       String userName = mqttConfig.getUserName();
       String password = mqttConfig.getPassword();
       mqttClient = new MqttClient(mqttConfig.getUrl(), mqttConfig.getClientName());
@@ -116,7 +94,7 @@ public class SensorValueSender implements Runnable
       options.setKeepAliveInterval(60);
       options.setUserName(userName);
       options.setPassword(password.toCharArray());
-      LOG.debug("Connecting to " + mqttConfig.getUrl());
+      LOG.debug("Connecting to {}", mqttConfig.getUrl());
       // TODO: Connect in a loop. Send notifications when broker is down for 5? minutes
       mqttClient.connect(options);
    }
@@ -138,7 +116,7 @@ public class SensorValueSender implements Runnable
          boolean isConnectionOk = true;
          MqttMessage message = new MqttMessage();
          message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
-         LOG.debug("Sending Topic: " + mqttTopic + ", Message: " + message);
+         LOG.debug("Sending Topic: {}, Msg: {}", mqttTopic, message);
          do
          {
             try
@@ -185,7 +163,7 @@ public class SensorValueSender implements Runnable
             returnType = TopicType.TEMPERATURE;
             break;
          default:
-            LOG.error("There is no mapping for measurementType:" + sensorValue.getSensorNode().getSensorType());
+            LOG.error("There is no mapping for measurementType: {}", sensorValue.getSensorNode().getSensorType());
       }
       return returnType;
    }

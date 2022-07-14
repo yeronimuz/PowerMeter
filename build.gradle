@@ -1,8 +1,8 @@
 import java.text.SimpleDateFormat
 
 plugins{
-   id "com.github.johnrengelman.shadow" version "4.0.1"
-   id 'net.nemerosa.versioning' version '2.6.1'
+   id "com.github.johnrengelman.shadow" version "7.1.2"
+   id 'net.nemerosa.versioning' version '2.8.2'
 }
 
 apply plugin: 'java'
@@ -11,12 +11,11 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
-version '0.5.1'
+version '0.5.2'
 
 ext{
    baseName = 'lnb-powermeter'
-   classifier = 'FINAL'
-   junitVersion = '4.+'
+   classifier = 'SNAPSHOT'
 }
 
 repositories{

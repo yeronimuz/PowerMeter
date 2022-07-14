@@ -1,27 +1,23 @@
-# Repeat 'identical' values after <repeatValuesAfter> 'ms'
 repeatValuesAfter: 3600000
-# Items that can be queued. When a connection drops, it does not lead to immediate failure.
-# For one minute of queueing, 7 values * 6 (10 seconds loop) = 42 values can be queued. 
-# For size 1000 about 23 minutes can be stored, at least. Depending on repeated values it can be more.
 internalQueueSize: 10000
 sensorConfig:
   nic: eth0
-  sensorTypes: 
+  sensorTypes:
     - POWER_METER
     - GAS_METER
-    
+
 mqttConfig:
   clientName: CS1F08_PM1
   url: tcp://localhost:1883
   userName: johndoe
   password: secret
-  topics: 
-    - topic: lnb/eng/power
+  topics:
+    - topic: p1/power
       type: POWER
-    - topic: lnb/eng/gas
+    - topic: p1/gas
       type: GAS
 
 serialPort:
-  p1Key: /XMX5LGBBFG1009021021
+  p1Key: /ISK5\2M550T-1013
   uart: /dev/ttyUSB0
   baudRate: 115200

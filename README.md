@@ -40,3 +40,7 @@ Current issues:
 0.5 Released on 2019-01-22
 
 * First final release
+
+# Handy lines
+scp build/libs/lnb-powermeter-0.5.2-SNAPSHOT.jar jeroen@192.168.2.16:pmagent
+

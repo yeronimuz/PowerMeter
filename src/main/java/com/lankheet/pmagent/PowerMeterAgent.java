@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -26,8 +26,7 @@ import java.util.jar.Manifest;
  */
 public class PowerMeterAgent
 {
-   private static final int    QUEUE_SIZE = 1000;
-   private static final Logger LOG        = LoggerFactory.getLogger(PowerMeterAgent.class);
+   private static final Logger LOG = LoggerFactory.getLogger(PowerMeterAgent.class);
 
 
    public static void main(String[] args)
@@ -41,9 +40,10 @@ public class PowerMeterAgent
       String classifier = mainAttrs.getValue("Implementation-Classifier");
 
       showBanner();
-      LOG.info("Starting " + title + ": " + version + "-" + classifier);
+      LOG.info("Starting {}: {}-{}", title, version, classifier);
       Runtime.getRuntime().addShutdownHook(new Thread()
       {
+         @Override
          public void run()
          {
             LOG.warn("Shutdown Hook is cleaning up!");
@@ -59,10 +59,9 @@ public class PowerMeterAgent
 
 
    private static void showBanner()
-      throws URISyntaxException, IOException
    {
-      String text = new Scanner(PowerMeterAgent.class.getResourceAsStream("/banner.txt"), "UTF-8").useDelimiter("\\A").next();
-      System.out.println(text);
+      String text = new Scanner(Objects.requireNonNull(PowerMeterAgent.class.getResourceAsStream("/banner.txt")), "UTF-8").useDelimiter("\\A").next();
+      LOG.info(text);
    }
 
 
@@ -71,26 +70,25 @@ public class PowerMeterAgent
       System.out.println("Missing configuration file!");
       System.out.println("Usage:");
       System.out.println("java -jar lnb-powermeter-" + version + "-" + classifier + " config.yml");
-      ;
    }
 
 
    public void run(String configFileName)
-      throws Exception
+      throws IOException
+
    {
       PMAgentConfig configuration = PMAgentConfig.loadConfigurationFromFile(configFileName);
-      LOG.info("Configuration: " + configuration.toString());
+      LOG.info("Configuration: {}", configuration);
       BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(configuration.getInternalQueueSize());
 
       MqttConfig mqttConfig = configuration.getMqttConfig();
-      SensorValueSender sensorValueSender = new SensorValueSender(queue, mqttConfig, configuration.getRepeatValuesAfter());
+
       final String nic = configuration.getSensorConfig().getNic();
       SensorNode sensorNode = new SensorNode(NetUtils.getMacAddress(nic), SensorType.POWER_METER.getId());
 
-      SerialPortReader serialPortReader =
-         new SerialPortReader(queue, configuration.getSerialPortConfig(), sensorNode);
+      new Thread(new SensorValueSender(queue, mqttConfig)).start();
 
-      new Thread(sensorValueSender).start();
+      SerialPortReader serialPortReader = new SerialPortReader(queue, configuration.getSerialPortConfig(), sensorNode);
       new Thread(serialPortReader).start();
    }
 }

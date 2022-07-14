@@ -2,15 +2,17 @@ package com.lankheet.pmagent.config;
 
 import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.PowerMeterAgent;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(JUnitPlatform.class)
+@ExtendWith(MockitoExtension.class)
 public class PowerMeterAgentConfigTest
 {
    // Prepare the SUT
@@ -27,7 +29,7 @@ public class PowerMeterAgentConfigTest
 
 
       public void run(String configFileName)
-         throws Exception
+         throws IOException
       {
          this.pmaConfig = PMAgentConfig.loadConfigurationFromFile(configFileName);
       }
@@ -44,7 +46,7 @@ public class PowerMeterAgentConfigTest
    }
 
 
-   @BeforeClass
+   @BeforeAll
    public static void setup()
       throws Exception
    {
@@ -53,7 +55,7 @@ public class PowerMeterAgentConfigTest
 
 
    @Test
-   public void testPmAgentParameters()
+   void testPmAgentParameters()
    {
       PMAgentConfigTester pmaTester = PMAgentConfigTester.getInstance();
       assertEquals(3600000L, pmaTester.pmaConfig.getRepeatValuesAfter());
@@ -62,7 +64,7 @@ public class PowerMeterAgentConfigTest
 
 
    @Test
-   public void testConfigSerial()
+   void testConfigSerial()
       throws Exception
    {
       PMAgentConfigTester pmaTester = PMAgentConfigTester.getInstance();
@@ -74,7 +76,7 @@ public class PowerMeterAgentConfigTest
 
 
    @Test
-   public void testConfigMqtt()
+   void testConfigMqtt()
    {
       PMAgentConfigTester pmaTester = PMAgentConfigTester.getInstance();
 
@@ -91,7 +93,7 @@ public class PowerMeterAgentConfigTest
 
 
    @Test
-   public void testSensorConfig()
+   void testSensorConfig()
    {
       PMAgentConfigTester pmaTester = PMAgentConfigTester.getInstance();
       SensorConfig sensorConfig = pmaTester.pmaConfig.getSensorConfig();

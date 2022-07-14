@@ -7,6 +7,6 @@ WORKDIR /app
 # application.yml host's mqtt-broker is at 172.17.0.1. This is a temp workaround until mosquitto is in it's own container
 
 ADD application.yml /app
-ADD lnb-powermeter-0.5.1-FINAL.jar /app
+ADD lnb-powermeter-0.5.2-SNAPSHOT.jar /app
 
-CMD ["java", "-jar", "/app/lnb-powermeter-0.5.1-FINAL.jar", "/app/application.yml"]
+CMD ["java", "-jar", "/app/lnb-powermeter-0.5.2-SNAPSHOT.jar", "/app/application.yml"]

@@ -25,16 +25,13 @@ import java.util.concurrent.BlockingQueue;
  */
 public class SerialPortReader implements SerialPortEventListener, Runnable
 {
-   private static final Logger LOG                   = LoggerFactory.getLogger(SerialPortReader.class);
-   private static final int    NR_OF_LOOPS_FOR_RETRY = 100;
-
-   private static final int SERIAL_PORT_READER_LOOP_WAIT_MS = 100;
-
-
-   private static final int    SERIAL_DATA_BITS = 8;
-   private static final char   STOP_TOKEN       = '!';
+   private static final Logger LOG                             = LoggerFactory.getLogger(SerialPortReader.class);
+   private static final int    NR_OF_LOOPS_FOR_RETRY           = 100;
+   private static final int    SERIAL_PORT_READER_LOOP_WAIT_MS = 100;
+   private static final int    SERIAL_DATA_BITS                = 8;
+   private static final char   STOP_TOKEN                      = '!';
    private              String powerMeterUniqueKey;
-   private              String buffS            = "";
+   private              String buffS                           = "";
 
    /**
     * The delay is determined to be accurate for receiving one datagram at a time.<BR> Other values will lead to fragmentation of datagrams.
@@ -134,7 +131,6 @@ public class SerialPortReader implements SerialPortEventListener, Runnable
          {
             byte[] buf = serialPort.readBytes(numChars);
             chunkS = new String(buf);
-            LOG.debug(chunkS);
          }
          catch (SerialPortException ex)
          {
@@ -157,12 +153,10 @@ public class SerialPortReader implements SerialPortEventListener, Runnable
       int stop = bufS.indexOf(STOP_TOKEN); // Followed by 3 or 4 characters
       // (checksum)
 
-      LOG.debug("Start: {}, Stop: {}, String {}", start, stop, bufS);
       if ((start >= 0) && (stop >= 0))
       {
          // Enough captured, parse the datagram part, save the remainder
          String stringToParse = bufS.substring(start, stop + 4);
-         LOG.debug("Parse: {}", stringToParse);
 
          P1Datagram datagram = P1Parser.parse(stringToParse);
          publishDatagram(datagram);

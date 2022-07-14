@@ -12,15 +12,14 @@ import java.util.regex.Pattern;
  */
 public class P1Parser
 {
+   private static final Logger LOG = LoggerFactory.getLogger(P1Parser.class);
+
+   private static final String DECIMAL_PATTERN = "([0-9]*\\.[0-9]*)";
+
 
    private P1Parser()
    {
    }
-
-
-   private static final Logger LOG = LoggerFactory.getLogger(P1Parser.class);
-
-   private static final String DECIMAL_PATTERN = "([0-9]*\\.[0-9]*)";
 
 
    /**
@@ -31,12 +30,11 @@ public class P1Parser
     */
    public static P1Datagram parse(String tempS)
    {
-      LOG.debug(tempS);
-      P1Datagram p1dg = new P1Datagram();
+      LOG.trace(tempS);
+      P1Datagram p1Datagram = new P1Datagram();
       String[] lines = tempS.split("[\\r\\n]+");
       for (String line : lines)
       {
-         // LOG.info(line);
          if (line.startsWith("/") || line.startsWith("!"))
          {
             // Ignore
@@ -51,19 +49,19 @@ public class P1Parser
             }
             String id = line.substring(0, idx);
             String value = line.substring(idx + 1, idy);
-            parseP1Line(p1dg, id, value);
+            parseP1Line(p1Datagram, id, value);
          }
       }
-      return p1dg;
+      return p1Datagram;
    }
 
 
    private static void parseP1Line(P1Datagram p1dg, String id, String value)
    {
       P1Standard p1 = P1Standard.getDescription(id);
-      LOG.debug("parseP1Line: id = {}, value = {}", id, value);
+      LOG.trace("parseP1Line: id = {}, value = {}", id, value);
       value = value.replaceFirst("^0+(?!$)", "");
-      LOG.debug("Removing leading zeroes: {}", value);
+      LOG.trace("Removing leading zeroes: {}", value);
 
       if (p1 != null)
       {
@@ -124,24 +122,6 @@ public class P1Parser
                LOG.error("No such id: {}, value = {} ", id, value);
          }
       } // else we skip this line
-   }
-
-
-   private static String trimLeadingZeroes(String value)
-   {
-      while (value.startsWith("0") && value.length() > 1)
-      {
-         if (value.startsWith("00") || value.charAt(1) != '.')
-         {
-            value = value.substring(1);
-         }
-         if ((value.length() > 1) && value.charAt(1) == '.')
-         {
-            break;
-         }
-      }
-
-      return value;
    }
 
 

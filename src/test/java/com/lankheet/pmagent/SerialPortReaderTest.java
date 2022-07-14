@@ -1,8 +1,6 @@
 package com.lankheet.pmagent;
 
-import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
-import com.lankheet.pmagent.config.SerialPortConfig;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortException;
@@ -18,6 +16,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode.TOP_DOWN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,20 +31,9 @@ class SerialPortReaderTest
    private SerialPortReader serialPortReader;
 
    @Mock
-   private SensorNode                 sensorNode;
-   @Mock
    private BlockingQueue<SensorValue> queue;
    @Mock
    private Logger                     logger;
-
-   private final SerialPortConfig serialPortConfig = new SerialPortConfig()
-   {
-      {
-         setBaudRate(115200);
-         setUart("/dev/ttySomething");
-         setP1Key("/XMX5LGBBFG1009021021");
-      }
-   };
 
 
    @Test
@@ -104,5 +92,11 @@ class SerialPortReaderTest
    void testFlowAfterExceptionWithLotsOfChunks()
    {
       // TODO
+   }
+
+   @Test
+   void testStuff()
+   {
+      assertEquals(1906.327, Double.parseDouble("1906.327"));
    }
 }
