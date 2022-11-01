@@ -104,7 +104,6 @@ public class SensorValueSender implements Runnable
    {
       if (!sensorValueCache.isRepeatedValue(sensorValue))
       {
-         LOG.debug("new value: {}", sensorValue);
          String mqttTopic = null;
          TopicType topicType = getTopicTypeFromSensorValueType(sensorValue);
          // Get the destination

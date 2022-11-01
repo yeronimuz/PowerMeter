@@ -1,5 +1,6 @@
 package com.lankheet.pmagent;
 
+import com.lankheet.iot.datatypes.domotics.SensorNode;
 import com.lankheet.iot.datatypes.domotics.SensorValue;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -37,11 +38,12 @@ class SerialPortReaderTest
 
 
    @Test
-   void testOneDatagram(@Mock SerialPort serialPort)
+   void testOneDatagram(@Mock SerialPort serialPort, @Mock SensorNode sensorNode)
       throws SerialPortException, InterruptedException, IllegalAccessException
    {
       setField(serialPortReader, "serialPort", serialPort);
       setField(serialPortReader, "powerMeterUniqueKey", "/XMX5LGBBFG1009021021");
+      setField(serialPortReader, "sensorNode", sensorNode);
       when(serialPort.readBytes(200)).thenReturn(
          ("/XMX5LGBBFG1009021021\n" + "\n" + "1-3:0.2.8(42)\n" + "0-0:1.0.0(151009123245S)\n"
             + "0-0:96.1.1(4530303331303033303331323532363135)\n" + "1-0:1.8.1(000207.138*kWh)\n"

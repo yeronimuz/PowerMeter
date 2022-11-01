@@ -160,10 +160,9 @@ public class SerialPortReader implements SerialPortEventListener, Runnable
 
          P1Datagram datagram = P1Parser.parse(stringToParse);
          publishDatagram(datagram);
-         LOG.info("Saved: {}", datagram);
+         LOG.debug("Saved: {}", datagram);
          return bufS.substring(stop + 4); // sometimes only 3 chars.
-         // CR/LF not taken into
-         // account
+         // CR/LF not taken into account
       }
       // else wait for another event
       return bufS;

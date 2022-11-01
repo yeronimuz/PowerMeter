@@ -76,11 +76,11 @@ publishing{
 
 dependencies{
    implementation group: 'com.lankheet.iot', name: 'datatypes', version: '0.5.1-SNAPSHOT'
-   implementation group: 'org.yaml', name: 'snakeyaml', version: '1.30'
+   implementation group: 'org.yaml', name: 'snakeyaml', version: '1.32'
    implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
    implementation 'org.scream3r:jssc:2.8.0'
-   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.3'
-   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.3'
+   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.4'
+   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.4.2'
    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
 
