@@ -5,12 +5,15 @@ import com.lankheet.iot.datatypes.domotics.SensorValue;
 import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.config.PMAgentConfig;
+import com.lankheet.pmagent.config.SerialPortConfig;
 import com.lankheet.utils.NetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -27,6 +30,8 @@ import java.util.jar.Manifest;
 public class PowerMeterAgent
 {
    private static final Logger LOG = LoggerFactory.getLogger(PowerMeterAgent.class);
+   private static final String SERIAL_CMD           = "cu -l %s -s %d";
+   private static final int    WAIT_FOR_SERIAL_DATA = 500;
 
 
    public static void main(String[] args)
@@ -41,14 +46,7 @@ public class PowerMeterAgent
 
       showBanner();
       LOG.info("Starting {}: {}-{}", title, version, classifier);
-      Runtime.getRuntime().addShutdownHook(new Thread()
-      {
-         @Override
-         public void run()
-         {
-            LOG.warn("Shutdown Hook is cleaning up!");
-         }
-      });
+      Runtime.getRuntime().addShutdownHook(new Thread(() -> LOG.warn("Shutdown Hook is cleaning up!")));
       if (args.length < 1)
       {
          showUsage(version, classifier);
@@ -74,8 +72,7 @@ public class PowerMeterAgent
 
 
    public void run(String configFileName)
-      throws IOException
-
+      throws IOException, InterruptedException
    {
       PMAgentConfig configuration = PMAgentConfig.loadConfigurationFromFile(configFileName);
       LOG.info("Configuration: {}", configuration);
@@ -86,9 +83,33 @@ public class PowerMeterAgent
       final String nic = configuration.getSensorConfig().getNic();
       SensorNode sensorNode = new SensorNode(NetUtils.getMacAddress(nic), SensorType.POWER_METER.getId());
 
-      new Thread(new SensorValueSender(queue, mqttConfig)).start();
+      Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig));
+      mqttThread.start();
 
-      SerialPortReader serialPortReader = new SerialPortReader(queue, configuration.getSerialPortConfig(), sensorNode);
-      new Thread(serialPortReader).start();
+      SerialPortConfig serialPortConfig = configuration.getSerialPortConfig();
+      String port = serialPortConfig.getUart();
+      int baudRate = serialPortConfig.getBaudRate();
+      Process process = null;
+
+      try
+      {
+         String command = String.format(SERIAL_CMD, port, baudRate);
+         LOG.info(command);
+         process = Runtime.getRuntime().exec(command);
+         Thread.sleep(WAIT_FOR_SERIAL_DATA);
+      }
+      catch (IOException | InterruptedException e)
+      {
+         LOG.error("Cannot open serial port {}", port);
+         System.exit(-1);
+      }
+      BufferedReader p1Reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+      P1Reader serialPortReader = new P1Reader(queue, configuration.getSerialPortConfig().getP1Key(), sensorNode, p1Reader);
+      Thread serialReaderThread = new Thread(serialPortReader);
+      serialReaderThread.start();
+
+      mqttThread.join();
+      serialReaderThread.join();
    }
 }
