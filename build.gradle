@@ -11,7 +11,7 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
-version '0.5.2'
+version '0.5.3'
 
 ext{
    baseName = 'lnb-powermeter'
