@@ -103,7 +103,6 @@ public class P1Reader implements Runnable
          try
          {
             queue.put(sensorValue);
-            System.out.println("+");
          }
          catch (InterruptedException e)
          {
