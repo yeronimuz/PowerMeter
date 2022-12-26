@@ -12,11 +12,6 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
-ext{
-   baseName = 'powermeter-agent'
-   classifier = 'SNAPSHOT'
-}
-
 repositories{
    mavenLocal()
    mavenCentral()
@@ -27,9 +22,9 @@ mainClassName = 'org.domiot.powermeter.PowerMeterAgent'
 shadowJar{
    mergeServiceFiles()
    mainClassName = mainClassName
-   baseName = project.ext.baseName
-   classifier = project.ext.classifier
-   version = version
+   baseName = project.name
+   classifier = project.classifier
+   version = project.version
 }
 
 if (hasProperty('buildScan'))
@@ -44,8 +39,8 @@ jar{
    manifest{
       attributes(
          'Implementation-Title': 'Powermeter Agent',
-         'Implementation-Version': version,
-         'Implementation-Classifier': project.ext.classifier,
+         'Implementation-Version': project.version,
+         'Implementation-Classifier': project.classifier,
          'Built-By': System.properties['user.name'],
          'Build-Timestamp': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
          'Build-Revision': versioning.info.commit,
@@ -64,9 +59,9 @@ jacoco{
 publishing{
    publications{
       maven(MavenPublication){
-         groupId 'org.domiot' // TODO Use already defined one in gradle.properties
-         artifactId 'powermeter-agent'
-         version version
+         groupId project.group
+         artifactId project.name
+         version project.version
 
          from components.java
       }
