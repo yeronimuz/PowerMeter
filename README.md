@@ -12,7 +12,7 @@ If you want the store to be available in the cloud, then just move your backend 
 
 Being able to choose where your services are hosted is the main reason why MQTT was chosen as communication layer.
 
-###This application
+### This application
 * Is a Java based P1 smart meter reader
 * It reads the serial interface that is configured in the application.yml
 * At this interface, a smart p1 meter is connected via a FTDI converter (inverted signal) to a Computer that runs Java and 'cu'. Raspberry Pi is an excellent choice.
@@ -20,17 +20,18 @@ Being able to choose where your services are hosted is the main reason why MQTT 
 * This meter produces a p1 datagram each x seconds.
 * The data is read, parsed and pushed to an mqtt broker (configurable in application.yml)
 * Currently, only produced and consumed power are sent as well as the consumed gas
-* Repeated values for a sensor, type combination are ignored. A value latch is used. This latch is currently reset by a timer loop. The timer period is
+* Repeated values for a sensor, type combinations are ignored. A value latch is used. This latch is currently reset by a timer loop. The timer period is
   configurable.
 * Readings are buffered in a blocking queue. The capacity is configurable but defaults to 10000 readings. At max, 7 readings are produced per 10 seconds. 7 * 6 * 60 = 2520 readings per hour. So little less than 4 hours of readings are stored when the mqtt broker is not reachable any longer. Note that when the mqtt connection is resumed, all readings are processed without delay. Note that for v2 generation of power meters the capacity is 1/10th (a datagram every second)
 * Initial mqtt connection setup is done only once. When the connection is not available at startup time, the application will exit.
 * The NIC adapter to bind to is configurable. The MAC address of the NIC will be used to identify the sensor in the domotics system.
 * The serial port reader operates in it's own process. Next to the main thread there are two other threads, one for creating sensor value readings out of the P1 datagrams, the second thread is responsible for pushing the sensor values to the mqtt broker. 
 
-###Wishlist
-
+### Wishlist
 * report health
 * error handling
+* openhab binding
+  * Check whether to adopt to an existing mqtt binding or to create a new one
 * read configuration from a rest endpoint instead of config file
   * Make it possible to reload operational parameters (Bootstrap process required.)
   * Considerations:
@@ -44,7 +45,7 @@ Being able to choose where your services are hosted is the main reason why MQTT 
 * Jenkins and Nexus repo manager
 * Behavior driven tests (Cucumber)
 
-##Current issues:
+## Current issues:
 
 * Unit test coverage is poor
 * TOPIC gas is not sent as TOPIC gas but under topic POWER
