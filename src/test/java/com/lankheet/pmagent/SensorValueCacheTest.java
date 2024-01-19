@@ -1,14 +1,20 @@
 package com.lankheet.pmagent;
 
-import com.lankheet.iot.datatypes.domotics.SensorNode;
-import com.lankheet.iot.datatypes.domotics.SensorValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.lankheet.domiot.model.Device;
+import org.lankheet.domiot.model.Sensor;
+import org.lankheet.domiot.model.SensorType;
+import org.lankheet.domiot.model.SensorValue;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -17,46 +23,80 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(JUnitPlatform.class)
+@ExtendWith(MockitoExtension.class)
 class SensorValueCacheTest {
 
-    @Mock
-    private LoggerFactory LoggerFactoryMock;
-    @Mock
-    private Logger loggerMock;
+//    @Mock
+//    private LoggerFactory LoggerFactoryMock;
+//    @Mock
+//    private Logger loggerMock;
 
     @Test
     void testRepeatedValues() {
-        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue(1000);
-        SensorNode sensorNode = new SensorNode("01:02:03:04:05:06", 1);
-        SensorNode anotherNode = new SensorNode("02:03:04:05:06:07", 1);
+        Sensor sensor = new Sensor().type(SensorType.GAS_METER);
+        Sensor sensor2 = new Sensor().type(SensorType.POWER_AC);
         SensorValueCache svCache = new SensorValueCache();
 
-        assertFalse(svCache.isRepeatedValue(new SensorValue(sensorNode, new Date(), 1, 3.0)));
-        assertTrue(svCache.isRepeatedValue(new SensorValue(sensorNode, new Date(), 1, 3.0)));
-        assertEquals(1, svCache.getLatch().get(sensorNode).size());
-        assertEquals(1, svCache.getLatch().get(sensorNode).get(0).getMeasurementType());
-        assertEquals(3.0, svCache.getLatch().get(sensorNode).get(0).getValue());
+        assertFalse(svCache.isRepeatedValue(new SensorValue()
+                .sensor(sensor)
+                .timestamp(LocalDateTime.now())
+                .value(3.0)));
+        assertTrue(svCache.isRepeatedValue(new SensorValue()
+                .sensor(sensor)
+                .timestamp(LocalDateTime.now())
+                .value(3.0)));
+        assertEquals(3.0, svCache.getLatch().get(sensor).doubleValue());
 
-        assertFalse(svCache.isRepeatedValue(new SensorValue(sensorNode, new Date(), 1, 3.5)));
-        assertFalse(svCache.isRepeatedValue(new SensorValue(anotherNode, new Date(), 2, 3.5)));
-        assertEquals(1, svCache.getLatch().get(sensorNode).size());
-        assertEquals(1, svCache.getLatch().get(sensorNode).get(0).getMeasurementType());
-        assertEquals(3.5, svCache.getLatch().get(sensorNode).get(0).getValue());
-        assertEquals(1, svCache.getLatch().get(anotherNode).size());
-        assertEquals(2, svCache.getLatch().get(anotherNode).get(0).getMeasurementType());
-        assertEquals(3.5, svCache.getLatch().get(anotherNode).get(0).getValue());
-        
+        assertFalse(svCache.isRepeatedValue(new SensorValue()
+                .sensor(sensor)
+                .timestamp(LocalDateTime.now())
+                .value(3.5)));
+        assertEquals(3.5, svCache.getLatch().get(sensor).doubleValue());
 
-        assertEquals(1, svCache.getLatch().get(sensorNode).size());
-        assertEquals(1, svCache.getLatch().get(sensorNode).get(0).getMeasurementType());
-        assertEquals(3.5, svCache.getLatch().get(sensorNode).get(0).getValue());
+        assertFalse(svCache.isRepeatedValue(new SensorValue()
+                .sensor(sensor2)
+                .timestamp(LocalDateTime.now())
+                .value(3.5)));
+     }
 
-        svCache.isRepeatedValue(new SensorValue(anotherNode, new Date(), 3, 3.0));
-        assertEquals(2, svCache.getLatch().get(anotherNode).size());
-        assertEquals(2, svCache.getLatch().get(anotherNode).get(0).getMeasurementType());
-        assertEquals(3.5, svCache.getLatch().get(anotherNode).get(0).getValue());
-        assertEquals(3, svCache.getLatch().get(anotherNode).get(1).getMeasurementType());
-        assertEquals(3.0, svCache.getLatch().get(anotherNode).get(1).getValue());
+     @Test
+     void testDifferentSensors() {
+         Sensor sensor = new Sensor().type(SensorType.GAS_METER);
+         Sensor sensor2 = new Sensor().type(SensorType.POWER_AC);
+         SensorValueCache svCache = new SensorValueCache();
+
+         assertFalse(svCache.isRepeatedValue(new SensorValue()
+                 .sensor(sensor)
+                 .timestamp(LocalDateTime.now())
+                 .value(3.0)));
+         assertFalse(svCache.isRepeatedValue(new SensorValue()
+                 .sensor(sensor2)
+                 .timestamp(LocalDateTime.now())
+                 .value(3.0)));
+
+         assertEquals(3.0, svCache.getLatch().get(sensor).doubleValue());
+         assertEquals(3.0, svCache.getLatch().get(sensor2).doubleValue());
+
+     }
+     @Test
+    void testEqualSensor() {
+         Sensor sensor = new Sensor().type(SensorType.GAS_METER);
+         Sensor sensorClone = new Sensor().type(SensorType.GAS_METER);
+         SensorValueCache svCache = new SensorValueCache();
+
+         assertFalse(svCache.isRepeatedValue(new SensorValue()
+                 .sensor(sensor)
+                 .timestamp(LocalDateTime.now())
+                 .value(3.5)));
+         assertTrue(svCache.isRepeatedValue(new SensorValue()
+                 .sensor(sensorClone)
+                 .timestamp(LocalDateTime.now())
+                 .value(3.5)));
+         assertEquals(3.5, svCache.getLatch().get(sensor).doubleValue());
+
+         assertFalse(svCache.isRepeatedValue(new SensorValue()
+                 .sensor(sensor)
+                 .timestamp(LocalDateTime.now())
+                 .value(2.5)));
      }
 }

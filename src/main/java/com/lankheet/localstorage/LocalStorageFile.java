@@ -6,16 +6,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.lankheet.domiot.utils.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lankheet.pmagent.p1.P1Datagram;
-import com.lankheet.utils.JsonUtil;
 
 /**
  * Store the measurement in a file in JSON format
- * 
- * @author jeroen
- *
  */
 public class LocalStorageFile implements LocalStorage {
 	private static final Logger LOG = LoggerFactory.getLogger(LocalStorageFile.class);

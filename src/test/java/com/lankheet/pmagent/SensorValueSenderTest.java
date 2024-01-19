@@ -1,9 +1,5 @@
 package com.lankheet.pmagent;
 
-import com.lankheet.iot.datatypes.domotics.SensorNode;
-import com.lankheet.iot.datatypes.domotics.SensorValue;
-import com.lankheet.iot.datatypes.entities.MeasurementType;
-import com.lankheet.iot.datatypes.entities.SensorType;
 import com.lankheet.pmagent.config.PMAgentConfig;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -11,6 +7,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.lankheet.domiot.model.MqttTopic;
+import org.lankheet.domiot.model.Sensor;
+import org.lankheet.domiot.model.SensorType;
+import org.lankheet.domiot.model.SensorValue;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -61,15 +61,18 @@ class SensorValueSenderTest
    {
       doNothing().when(mqttClientMock).publish(anyString(), any(MqttMessage.class));
       BlockingQueue<SensorValue> queue = new ArrayBlockingQueue(1000);
-      SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttConfig());
+      SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttBroker());
       setField(sensorValueSender, "mqttClient", mqttClientMock);
 
-      sensorValueSender.newSensorValue(new SensorValue(new SensorNode("01:02:03:04", SensorType.POWER_METER.getId()),
-                                                       new Date(), MeasurementType.ACTUAL_CONSUMED_POWER.getId(), 3.5));
+      sensorValueSender.newSensorValue(new SensorValue()
+              .sensor(new Sensor()
+                      .type(SensorType.POWER_AC)
+                      .mqttTopic(new MqttTopic().path("/path")))
+              .timestamp(LocalDateTime.now())
+              .value( 3.5));
 
       verify(mqttClientMock).publish(anyString(), any(MqttMessage.class));
    }
-
 
    private void setField(SensorValueSender sensorValueSender, String fieldName, Object object)
       throws IllegalAccessException

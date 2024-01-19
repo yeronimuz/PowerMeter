@@ -1,22 +1,31 @@
 # PowerMeterAgent configuration file
 repeatValuesAfter: 3600000
 internalQueueSize: 10000
-sensorConfig:
-  nic: wlo1
-  sensorTypes: 
-    - POWER_METER
-    - GAS_METER
+nic: eth0
+sensorConfigs:
+  - type: POWER_PT1
+    mqttTopic: /power/pt1
+  - type: POWER_PT2
+    mqttTopic: /power/pt2
+  - type: POWER_CT1
+    mqttTopic: /power/ct1
+  - type: POWER_CT2
+    mqttTopic: /power/ct2
+  - type: POWER_AC
+    mqttTopic: /power/ac
+  - type: POWER_AP
+    mqttTopic: /power/ap
+  - type: GAS_METER
+    mqttTopic: /gas/c
     
-mqttConfig:
+mqttBroker:
   clientName: PM_unique_client_name
   url: tcp://localhost:1883
   userName: johndoe
   password: noaccess
-  topics: 
-    - topic: lnb/eng/power
-      type: POWER
-    - topic: lnb/eng/gas
-      type: GAS
+  subscriptions:
+    - p1
+    - domiot
 
 serialPort:
   p1Key: /XMX5LGBBFG1009021021

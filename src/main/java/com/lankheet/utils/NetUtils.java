@@ -1,5 +1,6 @@
 package com.lankheet.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,11 +12,9 @@ import java.util.Collections;
 /**
  * Network utilities.
  */
+@Slf4j
 public class NetUtils
 {
-   private static final Logger LOG = LoggerFactory.getLogger(NetUtils.class);
-
-
    /**
     * Get the local MAC address. eth0 = b8:27:eb:59:50:fb (pidora)
     *
@@ -32,7 +31,7 @@ public class NetUtils
       {
          if (itfName.equals(networkInterface.getDisplayName()))
          {
-            LOG.debug("Get MAC address {}", itfName);
+            log.debug("Get MAC address {}", itfName);
             byte[] mac = networkInterface.getHardwareAddress();
             sb1 = new StringBuilder();
             int i = 0;
@@ -44,7 +43,7 @@ public class NetUtils
          }
       }
       macAddress = sb1.toString();
-      LOG.debug("MAC address: {}", macAddress);
+      log.debug("MAC address: {}", macAddress);
       return macAddress;
    }
 }

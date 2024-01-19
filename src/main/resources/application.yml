@@ -1,21 +1,30 @@
 repeatValuesAfter: 3600000
 internalQueueSize: 10000
-sensorConfig:
-  nic: eth0
-  sensorTypes:
-    - POWER_METER
-    - GAS_METER
+nic: eth0
+sensorConfigs:
+  - type: POWER_PT1
+    mqttTopic:  /power/pt1
+  - type: POWER_PT2
+    mqttTopic: /power/pt2
+  - type: POWER_CT1
+    mqttTopic: /power/ct1
+  - type: POWER_CT2
+    mqttTopic: /power/ct2
+  - type: POWER_AC
+    mqttTopic: /power/ac
+  - type: POWER_AP
+    mqttTopic: /power/ap
+  - type: GAS_METER
+    mqttTopic: /gas/c
 
-mqttConfig:
+mqttBroker:
   clientName: CS1F08_PM1
   url: tcp://localhost:1883
   userName: johndoe
   password: secret
-  topics:
-    - topic: p1/power
-      type: POWER
-    - topic: p1/gas
-      type: GAS
+  subscriptions:
+    - p1
+    - domiot
 
 serialPort:
   p1Key: /ISK5\2M550T-1013

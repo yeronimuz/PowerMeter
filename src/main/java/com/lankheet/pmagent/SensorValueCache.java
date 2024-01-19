@@ -1,96 +1,65 @@
 package com.lankheet.pmagent;
 
-import com.lankheet.iot.datatypes.domotics.SensorNode;
-import com.lankheet.iot.datatypes.domotics.SensorValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.lankheet.domiot.model.Sensor;
+import org.lankheet.domiot.model.SensorValue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * For each sensor value it will be evaluated whether it is a new or repeated value.<BR> Only new values need to be processed.<BR> For each sensor node,
- * multiple {type, value} pairs can be stored (multi-sensor nodes).
+ * For each sensor value it will be evaluated whether it is a new or repeated value.
  */
-public class SensorValueCache
-{
-   private static final Logger LOG = LoggerFactory.getLogger(SensorValueCache.class);
+@Slf4j
+public class SensorValueCache {
+    private Map<Sensor, Double> latch = new HashMap<>();
 
-   private Map<SensorNode, List<SensorValue>> latch = new HashMap<>();
+    /**
+     * Worker method for this class.
+     *
+     * @param sensorValue The sensor value that is to be inspected
+     * @return true: The value was already processed, false: new value
+     */
+    public boolean isRepeatedValue(SensorValue sensorValue) {
+        boolean isRepeated = false;
+        Sensor sensor = sensorValue.getSensor();
 
-
-   /**
-    * Worker method for this class.
-    *
-    * @param sensorValue The sensor value that is to be inspected
-    * @return true: The value was already processed, false: new value
-    */
-   public boolean isRepeatedValue(SensorValue sensorValue)
-   {
-      boolean isRepeated = false;
-      int indexToBeReplaced = -1;
-      SensorNode sensorNode = sensorValue.getSensorNode();
-      List<SensorValue> sensorValues = new ArrayList<>();
-
-      if (!latch.isEmpty() && latch.containsKey(sensorValue.getSensorNode()))
-      {
-         sensorValues = latch.get(sensorNode);
-         for (SensorValue sensorValueLatch : sensorValues)
-         {
-            isRepeated |= sensorValueLatch.equals(sensorValue);
-            if (sensorValueLatch.equalsInType(sensorValue))
-            {
-               // Only value differs, store new value
-               indexToBeReplaced = sensorValues.indexOf(sensorValueLatch);
+        if (!latch.isEmpty() && latch.containsKey(sensorValue.getSensor())) {
+            double value = latch.get(sensor);
+            if (value == sensorValue.getValue()) {
+                isRepeated = true;
             }
-         }
-         if (indexToBeReplaced != -1)
-         {
-            sensorValues.set(indexToBeReplaced, sensorValue);
-         }
-      }
-      if (!isRepeated && indexToBeReplaced == -1)
-      {
-         sensorValues.add(sensorValue);
-         latch.put(sensorNode, sensorValues);
-      }
-      LOG.debug(toString());
-      return isRepeated;
-   }
+        }
+        if (!isRepeated) {
+            latch.put(sensorValue.getSensor(), sensorValue.getValue());
+            log.debug("Store new latch: {}", sensorValue);
+        }
+        return isRepeated;
+    }
 
+    /**
+     * In order to be able to resend repeated values when requested, this reset is needed.
+     */
+    public void resetLatch() {
+        latch = new HashMap<>();
+    }
 
-   /**
-    * In order to be able to resend repeated values when requested, this reset is needed.
-    */
-   public void resetLatch()
-   {
-      latch = new HashMap<>();
-   }
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
 
+        latch.keySet().forEach(sensor -> {
+            builder.append(String.format("{name = %s, type = %s} -> ", sensor.getName(), sensor.getType()));
+            builder.append(String.format("value = %f}%n", latch.get(sensor)));
+        });
+        return builder.toString();
+    }
 
-   public String toString()
-   {
-      StringBuilder builder = new StringBuilder();
-
-      latch.keySet().forEach(node -> {
-         builder.append(String.format("{mac = %s, type = %s} -> ", node.getSensorMac(), node.getSensorType()));
-         latch.get(node).forEach(val -> {
-            builder.append(String.format("{type = %d, value = %f}\n", val.getMeasurementType(), val.getValue()));
-         });
-      });
-      return builder.toString();
-   }
-
-
-   /**
-    * Get latch.
-    *
-    * @return the latch
-    */
-   public Map<SensorNode, List<SensorValue>> getLatch()
-   {
-      return latch;
-   }
+    /**
+     * Get latch.
+     *
+     * @return the latch
+     */
+    public Map<Sensor, Double> getLatch() {
+        return latch;
+    }
 }

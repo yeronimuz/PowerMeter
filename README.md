@@ -9,19 +9,20 @@ This project:
 * This meter produces a p1 datagram each x seconds.
 * The data is read, parsed and pushed to an mqtt broker (configurable in application.yml)
 * Currently, only produced and consumed power are sent as well as the consumed gas
-* Repeated values for a sensor, type combination are ignored. A value latch is used. This latch is currently reset by a timer loop. The timer period is
-  configurable.
+* Repeated values for a {sensor, type} combination are ignored. A value latch is used. 
 * Readings are buffered in a blocking queue. The capacity is configurable but defaults to 10000 readings. At max, 7 readings are produced per 10 seconds. 7 * 6
   * 60 = 2520 readings per hour. So little less than 4 hours of readings are stored when the mqtt broker is not reachable any longer. Note that when the mqtt
   connection is resumed, all readings are processed without delay. Note that for v2 generation of power meters the capacity is 1/10th (a datagram every second)
-* Initial mqtt connection setup is done only once. When the connection is not available at startup time, the application will exit.
+* Initial mqtt connection setup is done at maximum 10 times with 1 second intervals. When the connection is not available after 10 retries, the application will exit.
 * The NIC adapter to bind to is configurable. The MAC address of the NIC will be used to identify the sensor in the domotics system.
 * The serial port reader operates in it's own process. Next to the main thread there are two other threads, one for creating sensor value readings out of the P1 datagrams, the second thread is responsible for pushing the sensor values to the mqtt broker. 
 
 Wishlist:
 
 * report health
-* read configuration from a rest endpoint instead of config file
+* Reset policy for the latch. This latch is currently not reset by a timer loop. The timer period is
+to be configurable.
+* read configuration parameters from mqtt. The configuration is prepared for this. But there is no subscription to any mqtt topic yet.
   * Make it possible to reload operational parameters (Bootstrap process required.)
   * Considerations:
     * Necessary to keep the reading process running during update in order not to lose data?
@@ -32,9 +33,12 @@ Wishlist:
 Current issues:
 
 * Unit test coverage is poor
-* TOPIC gas is not sent as TOPIC gas but under topic POWER
 
 ## Release notes
+0.6.0
+* Now using data types 0.8.0 and domotics API 1.1.1
+* Sensors configured separately
+
 0.5.3
 * Using cu als serial port reader. Major refactoring in the serial reading process
 

@@ -2,6 +2,7 @@ package com.lankheet.pmagent.config;
 
 public enum TopicType
 {
+   // TODO: Move to API, maybe a separate Mqtt API
    POWER("power"),
    GAS("gas"),
    TEMPERATURE("temp"),
