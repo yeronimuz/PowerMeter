@@ -35,6 +35,9 @@ Current issues:
 * Unit test coverage is poor
 
 ## Release notes
+0.7.0
+* Device registration added
+
 0.6.0
 * Now using data types 0.8.0 and domotics API 1.1.1
 * Sensors configured separately

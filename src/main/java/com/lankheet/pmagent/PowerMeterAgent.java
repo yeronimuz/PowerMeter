@@ -3,11 +3,16 @@ package com.lankheet.pmagent;
 import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.config.PMAgentConfig;
 import com.lankheet.pmagent.config.SerialPortConfig;
+import com.lankheet.pmagent.mqtt.MqttService;
 import com.lankheet.utils.NetUtils;
 import lombok.extern.slf4j.Slf4j;
 import com.lankheet.pmagent.mapper.SensorMapper;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.lankheet.domiot.model.Device;
 import org.lankheet.domiot.model.SensorValue;
+import org.lankheet.domiot.utils.JsonUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -63,7 +68,7 @@ public class PowerMeterAgent {
     }
 
     public void run(String configFileName)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, MqttException {
         PMAgentConfig configuration = PMAgentConfig.loadConfigurationFromFile(configFileName);
         log.info("Configuration: {}", configuration);
         BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(configuration.getInternalQueueSize());
@@ -91,11 +96,22 @@ public class PowerMeterAgent {
         Device device = new Device()
                 .macAddress(NetUtils.getMacAddress(configuration.getNic()))
                 .sensors(configuration.getSensorConfigs().stream().map(SensorMapper::map).toList());
+        // Send device config once
+        registerDevice(mqttConfig, device);
+
         P1Reader serialPortReader = new P1Reader(queue, configuration.getSerialPort().getP1Key(), device, p1Reader);
         Thread serialReaderThread = new Thread(serialPortReader);
         serialReaderThread.start();
 
         mqttThread.join();
         serialReaderThread.join();
+    }
+
+    private void registerDevice(MqttConfig mqttConfig, Device device) throws MqttException {
+        MqttService mqttService = new MqttService(mqttConfig);
+        MqttClient mqttClient = mqttService.connectToBroker();
+        MqttMessage message = new MqttMessage();
+        message.setPayload(JsonUtil.toJson(device).getBytes());
+        mqttClient.publish("config", message);
     }
 }
