@@ -3,20 +3,48 @@ repeatValuesAfter: 3600000
 internalQueueSize: 10000
 nic: eth0
 sensorConfigs:
-  - type: POWER_PT1
-    mqttTopic: /power/pt1
-  - type: POWER_PT2
-    mqttTopic: /power/pt2
-  - type: POWER_CT1
-    mqttTopic: /power/ct1
-  - type: POWER_CT2
-    mqttTopic: /power/ct2
-  - type: POWER_AC
-    mqttTopic: /power/ac
-  - type: POWER_AP
-    mqttTopic: /power/ap
-  - type: GAS_METER
-    mqttTopic: /gas/c
+  - name: pb13:p1:pt1
+    sensorType: POWER_PT1
+    mqttTopicConfig:
+      topic: /pb13/p1/power/pt1
+      topicType: power
+    description: Produced power T1
+  - name: pb13:p1:pt2
+    sensorType: POWER_PT2
+    mqttTopicConfig:
+      topic: /pb13/p1/power/pt2
+      topicType: power
+    description: Produced power T2
+  - name: pb13:p1:ct1
+    sensorType: POWER_CT1
+    mqttTopicConfig:
+      topic: /pb13/p1/power/ct1
+      topicType: power
+    description: Consumed power T1
+  - name: pb13:p1:ct2
+    sensorType: POWER_CT2
+    mqttTopicConfig:
+      topic: /pb13/p1/power/ct2
+      topicType: power
+    description: Consumed power T2
+  - name: pb13:p1:ac
+    sensorType: POWER_AC
+    mqttTopicConfig:
+      topic: /pb13/p1/power/ac
+      topicType: power
+    description: Accumulated consumed power
+  - name: pb13:p1:ap
+    sensorType: POWER_AP
+    mqttTopicConfig:
+      topic: /pb13/p1/power/ap
+      topicType: power
+    description: Accumulated produced power
+  - name: pb13:p1:c
+    sensorType: GAS_METER
+    mqttTopicConfig:
+      topic: /pb13/p1/gas/c
+      topicType: gas
+    description: Consumed gas
     
 mqttBroker:
   clientName: PM_unique_client_name

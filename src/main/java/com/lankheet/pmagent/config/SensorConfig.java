@@ -9,15 +9,20 @@ import java.util.Arrays;
 @Data
 public class SensorConfig {
     @JsonProperty
-    private SensorType type;
+    private String name;
 
     @JsonProperty
-    private String mqttTopic;
+    private SensorType sensorType;
+
+    @JsonProperty
+    private MqttTopicConfig mqttTopicConfig;
+
+    @JsonProperty
+    private String description;
 
     SensorType of(String value) {
         return Arrays.stream(SensorType.values()).
                 filter(type -> type.name().equals(value)).
                 findFirst().orElse(null);
     }
-
 }

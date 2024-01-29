@@ -1,5 +1,6 @@
 package com.lankheet.pmagent;
 
+import com.lankheet.pmagent.config.DeviceConfig;
 import com.lankheet.pmagent.config.PMAgentConfig;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -44,7 +45,7 @@ class SensorValueSenderTest
    @Captor
    private ArgumentCaptor<String> logMessage;
 
-   private static PMAgentConfig config;
+   private static DeviceConfig config;
 
 
    @BeforeAll

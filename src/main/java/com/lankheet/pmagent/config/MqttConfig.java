@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 public class MqttConfig
 {
-
    @JsonProperty
    private String clientName;
 

@@ -13,75 +13,57 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * Configuration object for PowerMeterAgent
  */
 @Data
-public class PMAgentConfig
-{
-   @JsonProperty
-   private long repeatValuesAfter;
+public class PMAgentConfig {
+    @JsonProperty
+    private DeviceConfig deviceConfig;
 
-   @JsonProperty
-   private int internalQueueSize;
+    public static DeviceConfig loadConfigurationFromFile(String configFileName)
+            throws IOException {
+        Constructor constructor = new Constructor(DeviceConfig.class, new LoaderOptions());
+        TypeDescription deviceConfigTypeDescription = new TypeDescription(DeviceConfig.class);
+        deviceConfigTypeDescription.addPropertyParameters("repeatValuesAfter", DeviceConfig.class);
+        deviceConfigTypeDescription.addPropertyParameters("internalQueueSize", DeviceConfig.class);
+        deviceConfigTypeDescription.addPropertyParameters("nic", String.class);
+        deviceConfigTypeDescription.addPropertyParameters("sensorConfigs", SensorConfig.class);
+        deviceConfigTypeDescription.addPropertyParameters("mqttBroker", MqttConfig.class);
+        deviceConfigTypeDescription.addPropertyParameters("serialPort", SerialPortConfig.class);
 
-   @JsonProperty
-   private String nic;
+        TypeDescription sensorConfigTypeDescription = new TypeDescription(Sensor.class);
+        sensorConfigTypeDescription.addPropertyParameters("sensorType", SensorType.class);
+        sensorConfigTypeDescription.addPropertyParameters("name", String.class);
+        sensorConfigTypeDescription.addPropertyParameters("description", String.class);
+        sensorConfigTypeDescription.addPropertyParameters("mqttTopic", MqttTopicConfig.class);
 
-   @JsonProperty
-   private SerialPortConfig serialPort = new SerialPortConfig();
+        TypeDescription mqttTopicConfigTypeDescription = new TypeDescription(MqttTopicConfig.class);
+        mqttTopicConfigTypeDescription.addPropertyParameters("topic", String.class);
+        mqttTopicConfigTypeDescription.addPropertyParameters("topicType", String.class);
 
-   @JsonProperty
-   private MqttConfig mqttBroker = new MqttConfig();
+        TypeDescription mqttConfigTypeDescription = new TypeDescription(MqttConfig.class);
+        mqttConfigTypeDescription.addPropertyParameters("subscriptions", String.class);
+        mqttConfigTypeDescription.addPropertyParameters("url", String.class);
+        mqttConfigTypeDescription.addPropertyParameters("userName", String.class);
+        mqttConfigTypeDescription.addPropertyParameters("password", String.class);
+        mqttConfigTypeDescription.addPropertyParameters("clientName", String.class);
 
-   @JsonProperty
-   private List<SensorConfig> sensorConfigs;
+        TypeDescription serialPortConfigTypeDescription = new TypeDescription(SerialPortConfig.class);
+        serialPortConfigTypeDescription.addPropertyParameters("p1Key", String.class);
+        serialPortConfigTypeDescription.addPropertyParameters("uart", String.class);
+        serialPortConfigTypeDescription.addPropertyParameters("baudRate", String.class);
 
+        constructor.addTypeDescription(deviceConfigTypeDescription);
+        constructor.addTypeDescription(sensorConfigTypeDescription);
+        constructor.addTypeDescription(mqttConfigTypeDescription);
+        constructor.addTypeDescription(serialPortConfigTypeDescription);
+        constructor.addTypeDescription(mqttTopicConfigTypeDescription);
 
-   public static PMAgentConfig loadConfigurationFromFile(String configFileName)
-      throws IOException
-   {
-      Constructor constructor = new Constructor(PMAgentConfig.class, new LoaderOptions());
-      TypeDescription pmAgentConfigTypeDescription = new TypeDescription(PMAgentConfig.class);
-      constructor.addTypeDescription(pmAgentConfigTypeDescription);
-      pmAgentConfigTypeDescription.addPropertyParameters("repeatValuesAfter", PMAgentConfig.class);
-      pmAgentConfigTypeDescription.addPropertyParameters("internalQueueSize", PMAgentConfig.class);
-      pmAgentConfigTypeDescription.addPropertyParameters("nic", String.class);
-      pmAgentConfigTypeDescription.addPropertyParameters("sensorConfigs", SensorConfig.class);
-      pmAgentConfigTypeDescription.addPropertyParameters("mqttBroker", MqttConfig.class);
+        Yaml yaml = new Yaml(constructor);
+        InputStream inputStream = Files.newInputStream(Paths.get(configFileName));
 
-      TypeDescription sensorConfigTypeDescription = new TypeDescription(Sensor.class);
-      sensorConfigTypeDescription.addPropertyParameters("sensorType", SensorType.class);
-      sensorConfigTypeDescription.addPropertyParameters("mqttTopic", String.class);
-
-      TypeDescription mqttConfigTypeDescription = new TypeDescription(MqttConfig.class);
-      mqttConfigTypeDescription.addPropertyParameters("subscriptions", String.class);
-      mqttConfigTypeDescription.addPropertyParameters("url", String.class);
-      mqttConfigTypeDescription.addPropertyParameters("userName", String.class);
-      mqttConfigTypeDescription.addPropertyParameters("password", String.class);
-      mqttConfigTypeDescription.addPropertyParameters("clientName", String.class);
-
-      TypeDescription mqttTopicConfigTypeDescription = new TypeDescription(MqttTopicConfig.class);
-      mqttTopicConfigTypeDescription.addPropertyParameters("topic", String.class);
-      mqttTopicConfigTypeDescription.addPropertyParameters("type", TopicType.class);
-
-      TypeDescription serialPortConfigTypeDescription = new TypeDescription(SerialPortConfig.class);
-      serialPortConfigTypeDescription.addPropertyParameters("p1Key", String.class);
-      serialPortConfigTypeDescription.addPropertyParameters("uart", String.class);
-      serialPortConfigTypeDescription.addPropertyParameters("baudRate", String.class);
-
-      constructor.addTypeDescription(sensorConfigTypeDescription);
-      constructor.addTypeDescription(pmAgentConfigTypeDescription);
-      constructor.addTypeDescription(mqttConfigTypeDescription);
-      constructor.addTypeDescription(mqttTopicConfigTypeDescription);
-      constructor.addTypeDescription(serialPortConfigTypeDescription);
-
-      Yaml yaml = new Yaml(constructor);
-      InputStream inputStream = Files.newInputStream(Paths.get(configFileName));
-
-      PMAgentConfig pmAgentConfig = yaml.load(inputStream);
-      return pmAgentConfig;
-   }
+        return yaml.load(inputStream);
+    }
 }

@@ -1,8 +1,10 @@
 package com.lankheet.pmagent;
 
+import com.lankheet.pmagent.config.DeviceConfig;
 import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.config.PMAgentConfig;
 import com.lankheet.pmagent.config.SerialPortConfig;
+import com.lankheet.pmagent.mapper.DeviceMapper;
 import com.lankheet.pmagent.mqtt.MqttService;
 import com.lankheet.utils.NetUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.lankheet.domiot.model.Device;
+import org.lankheet.domiot.model.DomiotParameter;
 import org.lankheet.domiot.model.SensorValue;
 import org.lankheet.domiot.utils.JsonUtil;
 
@@ -69,15 +72,15 @@ public class PowerMeterAgent {
 
     public void run(String configFileName)
             throws IOException, InterruptedException, MqttException {
-        PMAgentConfig configuration = PMAgentConfig.loadConfigurationFromFile(configFileName);
-        log.info("Configuration: {}", configuration);
-        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(configuration.getInternalQueueSize());
+        DeviceConfig deviceConfig = PMAgentConfig.loadConfigurationFromFile(configFileName);
+        log.info("Configuration: {}", deviceConfig);
+        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(deviceConfig.getInternalQueueSize());
 
-        MqttConfig mqttConfig = configuration.getMqttBroker();
+        MqttConfig mqttConfig = deviceConfig.getMqttBroker();
         Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig));
         mqttThread.start();
 
-        SerialPortConfig serialPortConfig = configuration.getSerialPort();
+        SerialPortConfig serialPortConfig = deviceConfig.getSerialPort();
         String port = serialPortConfig.getUart();
         int baudRate = serialPortConfig.getBaudRate();
         Process process = null;
@@ -93,13 +96,11 @@ public class PowerMeterAgent {
         }
         BufferedReader p1Reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        Device device = new Device()
-                .macAddress(NetUtils.getMacAddress(configuration.getNic()))
-                .sensors(configuration.getSensorConfigs().stream().map(SensorMapper::map).toList());
         // Send device config once
+        Device device = DeviceMapper.map(deviceConfig);
         registerDevice(mqttConfig, device);
 
-        P1Reader serialPortReader = new P1Reader(queue, configuration.getSerialPort().getP1Key(), device, p1Reader);
+        P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), device, p1Reader);
         Thread serialReaderThread = new Thread(serialPortReader);
         serialReaderThread.start();
 
