@@ -7,8 +7,6 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import java.util.Arrays;
-
 /**
  * Mqtt service class. Setup and Connect to MQTT broker
  */
@@ -18,7 +16,7 @@ public class MqttService {
     private static final int MS_DELAY_BETWEEN_RETRIES = 1000;
 
     private MqttClient mqttClient;
-    private MqttConnectOptions mqttConnectOptions;
+    private final MqttConnectOptions mqttConnectOptions;
 
     public MqttService(MqttConfig mqttConfig) throws MqttException {
         this.mqttConnectOptions = configMqttClient(mqttConfig);
@@ -49,7 +47,6 @@ public class MqttService {
             throws MqttException {
         for (int count = 0; count < MQTT_RETRIES; count++) {
             try {
-                log.debug("Connecting to {}", Arrays.stream(mqttConnectOptions.getServerURIs()).sequential().toList());
                 mqttClient.connect(this.mqttConnectOptions);
                 if (mqttClient.isConnected()) {
                     break;

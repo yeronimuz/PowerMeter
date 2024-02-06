@@ -33,17 +33,18 @@ public class DeviceConfig {
 
     public Device toDevice() throws SocketException {
         Device device = new Device();
-        device.setMacAddress(NetUtils.getMacAddress(nic));
-        device.setSensors(toSensorList());
+        String macAddress = NetUtils.getMacAddress(nic);
+        device.setMacAddress(macAddress);
+        device.setSensors(toSensorList(macAddress));
         return device;
     }
 
-    List<Sensor> toSensorList() {
+    List<Sensor> toSensorList(String macAddress) {
         List<Sensor> sensorList = new ArrayList<>();
         for (SensorConfig sensorConfig: sensorConfigs) {
             Sensor sensor = new Sensor();
             sensor.setType(sensorConfig.getSensorType());
-            sensor.setName(sensorConfig.getName());
+            sensor.setName(macAddress);
             sensor.setDescription(sensorConfig.getDescription());
             // MqttConfigType not used
             sensor.setMqttTopic(new MqttTopic().path(sensorConfig.getMqttTopicConfig().getTopic()));

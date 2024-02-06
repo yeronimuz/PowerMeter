@@ -30,7 +30,11 @@ public class DatagramToSensorValueMapper {
         List<SensorValue> sensorValueList = new ArrayList<>();
         LocalDateTime timestamp = LocalDateTime.now();
         for (Sensor sensor : device.getSensors()) {
-            sensorValueList.add(new SensorValue().sensor(sensor).timestamp(timestamp).value(getValueFromDatagram(sensor, datagram)));
+            sensor.setName(device.getMacAddress());
+            sensorValueList.add(new SensorValue()
+                    .sensor(sensor)
+                    .timestamp(timestamp)
+                    .value(getValueFromDatagram(sensor, datagram)));
         }
 
         return sensorValueList;
@@ -59,12 +63,11 @@ public class DatagramToSensorValueMapper {
             case GAS_METER -> {
                 return datagram.getConsumedGas();
             }
-            case TEMP, HUMID, WATER, GAS_SENSOR, NOT_USED, HYDRO, STATUS, VOLTAGE_LEVEL, CURRENT_LEVEL -> {
-                log.error("No such sensorType for P1 device: {}", sensor.getType());
-            }
-            default -> {
-                log.error("Current sensorType unknown for the current API: {}", sensor.getType());
-            }
+            case TEMP, HUMID, WATER, GAS_SENSOR, NOT_USED, HYDRO, STATUS, VOLTAGE_LEVEL, CURRENT_LEVEL ->
+                    log.error("No such sensorType for P1 device: {}", sensor.getType());
+
+            default -> log.error("Current sensorType unknown for the current API: {}", sensor.getType());
+
         }
         return Double.MAX_VALUE;
     }

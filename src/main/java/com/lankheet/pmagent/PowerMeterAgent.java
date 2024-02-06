@@ -6,14 +6,12 @@ import com.lankheet.pmagent.config.PMAgentConfig;
 import com.lankheet.pmagent.config.SerialPortConfig;
 import com.lankheet.pmagent.mapper.DeviceMapper;
 import com.lankheet.pmagent.mqtt.MqttService;
-import com.lankheet.utils.NetUtils;
+import com.lankheet.pmagent.runtime.RuntimeFactory;
 import lombok.extern.slf4j.Slf4j;
-import com.lankheet.pmagent.mapper.SensorMapper;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.model.DomiotParameter;
 import org.lankheet.domiot.model.SensorValue;
 import org.lankheet.domiot.utils.JsonUtil;
 
@@ -64,7 +62,6 @@ public class PowerMeterAgent {
     }
 
     private static void showUsage(String version, String classifier) {
-        // TODO: Create console logger and log via this logger
         System.out.println("Missing configuration file!");
         System.out.println("Usage:");
         System.out.println("java -jar lnb-powermeter-" + version + "-" + classifier + " config.yml");
@@ -98,7 +95,9 @@ public class PowerMeterAgent {
 
         // Send device config once
         Device device = DeviceMapper.map(deviceConfig);
+        RuntimeFactory.addRuntimeInfo(device);
         registerDevice(mqttConfig, device);
+        log.info("Device: {}", device);
 
         P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), device, p1Reader);
         Thread serialReaderThread = new Thread(serialPortReader);
@@ -113,6 +112,6 @@ public class PowerMeterAgent {
         MqttClient mqttClient = mqttService.connectToBroker();
         MqttMessage message = new MqttMessage();
         message.setPayload(JsonUtil.toJson(device).getBytes());
-        mqttClient.publish("config", message);
+        mqttClient.publish("register", message);
     }
 }

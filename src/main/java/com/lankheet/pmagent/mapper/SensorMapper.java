@@ -11,7 +11,6 @@ public class SensorMapper {
     public static Sensor map(SensorConfig sensorConfig) {
         return new Sensor()
                 .type(sensorConfig.getSensorType())
-                .name(sensorConfig.getName())
                 .description(sensorConfig.getDescription())
                 .mqttTopic(new MqttTopic().path(sensorConfig.getMqttTopicConfig().getTopic()));
     }

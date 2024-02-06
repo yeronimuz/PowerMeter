@@ -9,9 +9,6 @@ import java.util.Arrays;
 @Data
 public class SensorConfig {
     @JsonProperty
-    private String name;
-
-    @JsonProperty
     private SensorType sensorType;
 
     @JsonProperty

@@ -2,46 +2,41 @@ repeatValuesAfter: 3600000
 internalQueueSize: 10000
 nic: eth0
 sensorConfigs:
-  - name: pb13:p1:pt1
-    sensorType: POWER_PT1
+# naming convention: <home>:<device>:<sensor>
+  - sensorType: POWER_PT1
     mqttTopicConfig:
-      topic: /pb13/p1/power/pt1
+      #topic convention: <home>/<room>/<type:{sensor|actuator|config}>/<type:{power, humidity, gas, ...}<sensor>
+      topic: meterbox/sensor/power/pt1
       topicType: power
     description: Produced power T1
-  - name: pb13:p1:pt2
-    sensorType: POWER_PT2
+  - sensorType: POWER_PT2
     mqttTopicConfig:
-      topic: /pb13/p1/power/pt2
+      topic: meterbox/sensor/power/pt2
       topicType: power
     description: Produced power T2
-  - name: pb13:p1:ct1
-    sensorType: POWER_CT1
+  - sensorType: POWER_CT1
     mqttTopicConfig:
-      topic: /pb13/p1/power/ct1
+      topic: meterbox/sensor/power/ct1
       topicType: power
     description: Consumed power T1
-  - name: pb13:p1:ct2
-    sensorType: POWER_CT2
+  - sensorType: POWER_CT2
     mqttTopicConfig:
-      topic: /pb13/p1/power/ct2
+      topic: meterbox/sensor/power/ct2
       topicType: power
     description: Consumed power T2
-  - name: pb13:p1:ac
-    sensorType: POWER_AC
+  - sensorType: POWER_AC
     mqttTopicConfig:
-      topic: /pb13/p1/power/ac
+      topic: meterbox/sensor/power/ac
       topicType: power
     description: Accumulated consumed power
-  - name: pb13:p1:ap
-    sensorType: POWER_AP
+  - sensorType: POWER_AP
     mqttTopicConfig:
-      topic: /pb13/p1/power/ap
+      topic: meterbox/sensor/power/ap
       topicType: power
     description: Accumulated produced power
-  - name: pb13:p1:c
-    sensorType: GAS_METER
+  - sensorType: GAS_METER
     mqttTopicConfig:
-      topic: /pb13/p1/gas/c
+      topic: meterbox/sensor/gas/c
       topicType: gas
     description: Consumed gas
 
@@ -53,6 +48,7 @@ mqttBroker:
   subscriptions:
     - p1
     - domiot
+    - config
 
 serialPort:
   p1Key: /ISK5\2M550T-1013

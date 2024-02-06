@@ -35,7 +35,6 @@ public class PMAgentConfig {
 
         TypeDescription sensorConfigTypeDescription = new TypeDescription(Sensor.class);
         sensorConfigTypeDescription.addPropertyParameters("sensorType", SensorType.class);
-        sensorConfigTypeDescription.addPropertyParameters("name", String.class);
         sensorConfigTypeDescription.addPropertyParameters("description", String.class);
         sensorConfigTypeDescription.addPropertyParameters("mqttTopic", MqttTopicConfig.class);
 

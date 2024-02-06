@@ -17,6 +17,7 @@ public class DeviceMapper {
 
     public static Device map(DeviceConfig deviceConfig) throws SocketException {
         return new Device()
+                .hardwareVersion("RaspberryPi B+")
                 .macAddress(NetUtils.getMacAddress(deviceConfig.getNic()))
                 .sensors(deviceConfig.getSensorConfigs().stream().map(SensorMapper::map).toList())
                 .addParametersItem(new DomiotParameter()

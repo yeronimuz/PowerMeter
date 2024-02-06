@@ -23,7 +23,7 @@ class PMAgentConfigTest
    }
 
    @Test
-   void testPmAgentParameters() throws IOException {
+   void testPmAgentParameters() {
       assertEquals(3600000L, deviceConfig.getRepeatValuesAfter());
       assertEquals(10000, deviceConfig.getInternalQueueSize());
    }
@@ -61,37 +61,32 @@ class PMAgentConfigTest
       SensorConfig sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_PT1);
       assertNotNull(sensorConfig);
       assertEquals(SensorType.POWER_PT1, sensorConfig.getSensorType());
-      assertEquals("/pb13/p1/power/pt1", sensorConfig.getMqttTopicConfig().getTopic());
+      assertEquals("sensor/power/pt1", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("power", sensorConfig.getMqttTopicConfig().getTopicType());
-      assertEquals("pb13:p1:pt1", sensorConfig.getName());
       assertEquals("Produced power T1", sensorConfig.getDescription());
 
       sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_PT2);
       assertNotNull(sensorConfig);
       assertEquals(SensorType.POWER_PT2, sensorConfig.getSensorType());
-      assertEquals("/pb13/p1/power/pt2", sensorConfig.getMqttTopicConfig().getTopic());
-      assertEquals("pb13:p1:pt2", sensorConfig.getName());
+      assertEquals("sensor/power/pt2", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("Produced power T2", sensorConfig.getDescription());
 
       sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_CT1);
       assertNotNull(sensorConfig);
       assertEquals(SensorType.POWER_CT1, sensorConfig.getSensorType());
-      assertEquals("/pb13/p1/power/ct1", sensorConfig.getMqttTopicConfig().getTopic());
-      assertEquals("pb13:p1:ct1", sensorConfig.getName());
+      assertEquals("sensor/power/ct1", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("Consumed power T1", sensorConfig.getDescription());
 
       sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_AC);
       assertNotNull(sensorConfig);
       assertEquals(SensorType.POWER_AC, sensorConfig.getSensorType());
-      assertEquals("/pb13/p1/power/ac", sensorConfig.getMqttTopicConfig().getTopic());
-      assertEquals("pb13:p1:ac", sensorConfig.getName());
+      assertEquals("sensor/power/ac", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("Accumulated consumed power", sensorConfig.getDescription());
 
       sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_AP);
       assertNotNull(sensorConfig);
       assertEquals(SensorType.POWER_AP, sensorConfig.getSensorType());
-      assertEquals("/pb13/p1/power/ap", sensorConfig.getMqttTopicConfig().getTopic());
-      assertEquals("pb13:p1:ap", sensorConfig.getName());
+      assertEquals("sensor/power/ap", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("Accumulated produced power", sensorConfig.getDescription());
    }
 
