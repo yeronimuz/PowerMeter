@@ -1,6 +1,8 @@
 package com.lankheet.pmagent;
 
 import lombok.extern.slf4j.Slf4j;
+import org.lankheet.domiot.domotics.dto.SensorDto;
+import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.lankheet.domiot.model.Sensor;
 import org.lankheet.domiot.model.SensorValue;
 
@@ -12,7 +14,7 @@ import java.util.Map;
  */
 @Slf4j
 public class SensorValueCache {
-    private Map<Sensor, Double> latch = new HashMap<>();
+    private Map<SensorDto, Double> latch = new HashMap<>();
 
     /**
      * Worker method for this class.
@@ -20,18 +22,18 @@ public class SensorValueCache {
      * @param sensorValue The sensor value that is to be inspected
      * @return true: The value was already processed, false: new value
      */
-    public boolean isRepeatedValue(SensorValue sensorValue) {
+    public boolean isRepeatedValue(SensorValueDto sensorValue) {
         boolean isRepeated = false;
-        Sensor sensor = sensorValue.getSensor();
+        SensorDto sensor = sensorValue.sensor();
 
-        if (!latch.isEmpty() && latch.containsKey(sensorValue.getSensor())) {
+        if (!latch.isEmpty() && latch.containsKey(sensorValue.sensor())) {
             double value = latch.get(sensor);
-            if (value == sensorValue.getValue()) {
+            if (value == sensorValue.value()) {
                 isRepeated = true;
             }
         }
         if (!isRepeated) {
-            latch.put(sensorValue.getSensor(), sensorValue.getValue());
+            latch.put(sensorValue.sensor(), sensorValue.value());
             log.debug("Store new latch: {}", sensorValue);
         }
         return isRepeated;
@@ -48,7 +50,7 @@ public class SensorValueCache {
         StringBuilder builder = new StringBuilder();
 
         latch.keySet().forEach(sensor -> {
-            builder.append(String.format("{name = %s, type = %s} -> ", sensor.getName(), sensor.getType()));
+            builder.append(String.format("{mac = %s, type = %s} -> ", sensor.deviceMac(), sensor.sensorType()));
             builder.append(String.format("value = %f}%n", latch.get(sensor)));
         });
         return builder.toString();
@@ -59,7 +61,7 @@ public class SensorValueCache {
      *
      * @return the latch
      */
-    public Map<Sensor, Double> getLatch() {
+    public Map<SensorDto, Double> getLatch() {
         return latch;
     }
 }

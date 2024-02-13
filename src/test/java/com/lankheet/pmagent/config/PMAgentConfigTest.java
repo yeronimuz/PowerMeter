@@ -3,7 +3,7 @@ package com.lankheet.pmagent.config;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.lankheet.domiot.model.SensorType;
+import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -58,39 +58,39 @@ class PMAgentConfigTest
       List<SensorConfig> sensorConfigs = deviceConfig.getSensorConfigs();
       assertEquals(7, sensorConfigs.size());
 
-      SensorConfig sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_PT1);
+      SensorConfig sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_PT1);
       assertNotNull(sensorConfig);
-      assertEquals(SensorType.POWER_PT1, sensorConfig.getSensorType());
+      assertEquals(SensorTypeDto.POWER_PT1, sensorConfig.getSensorType());
       assertEquals("sensor/power/pt1", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("power", sensorConfig.getMqttTopicConfig().getTopicType());
       assertEquals("Produced power T1", sensorConfig.getDescription());
 
-      sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_PT2);
+      sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_PT2);
       assertNotNull(sensorConfig);
-      assertEquals(SensorType.POWER_PT2, sensorConfig.getSensorType());
+      assertEquals(SensorTypeDto.POWER_PT2, sensorConfig.getSensorType());
       assertEquals("sensor/power/pt2", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("Produced power T2", sensorConfig.getDescription());
 
-      sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_CT1);
+      sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_CT1);
       assertNotNull(sensorConfig);
-      assertEquals(SensorType.POWER_CT1, sensorConfig.getSensorType());
+      assertEquals(SensorTypeDto.POWER_CT1, sensorConfig.getSensorType());
       assertEquals("sensor/power/ct1", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("Consumed power T1", sensorConfig.getDescription());
 
-      sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_AC);
+      sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_AC);
       assertNotNull(sensorConfig);
-      assertEquals(SensorType.POWER_AC, sensorConfig.getSensorType());
+      assertEquals(SensorTypeDto.POWER_AC, sensorConfig.getSensorType());
       assertEquals("sensor/power/ac", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("Accumulated consumed power", sensorConfig.getDescription());
 
-      sensorConfig = getSensorConfig(sensorConfigs, SensorType.POWER_AP);
+      sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_AP);
       assertNotNull(sensorConfig);
-      assertEquals(SensorType.POWER_AP, sensorConfig.getSensorType());
+      assertEquals(SensorTypeDto.POWER_AP, sensorConfig.getSensorType());
       assertEquals("sensor/power/ap", sensorConfig.getMqttTopicConfig().getTopic());
       assertEquals("Accumulated produced power", sensorConfig.getDescription());
    }
 
-   private SensorConfig getSensorConfig(List<SensorConfig> sensorConfigs, SensorType type) {
+   private SensorConfig getSensorConfig(List<SensorConfig> sensorConfigs, SensorTypeDto type) {
       return sensorConfigs.stream()
               .filter(sensorConfig -> sensorConfig.getSensorType().equals(type))
               .findFirst()

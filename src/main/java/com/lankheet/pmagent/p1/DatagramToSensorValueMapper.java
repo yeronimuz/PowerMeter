@@ -1,6 +1,9 @@
 package com.lankheet.pmagent.p1;
 
 import lombok.extern.slf4j.Slf4j;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.SensorDto;
+import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.lankheet.domiot.model.Device;
 import org.lankheet.domiot.model.Sensor;
 import org.lankheet.domiot.model.SensorValue;
@@ -26,22 +29,19 @@ public class DatagramToSensorValueMapper {
      * @param datagram The datagram to convert
      * @return A list with SensorValues
      */
-    public static List<SensorValue> convertP1Datagram(Device device, P1Datagram datagram) {
-        List<SensorValue> sensorValueList = new ArrayList<>();
+    public static List<SensorValueDto> convertP1Datagram(DeviceDto device, P1Datagram datagram) {
+        List<SensorValueDto> sensorValueList = new ArrayList<>();
         LocalDateTime timestamp = LocalDateTime.now();
-        for (Sensor sensor : device.getSensors()) {
-            sensor.setName(device.getMacAddress());
-            sensorValueList.add(new SensorValue()
-                    .sensor(sensor)
-                    .timestamp(timestamp)
-                    .value(getValueFromDatagram(sensor, datagram)));
+        for (SensorDto sensor : device.sensors()) {
+            sensor.deviceMac(device.macAddress());
+            sensorValueList.add(new SensorValueDto().sensor(sensor).timeStamp(timestamp).value(getValueFromDatagram(sensor, datagram)));
         }
 
         return sensorValueList;
     }
 
-    private static double getValueFromDatagram(Sensor sensor, P1Datagram datagram) {
-        switch (sensor.getType()) {
+    private static double getValueFromDatagram(SensorDto sensor, P1Datagram datagram) {
+        switch (sensor.sensorType()) {
             case POWER_PT1 -> {
                 return datagram.getProducedPowerTariff1();
             }
@@ -64,9 +64,9 @@ public class DatagramToSensorValueMapper {
                 return datagram.getConsumedGas();
             }
             case TEMP, HUMID, WATER, GAS_SENSOR, NOT_USED, HYDRO, STATUS, VOLTAGE_LEVEL, CURRENT_LEVEL ->
-                    log.error("No such sensorType for P1 device: {}", sensor.getType());
+                    log.error("No such sensorType for P1 device: {}", sensor.sensorType());
 
-            default -> log.error("Current sensorType unknown for the current API: {}", sensor.getType());
+            default -> log.error("Current sensorType unknown for the current API: {}", sensor.sensorType());
 
         }
         return Double.MAX_VALUE;

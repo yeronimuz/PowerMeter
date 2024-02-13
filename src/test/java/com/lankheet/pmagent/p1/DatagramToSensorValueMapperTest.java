@@ -18,17 +18,18 @@ package com.lankheet.pmagent.p1;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.lankheet.domiot.entities.MeasurementType;
-import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.model.Sensor;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.SensorDto;
+import org.lankheet.domiot.domotics.dto.SensorTypeDto;
+import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.lankheet.domiot.model.SensorType;
-import org.lankheet.domiot.model.SensorValue;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,22 +47,21 @@ class DatagramToSensorValueMapperTest {
         System.out.println(input);
 
         P1Datagram p1Datagram = P1Parser.parse(input);
-        List<SensorValue> sensorValues = DatagramToSensorValueMapper.convertP1Datagram(
-                new Device()
-                        .addSensorsItem(
-                                new Sensor()
-                                        .type(SensorType.POWER_CT1))
-                        .addSensorsItem(
-                                new Sensor()
-                                        .type(SensorType.POWER_AC))
-                        .addSensorsItem(
-                                new Sensor()
-                                        .type(SensorType.GAS_METER))
-                        .macAddress("AA:BB:CC:DD:EE:FF")
-                , p1Datagram);
+        List<SensorValueDto> sensorValues = DatagramToSensorValueMapper.convertP1Datagram(
+                new DeviceDto()
+                        .addSensor(
+                                new SensorDto()
+                                        .sensorType(SensorTypeDto.POWER_CT1))
+                        .addSensor(
+                                new SensorDto()
+                                        .sensorType(SensorTypeDto.POWER_AC))
+                                        .addSensor(
+                                                new SensorDto()
+                                        .sensorType(SensorTypeDto.GAS_METER))
+                        .macAddress("AA:BB:CC:DD:EE:FF"), p1Datagram);
         assertEquals(3, sensorValues.size());
-        assertEquals(SensorType.POWER_CT1, sensorValues.get(0).getSensor().getType());
-        assertEquals(207.138, sensorValues.get(0).getValue());
+        assertEquals(SensorTypeDto.POWER_CT1, sensorValues.get(0).sensor().sensorType());
+        assertEquals(207.138, sensorValues.get(0).value());
 
 //        assertEquals(MeasurementType.PRODUCED_POWER_T1.getId(), sensorValues.get(1).getMeasurementType());
 //        assertEquals(27.545, sensorValues.get(1).getValue());

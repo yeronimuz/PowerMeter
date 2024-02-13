@@ -3,9 +3,9 @@ package com.lankheet.pmagent.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lankheet.utils.NetUtils;
 import lombok.Data;
-import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.model.MqttTopic;
-import org.lankheet.domiot.model.Sensor;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.MqttTopicDto;
+import org.lankheet.domiot.domotics.dto.SensorDto;
 
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -31,23 +31,23 @@ public class DeviceConfig {
     @JsonProperty
     private List<SensorConfig> sensorConfigs;
 
-    public Device toDevice() throws SocketException {
-        Device device = new Device();
+    public DeviceDto toDevice() throws SocketException {
         String macAddress = NetUtils.getMacAddress(nic);
-        device.setMacAddress(macAddress);
-        device.setSensors(toSensorList(macAddress));
-        return device;
+        return new DeviceDto()
+                .macAddress(macAddress)
+                .sensors(toSensorList(macAddress));
     }
 
-    List<Sensor> toSensorList(String macAddress) {
-        List<Sensor> sensorList = new ArrayList<>();
-        for (SensorConfig sensorConfig: sensorConfigs) {
-            Sensor sensor = new Sensor();
-            sensor.setType(sensorConfig.getSensorType());
-            sensor.setName(macAddress);
-            sensor.setDescription(sensorConfig.getDescription());
-            // MqttConfigType not used
-            sensor.setMqttTopic(new MqttTopic().path(sensorConfig.getMqttTopicConfig().getTopic()));
+    List<SensorDto> toSensorList(String macAddress) {
+        List<SensorDto> sensorList = new ArrayList<>();
+        for (SensorConfig sensorConfig : sensorConfigs) {
+            SensorDto sensor = new SensorDto()
+                    .sensorType(sensorConfig.getSensorType())
+                    .deviceMac(macAddress)
+                    // MqttConfigType not used
+                    .mqttTopic(new MqttTopicDto()
+                            .path(sensorConfig.getMqttTopicConfig().getTopic())
+                            .type(sensorConfig.getMqttTopicConfig().getTopicType()));
             sensorList.add(sensor);
         }
         return sensorList;

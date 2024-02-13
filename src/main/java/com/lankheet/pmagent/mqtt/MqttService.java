@@ -48,6 +48,7 @@ public class MqttService {
         for (int count = 0; count < MQTT_RETRIES; count++) {
             try {
                 mqttClient.connect(this.mqttConnectOptions);
+                log.info("MQTT client connected: {}", mqttClient.getClientId());
                 if (mqttClient.isConnected()) {
                     break;
                 }

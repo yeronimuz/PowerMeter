@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.lankheet.domiot.model.SensorValue;
 import org.lankheet.domiot.utils.JsonUtil;
 
@@ -20,7 +21,7 @@ import java.util.concurrent.BlockingQueue;
  */
 @Slf4j
 public class SensorValueSender implements Runnable {
-    private final BlockingQueue<SensorValue> queue;
+    private final BlockingQueue<SensorValueDto> queue;
 
     private MqttClient mqttClient;
 
@@ -34,7 +35,7 @@ public class SensorValueSender implements Runnable {
      * @param queue      The blocking queue that is filled with sensor values.
      * @param mqttConfig The mqtt configuration.
      */
-    public SensorValueSender(BlockingQueue<SensorValue> queue, MqttConfig mqttConfig) throws MqttException {
+    public SensorValueSender(BlockingQueue<SensorValueDto> queue, MqttConfig mqttConfig) throws MqttException {
         this.queue = queue;
         this.mqttService = new MqttService(mqttConfig);
     }
@@ -62,9 +63,9 @@ public class SensorValueSender implements Runnable {
         }
     }
 
-    public void newSensorValue(SensorValue sensorValue) {
+    public void newSensorValue(SensorValueDto sensorValue) {
         if (!sensorValueCache.isRepeatedValue(sensorValue)) {
-            String mqttTopic = sensorValue.getSensor().getMqttTopic().getPath();
+            String mqttTopic = sensorValue.sensor().mqttTopic().path();
             boolean isConnectionOk;
             MqttMessage message = new MqttMessage();
             message.setPayload(JsonUtil.toJson(sensorValue).getBytes());

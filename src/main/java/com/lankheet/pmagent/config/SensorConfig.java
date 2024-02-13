@@ -2,6 +2,7 @@ package com.lankheet.pmagent.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.lankheet.domiot.model.SensorType;
 
 import java.util.Arrays;
@@ -9,7 +10,7 @@ import java.util.Arrays;
 @Data
 public class SensorConfig {
     @JsonProperty
-    private SensorType sensorType;
+    private SensorTypeDto sensorType;
 
     @JsonProperty
     private MqttTopicConfig mqttTopicConfig;

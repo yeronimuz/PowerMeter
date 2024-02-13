@@ -1,8 +1,8 @@
 package com.lankheet.pmagent.runtime;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.model.DomiotParameter;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.DomiotParameterDto;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.UsbDevice;
@@ -26,7 +26,7 @@ public class RuntimeFactory {
      *
      * @param device The device to enrich
      */
-    public static void addRuntimeInfo(Device device) {
+    public static void addRuntimeInfo(DeviceDto device) {
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
         OperatingSystem os = si.getOperatingSystem();
@@ -34,42 +34,45 @@ public class RuntimeFactory {
         Runtime runtime = Runtime.getRuntime();
         File[] fsRoots = File.listRoots();
 
-        device.addParametersItem(new DomiotParameter()
+        device.addParameter(new DomiotParameterDto()
                         .name("HW:logicalProcessors")
-                        .parameterType(DomiotParameter.ParameterTypeEnum.NUMBER)
+                        .parameterType("NUMBER")
                         .value(hal.getProcessor().getLogicalProcessors().size()))
-                .addParametersItem(new DomiotParameter()
+                .addParameter(new DomiotParameterDto()
                         .name("jvm:maxMemory(B)")
-                        .parameterType(DomiotParameter.ParameterTypeEnum.NUMBER)
+                        .parameterType("NUMBER")
                         .value(runtime.maxMemory()))
-                .addParametersItem(new DomiotParameter()
+                .addParameter(new DomiotParameterDto()
                         .name("jvm:totalMemory(B)")
-                        .parameterType(DomiotParameter.ParameterTypeEnum.NUMBER)
+                        .parameterType("NUMBER")
                         .value(runtime.totalMemory()))
-                .addParametersItem(new DomiotParameter()
+                .addParameter(new DomiotParameterDto()
                         .name("OS")
-                        .parameterType(DomiotParameter.ParameterTypeEnum.STRING)
+                        .parameterType("STRING")
                         .value(os.toString()))
-                .addParametersItem(new DomiotParameter()
+                .addParameter(new DomiotParameterDto()
                         .name("usb devices")
-                        .parameterType(DomiotParameter.ParameterTypeEnum.STRING)
-                        .value(hal.getUsbDevices(true).stream().map(UsbDevice::getName).collect(Collectors.joining(","))));
+                        .parameterType("STRING")
+                        .value(hal.getUsbDevices(true)
+                                .stream()
+                                .map(UsbDevice::getName)
+                                .collect(Collectors.joining(","))));
         Arrays.stream(fsRoots).forEach(fileRoot -> {
-            device.addParametersItem(new DomiotParameter()
+            device.addParameter(new DomiotParameterDto()
                     .name(fileRoot.getName() + ": file system root")
-                    .parameterType(DomiotParameter.ParameterTypeEnum.STRING)
+                    .parameterType("STRING")
                     .value(fileRoot.getAbsolutePath()));
-            device.addParametersItem(new DomiotParameter()
+            device.addParameter(new DomiotParameterDto()
                     .name(fileRoot.getName() + ": total space(B)")
-                    .parameterType(DomiotParameter.ParameterTypeEnum.NUMBER)
+                    .parameterType("NUMBER")
                     .value(fileRoot.getTotalSpace()));
-            device.addParametersItem(new DomiotParameter()
+            device.addParameter(new DomiotParameterDto()
                     .name(fileRoot.getName() + ": free space(B)")
-                    .parameterType(DomiotParameter.ParameterTypeEnum.NUMBER)
+                    .parameterType("NUMBER")
                     .value(fileRoot.getFreeSpace()));
-            device.addParametersItem(new DomiotParameter()
+            device.addParameter(new DomiotParameterDto()
                     .name(fileRoot.getName() + ": usable space(B)")
-                    .parameterType(DomiotParameter.ParameterTypeEnum.NUMBER)
+                    .parameterType("NUMBER")
                     .value(fileRoot.getUsableSpace()));
         });
     }

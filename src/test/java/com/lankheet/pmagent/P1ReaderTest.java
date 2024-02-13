@@ -2,10 +2,10 @@ package com.lankheet.pmagent;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.model.Sensor;
-import org.lankheet.domiot.model.SensorType;
-import org.lankheet.domiot.model.SensorValue;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.SensorDto;
+import org.lankheet.domiot.domotics.dto.SensorTypeDto;
+import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -32,28 +32,28 @@ class P1ReaderTest {
     private P1Reader p1Reader;
 
     @Mock
-    private BlockingQueue<SensorValue> queue;
+    private BlockingQueue<SensorValueDto> queue;
     @Mock
     private Logger logger;
 
     @Captor
-    private ArgumentCaptor<SensorValue> sensorValueArgumentCaptor;
+    private ArgumentCaptor<SensorValueDto> sensorValueArgumentCaptor;
 
     @Test
     void testOneDatagram(
-            @Mock BlockingQueue<SensorValue> queue,
-            @Mock Device device,
+            @Mock BlockingQueue<SensorValueDto> queue,
+            @Mock DeviceDto device,
             @Mock BufferedReader bufferedReader)
             throws InterruptedException, IOException {
 
-        when(device.getSensors()).thenReturn(Arrays.asList(
-                new Sensor().type(SensorType.GAS_METER),
-                new Sensor().type(SensorType.POWER_AP),
-                new Sensor().type(SensorType.POWER_AC),
-                new Sensor().type(SensorType.POWER_CT1),
-                new Sensor().type(SensorType.POWER_CT2),
-                new Sensor().type(SensorType.POWER_PT1),
-                new Sensor().type(SensorType.POWER_PT2)));
+        when(device.sensors()).thenReturn(Arrays.asList(
+                new SensorDto().sensorType(SensorTypeDto.GAS_METER),
+                new SensorDto().sensorType(SensorTypeDto.POWER_AP),
+                new SensorDto().sensorType(SensorTypeDto.POWER_AC),
+                new SensorDto().sensorType(SensorTypeDto.POWER_CT1),
+                new SensorDto().sensorType(SensorTypeDto.POWER_CT2),
+                new SensorDto().sensorType(SensorTypeDto.POWER_PT1),
+                new SensorDto().sensorType(SensorTypeDto.POWER_PT2)));
         when(bufferedReader.readLine()).thenReturn(
                 "/ISK5\\2M550T-1013\n"
                 , "1-3:0.2.8(50)\n"
@@ -100,7 +100,7 @@ class P1ReaderTest {
         p1Reader.stop();
 
         verify(queue, times(7)).put(sensorValueArgumentCaptor.capture());
-        List<SensorValue> sensorValueList = sensorValueArgumentCaptor.getAllValues();
+        List<SensorValueDto> sensorValueList = sensorValueArgumentCaptor.getAllValues();
         // TODO: check values
         verify(logger, times(0)).error(anyString());
     }

@@ -4,6 +4,8 @@ import com.lankheet.pmagent.p1.DatagramToSensorValueMapper;
 import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.pmagent.p1.P1Parser;
 import lombok.extern.slf4j.Slf4j;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.lankheet.domiot.model.Device;
 import org.lankheet.domiot.model.SensorValue;
 
@@ -23,12 +25,12 @@ public class P1Reader implements Runnable {
     private static final String STOP_TOKEN = "!";
     private final String powerMeterUniqueKey;
     private String buffS = "";
-    private final BlockingQueue<SensorValue> queue;
-    private final Device device;
+    private final BlockingQueue<SensorValueDto> queue;
+    private final DeviceDto device;
     private final BufferedReader serialBufReader;
     private final AtomicBoolean continueFlag = new AtomicBoolean(true);
 
-    public P1Reader(BlockingQueue<SensorValue> queue, String powerMeterUniqueKey, Device device, BufferedReader serialBufReader) {
+    public P1Reader(BlockingQueue<SensorValueDto> queue, String powerMeterUniqueKey, DeviceDto device, BufferedReader serialBufReader) {
         this.queue = queue;
         this.powerMeterUniqueKey = powerMeterUniqueKey;
         this.device = device;
@@ -77,9 +79,9 @@ public class P1Reader implements Runnable {
     }
 
     private void publishDatagram(P1Datagram datagram) {
-        List<SensorValue> sensorValueList = DatagramToSensorValueMapper.convertP1Datagram(device, datagram);
+        List<SensorValueDto> sensorValueList = DatagramToSensorValueMapper.convertP1Datagram(device, datagram);
         log.debug("Putting {} values in the queue...", sensorValueList.size());
-        for (SensorValue sensorValue : sensorValueList) {
+        for (SensorValueDto sensorValue : sensorValueList) {
             try {
                 queue.put(sensorValue);
             } catch (InterruptedException e) {

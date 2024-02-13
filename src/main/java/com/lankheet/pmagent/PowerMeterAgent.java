@@ -11,14 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.model.SensorValue;
 import org.lankheet.domiot.utils.JsonUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -48,7 +50,7 @@ public class PowerMeterAgent {
 
         showBanner();
         log.info("Starting {}: {}-{}", title, version, classifier);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> log.warn("Shutdown Hook is cleaning up!")));
+        Runtime.getRuntime().addShutdownHook(new PowerMeterShutdownHook());
         if (args.length < 1) {
             showUsage(version, classifier);
             return;
@@ -57,7 +59,9 @@ public class PowerMeterAgent {
     }
 
     private static void showBanner() {
-        String text = new Scanner(Objects.requireNonNull(PowerMeterAgent.class.getResourceAsStream("/banner.txt")), "UTF-8").useDelimiter("\\A").next();
+        String text = new Scanner(Objects.requireNonNull(PowerMeterAgent.class.getResourceAsStream("/banner.txt")),
+                StandardCharsets.UTF_8)
+                .useDelimiter("\\A").next();
         log.info(text);
     }
 
@@ -71,7 +75,7 @@ public class PowerMeterAgent {
             throws IOException, InterruptedException, MqttException {
         DeviceConfig deviceConfig = PMAgentConfig.loadConfigurationFromFile(configFileName);
         log.info("Configuration: {}", deviceConfig);
-        BlockingQueue<SensorValue> queue = new ArrayBlockingQueue<>(deviceConfig.getInternalQueueSize());
+        BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(deviceConfig.getInternalQueueSize());
 
         MqttConfig mqttConfig = deviceConfig.getMqttBroker();
         Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig));
@@ -94,9 +98,9 @@ public class PowerMeterAgent {
         BufferedReader p1Reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
         // Send device config once
-        Device device = DeviceMapper.map(deviceConfig);
+        DeviceDto device = DeviceMapper.map(deviceConfig);
         RuntimeFactory.addRuntimeInfo(device);
-        registerDevice(mqttConfig, device);
+//        registerDevice(mqttConfig, device);
         log.info("Device: {}", device);
 
         P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), device, p1Reader);
