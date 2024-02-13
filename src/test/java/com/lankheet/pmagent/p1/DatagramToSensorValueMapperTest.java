@@ -22,14 +22,12 @@ import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
-import org.lankheet.domiot.model.SensorType;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,8 +53,8 @@ class DatagramToSensorValueMapperTest {
                         .addSensor(
                                 new SensorDto()
                                         .sensorType(SensorTypeDto.POWER_AC))
-                                        .addSensor(
-                                                new SensorDto()
+                        .addSensor(
+                                new SensorDto()
                                         .sensorType(SensorTypeDto.GAS_METER))
                         .macAddress("AA:BB:CC:DD:EE:FF"), p1Datagram);
         assertEquals(3, sensorValues.size());

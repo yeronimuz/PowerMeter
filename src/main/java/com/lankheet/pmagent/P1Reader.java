@@ -6,8 +6,6 @@ import com.lankheet.pmagent.p1.P1Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
-import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.model.SensorValue;
 
 import java.io.BufferedReader;
 import java.io.IOException;

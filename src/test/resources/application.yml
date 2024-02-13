@@ -38,7 +38,7 @@ sensorConfigs:
       topic: sensor/gas/c
       topicType: gas
     description: Consumed gas
-    
+
 mqttBroker:
   clientName: PM_unique_client_name
   url: tcp://localhost:1883

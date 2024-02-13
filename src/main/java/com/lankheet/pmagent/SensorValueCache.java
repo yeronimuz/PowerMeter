@@ -3,8 +3,6 @@ package com.lankheet.pmagent;
 import lombok.extern.slf4j.Slf4j;
 import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
-import org.lankheet.domiot.model.Sensor;
-import org.lankheet.domiot.model.SensorValue;
 
 import java.util.HashMap;
 import java.util.Map;

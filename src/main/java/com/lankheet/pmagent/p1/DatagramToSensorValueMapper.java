@@ -4,9 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
-import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.model.Sensor;
-import org.lankheet.domiot.model.SensorValue;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,8 +60,7 @@ public class DatagramToSensorValueMapper {
             case GAS_METER -> {
                 return datagram.getConsumedGas();
             }
-            case TEMP, HUMID, WATER, GAS_SENSOR, NOT_USED, HYDRO, STATUS, VOLTAGE_LEVEL, CURRENT_LEVEL ->
-                    log.error("No such sensorType for P1 device: {}", sensor.sensorType());
+            case TEMP, HUMID, WATER, GAS_SENSOR, NOT_USED, HYDRO, STATUS, VOLTAGE_LEVEL, CURRENT_LEVEL -> log.error("No such sensorType for P1 device: {}", sensor.sensorType());
 
             default -> log.error("Current sensorType unknown for the current API: {}", sensor.sensorType());
 

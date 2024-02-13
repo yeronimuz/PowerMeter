@@ -4,11 +4,9 @@ import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.mqtt.MqttService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
-import org.lankheet.domiot.model.SensorValue;
 import org.lankheet.domiot.utils.JsonUtil;
 
 import java.util.concurrent.BlockingQueue;
@@ -42,9 +40,9 @@ public class SensorValueSender implements Runnable {
 
     @Override
     public void run() {
-         try {
-             this.mqttClient = this.mqttService.connectToBroker();
-         } catch (MqttException e) {
+        try {
+            this.mqttClient = this.mqttService.connectToBroker();
+        } catch (MqttException e) {
             System.exit(-1);
         }
 

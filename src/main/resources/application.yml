@@ -2,10 +2,8 @@ repeatValuesAfter: 3600000
 internalQueueSize: 10000
 nic: eth0
 sensorConfigs:
-# naming convention: <home>:<device>:<sensor>
   - sensorType: POWER_PT1
     mqttTopicConfig:
-      #topic convention: <home>/<room>/<type:{sensor|actuator|config}>/<type:{power, humidity, gas, ...}<sensor>
       topic: meterbox/sensor/power/pt1
       topicType: power
     description: Produced power T1
