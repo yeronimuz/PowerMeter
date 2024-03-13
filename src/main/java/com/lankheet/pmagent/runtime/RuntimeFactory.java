@@ -17,6 +17,10 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class RuntimeFactory {
+
+    public static final String NUMBER_TYPE = "NUMBER";
+    public static final String STRING_TYPE = "STRING";
+
     private RuntimeFactory() {
     }
 
@@ -34,46 +38,55 @@ public class RuntimeFactory {
         Runtime runtime = Runtime.getRuntime();
         File[] fsRoots = File.listRoots();
 
-        device.addParameter(new DomiotParameterDto()
+        device.addParameter(DomiotParameterDto.builder()
                         .name("HW:logicalProcessors")
-                        .parameterType("NUMBER")
-                        .value(hal.getProcessor().getLogicalProcessors().size()))
-                .addParameter(new DomiotParameterDto()
+                        .parameterType(NUMBER_TYPE)
+                        .value(hal.getProcessor().getLogicalProcessors().size())
+                        .build())
+                .addParameter(DomiotParameterDto.builder()
                         .name("jvm:maxMemory(B)")
-                        .parameterType("NUMBER")
-                        .value(runtime.maxMemory()))
-                .addParameter(new DomiotParameterDto()
+                        .parameterType(NUMBER_TYPE)
+                        .value(runtime.maxMemory())
+                        .build())
+                .addParameter(DomiotParameterDto.builder()
                         .name("jvm:totalMemory(B)")
-                        .parameterType("NUMBER")
-                        .value(runtime.totalMemory()))
-                .addParameter(new DomiotParameterDto()
+                        .parameterType(NUMBER_TYPE)
+                        .value(runtime.totalMemory())
+                        .build())
+                .addParameter(DomiotParameterDto.builder()
                         .name("OS")
-                        .parameterType("STRING")
-                        .value(os.toString()))
-                .addParameter(new DomiotParameterDto()
+                        .parameterType(STRING_TYPE)
+                        .value(os.toString())
+                        .build())
+                .addParameter(DomiotParameterDto.builder()
                         .name("usb devices")
-                        .parameterType("STRING")
+                        .parameterType(STRING_TYPE)
                         .value(hal.getUsbDevices(true)
                                 .stream()
                                 .map(UsbDevice::getName)
-                                .collect(Collectors.joining(","))));
+                                .collect(Collectors.joining(",")))
+                        .build());
         Arrays.stream(fsRoots).forEach(fileRoot -> {
-            device.addParameter(new DomiotParameterDto()
+            device.addParameter(DomiotParameterDto.builder()
                     .name(fileRoot.getName() + ": file system root")
-                    .parameterType("STRING")
-                    .value(fileRoot.getAbsolutePath()));
-            device.addParameter(new DomiotParameterDto()
+                    .parameterType(STRING_TYPE)
+                    .value(fileRoot.getAbsolutePath())
+                    .build());
+            device.addParameter(DomiotParameterDto.builder()
                     .name(fileRoot.getName() + ": total space(B)")
-                    .parameterType("NUMBER")
-                    .value(fileRoot.getTotalSpace()));
-            device.addParameter(new DomiotParameterDto()
+                    .parameterType(NUMBER_TYPE)
+                    .value(fileRoot.getTotalSpace())
+                    .build());
+            device.addParameter(DomiotParameterDto.builder()
                     .name(fileRoot.getName() + ": free space(B)")
-                    .parameterType("NUMBER")
-                    .value(fileRoot.getFreeSpace()));
-            device.addParameter(new DomiotParameterDto()
+                    .parameterType(NUMBER_TYPE)
+                    .value(fileRoot.getFreeSpace())
+                    .build());
+            device.addParameter(DomiotParameterDto.builder()
                     .name(fileRoot.getName() + ": usable space(B)")
-                    .parameterType("NUMBER")
-                    .value(fileRoot.getUsableSpace()));
+                    .parameterType(NUMBER_TYPE)
+                    .value(fileRoot.getUsableSpace())
+                    .build());
         });
     }
 }

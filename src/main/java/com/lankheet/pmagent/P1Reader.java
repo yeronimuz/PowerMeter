@@ -3,6 +3,7 @@ package com.lankheet.pmagent;
 import com.lankheet.pmagent.p1.DatagramToSensorValueMapper;
 import com.lankheet.pmagent.p1.P1Datagram;
 import com.lankheet.pmagent.p1.P1Parser;
+import com.lankheet.utils.JvmMemoryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
@@ -78,7 +79,11 @@ public class P1Reader implements Runnable {
 
     private void publishDatagram(P1Datagram datagram) {
         List<SensorValueDto> sensorValueList = DatagramToSensorValueMapper.convertP1Datagram(device, datagram);
+
+        JvmMemoryUtil.logMemoryStatistics();
+
         log.debug("Putting {} values in the queue...", sensorValueList.size());
+
         for (SensorValueDto sensorValue : sensorValueList) {
             try {
                 queue.put(sensorValue);

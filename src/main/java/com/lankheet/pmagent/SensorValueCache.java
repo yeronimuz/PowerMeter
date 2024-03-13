@@ -22,16 +22,16 @@ public class SensorValueCache {
      */
     public boolean isRepeatedValue(SensorValueDto sensorValue) {
         boolean isRepeated = false;
-        SensorDto sensor = sensorValue.sensor();
+        SensorDto sensor = sensorValue.getSensor();
 
-        if (!latch.isEmpty() && latch.containsKey(sensorValue.sensor())) {
+        if (!latch.isEmpty() && latch.containsKey(sensorValue.getSensor())) {
             double value = latch.get(sensor);
-            if (value == sensorValue.value()) {
+            if (value == sensorValue.getValue()) {
                 isRepeated = true;
             }
         }
         if (!isRepeated) {
-            latch.put(sensorValue.sensor(), sensorValue.value());
+            latch.put(sensorValue.getSensor(), sensorValue.getValue());
             log.debug("Store new latch: {}", sensorValue);
         }
         return isRepeated;
@@ -48,7 +48,7 @@ public class SensorValueCache {
         StringBuilder builder = new StringBuilder();
 
         latch.keySet().forEach(sensor -> {
-            builder.append(String.format("{mac = %s, type = %s} -> ", sensor.deviceMac(), sensor.sensorType()));
+            builder.append(String.format("{mac = %s, type = %s} -> ", sensor.getDeviceMac(), sensor.getSensorType()));
             builder.append(String.format("value = %f}%n", latch.get(sensor)));
         });
         return builder.toString();

@@ -33,21 +33,24 @@ public class DeviceConfig {
 
     public DeviceDto toDevice() throws SocketException {
         String macAddress = NetUtils.getMacAddress(nic);
-        return new DeviceDto()
+        return DeviceDto.builder()
                 .macAddress(macAddress)
-                .sensors(toSensorList(macAddress));
+                .sensors(toSensorList(macAddress))
+                .build();
     }
 
     List<SensorDto> toSensorList(String macAddress) {
         List<SensorDto> sensorList = new ArrayList<>();
         for (SensorConfig sensorConfig : sensorConfigs) {
-            SensorDto sensor = new SensorDto()
+            SensorDto sensor = SensorDto.builder()
                     .sensorType(sensorConfig.getSensorType())
                     .deviceMac(macAddress)
                     // MqttConfigType not used
-                    .mqttTopic(new MqttTopicDto()
+                    .mqttTopic(MqttTopicDto.builder()
                             .path(sensorConfig.getMqttTopicConfig().getTopic())
-                            .type(sensorConfig.getMqttTopicConfig().getTopicType()));
+                            .type(sensorConfig.getMqttTopicConfig().getTopicType())
+                            .build())
+                    .build();
             sensorList.add(sensor);
         }
         return sensorList;

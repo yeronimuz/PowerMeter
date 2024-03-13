@@ -2,6 +2,7 @@ package com.lankheet.pmagent;
 
 import com.lankheet.pmagent.config.MqttConfig;
 import com.lankheet.pmagent.mqtt.MqttService;
+import com.lankheet.utils.JvmMemoryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -63,7 +64,7 @@ public class SensorValueSender implements Runnable {
 
     public void newSensorValue(SensorValueDto sensorValue) {
         if (!sensorValueCache.isRepeatedValue(sensorValue)) {
-            String mqttTopic = sensorValue.sensor().mqttTopic().path();
+            String mqttTopic = sensorValue.getSensor().getMqttTopic().getPath();
             boolean isConnectionOk;
             MqttMessage message = new MqttMessage();
             message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
@@ -75,15 +76,20 @@ public class SensorValueSender implements Runnable {
                 } catch (Exception e) {
                     log.error(e.getMessage());
                     isConnectionOk = false;
-                    try {
-                        mqttClient.reconnect();
-                        Thread.sleep(500);
-                    } catch (MqttException | InterruptedException e1) {
-                        // NOP
-                    }
+                    reconnect();
                 }
             }
             while (!isConnectionOk);
+        }
+    }
+
+    private void reconnect() {
+        try {
+            log.error("Attempting to reconnect to the broker");
+            mqttClient.reconnect();
+            Thread.sleep(1000);
+        } catch (MqttException | InterruptedException e) {
+            log.error("Reconnect failed: {}", e.getMessage());
         }
     }
 }

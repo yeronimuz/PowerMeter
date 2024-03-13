@@ -16,17 +16,19 @@ public class DeviceMapper {
     }
 
     public static DeviceDto map(DeviceConfig deviceConfig) throws SocketException {
-        return new DeviceDto()
+        DeviceDto deviceDto = DeviceDto.builder()
                 .hardwareVersion("RaspberryPi B+")
                 .macAddress(NetUtils.getMacAddress(deviceConfig.getNic()))
-                .sensors(deviceConfig.getSensorConfigs().stream().map(SensorMapper::map).toList())
-                .addParameter(new DomiotParameterDto()
+                .sensors(deviceConfig.getSensorConfigs().stream().map(SensorMapper::map).toList()).build();
+        deviceDto.addParameter(DomiotParameterDto.builder()
                         .name("internalQueueSize")
                         .parameterType("NUMBER")
-                        .value(deviceConfig.getInternalQueueSize()))
-                .addParameter(new DomiotParameterDto()
+                        .value(deviceConfig.getInternalQueueSize())
+                        .build())
+                .addParameter(DomiotParameterDto.builder()
                         .name("repeatValuesAfter")
                         .parameterType("NUMBER")
-                        .value(deviceConfig.getRepeatValuesAfter()));
+                        .value(deviceConfig.getRepeatValuesAfter()).build());
+        return deviceDto;
     }
 }

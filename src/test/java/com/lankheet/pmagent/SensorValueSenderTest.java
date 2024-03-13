@@ -60,12 +60,14 @@ class SensorValueSenderTest {
         SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttBroker());
         setField(sensorValueSender, "mqttClient", mqttClientMock);
 
-        sensorValueSender.newSensorValue(new SensorValueDto()
-                .sensor(new SensorDto()
+        sensorValueSender.newSensorValue(SensorValueDto.builder()
+                .sensor(SensorDto.builder()
                         .sensorType(SensorTypeDto.POWER_AC)
-                        .mqttTopic(new MqttTopicDto().path("/path")))
+                        .mqttTopic(MqttTopicDto.builder().path("/path").build())
+                        .build())
                 .timeStamp(LocalDateTime.now())
-                .value(3.5));
+                .value(3.5)
+                .build());
 
         verify(mqttClientMock).publish(anyString(), any(MqttMessage.class));
     }

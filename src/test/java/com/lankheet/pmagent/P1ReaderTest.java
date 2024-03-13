@@ -44,14 +44,14 @@ class P1ReaderTest {
             @Mock BufferedReader bufferedReader)
             throws InterruptedException, IOException {
 
-        when(device.sensors()).thenReturn(Arrays.asList(
-                new SensorDto().sensorType(SensorTypeDto.GAS_METER),
-                new SensorDto().sensorType(SensorTypeDto.POWER_AP),
-                new SensorDto().sensorType(SensorTypeDto.POWER_AC),
-                new SensorDto().sensorType(SensorTypeDto.POWER_CT1),
-                new SensorDto().sensorType(SensorTypeDto.POWER_CT2),
-                new SensorDto().sensorType(SensorTypeDto.POWER_PT1),
-                new SensorDto().sensorType(SensorTypeDto.POWER_PT2)));
+        when(device.getSensors()).thenReturn(Arrays.asList(
+                SensorDto.builder().sensorType(SensorTypeDto.GAS_METER).build(),
+                SensorDto.builder().sensorType(SensorTypeDto.POWER_AP).build(),
+                SensorDto.builder().sensorType(SensorTypeDto.POWER_AC).build(),
+                SensorDto.builder().sensorType(SensorTypeDto.POWER_CT1).build(),
+                SensorDto.builder().sensorType(SensorTypeDto.POWER_CT2).build(),
+                SensorDto.builder().sensorType(SensorTypeDto.POWER_PT1).build(),
+                SensorDto.builder().sensorType(SensorTypeDto.POWER_PT2).build()));
         when(bufferedReader.readLine()).thenReturn(
                 "/ISK5\\2M550T-1013\n"
                 , "1-3:0.2.8(50)\n"

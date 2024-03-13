@@ -45,21 +45,17 @@ class DatagramToSensorValueMapperTest {
         System.out.println(input);
 
         P1Datagram p1Datagram = P1Parser.parse(input);
-        List<SensorValueDto> sensorValues = DatagramToSensorValueMapper.convertP1Datagram(
-                new DeviceDto()
-                        .addSensor(
-                                new SensorDto()
-                                        .sensorType(SensorTypeDto.POWER_CT1))
-                        .addSensor(
-                                new SensorDto()
-                                        .sensorType(SensorTypeDto.POWER_AC))
-                        .addSensor(
-                                new SensorDto()
-                                        .sensorType(SensorTypeDto.GAS_METER))
-                        .macAddress("AA:BB:CC:DD:EE:FF"), p1Datagram);
+        DeviceDto deviceDto = DeviceDto.builder()
+                .macAddress("AA:BB:CC:DD:EE:FF").build();
+        deviceDto.addSensor(SensorDto.builder().sensorType(SensorTypeDto.POWER_CT1).build())
+                .addSensor(SensorDto.builder().sensorType(SensorTypeDto.POWER_AC).build())
+                .addSensor(SensorDto.builder().sensorType(SensorTypeDto.GAS_METER).build());
+        List<SensorValueDto> sensorValues;
+        sensorValues = DatagramToSensorValueMapper.convertP1Datagram(deviceDto, p1Datagram);
+
         assertEquals(3, sensorValues.size());
-        assertEquals(SensorTypeDto.POWER_CT1, sensorValues.get(0).sensor().sensorType());
-        assertEquals(207.138, sensorValues.get(0).value());
+        assertEquals(SensorTypeDto.POWER_CT1, sensorValues.get(0).getSensor().getSensorType());
+        assertEquals(207.138, sensorValues.get(0).getValue());
 
 //        assertEquals(MeasurementType.PRODUCED_POWER_T1.getId(), sensorValues.get(1).getMeasurementType());
 //        assertEquals(27.545, sensorValues.get(1).getValue());

@@ -18,6 +18,8 @@ public class PowerMeterShutdownHook extends Thread {
 
         HardwareAbstractionLayer hal = si.getHardware();
         OperatingSystem os = si.getOperatingSystem();
+        Runtime runtime = Runtime.getRuntime();
+
         log.info("Memory availabe: {}", hal.getMemory().getAvailable());
         log.info("Memory total: {}", hal.getMemory().getTotal());
         log.info("Processor currentFreq: {}", hal.getProcessor().getCurrentFreq());
@@ -26,5 +28,10 @@ public class PowerMeterShutdownHook extends Thread {
         log.info("Process Name: {}", os.getCurrentProcess().getName());
         log.info("Start time: {}", LocalDateTime.ofInstant(Instant.ofEpochMilli(os.getCurrentProcess().getStartTime()), ZoneId.systemDefault()));
         log.info("SystemUpTime: {}", os.getSystemUptime());
+        log.info("Runtime jvm:maxMemory {}", runtime.maxMemory());
+        log.info("Runtime totalMemory {}", runtime.totalMemory());
+        log.info("Runtime freeMemory {}", runtime.freeMemory());
+        log.info("Runtime usedMemory {}", runtime.totalMemory() - runtime.freeMemory());
+        log.info("Runtime maxMemory {}", runtime.maxMemory());
     }
 }

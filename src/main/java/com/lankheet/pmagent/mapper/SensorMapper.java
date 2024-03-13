@@ -9,10 +9,12 @@ public class SensorMapper {
     }
 
     public static SensorDto map(SensorConfig sensorConfig) {
-        return new SensorDto()
+        return SensorDto.builder()
                 .sensorType(sensorConfig.getSensorType())
-                .mqttTopic(new MqttTopicDto()
+                .mqttTopic(MqttTopicDto.builder()
                         .type(sensorConfig.getMqttTopicConfig().getTopicType())
-                        .path(sensorConfig.getMqttTopicConfig().getTopic()));
+                        .path(sensorConfig.getMqttTopicConfig().getTopic())
+                        .build())
+                .build();
     }
 }
