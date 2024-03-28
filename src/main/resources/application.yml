@@ -1,21 +1,52 @@
 repeatValuesAfter: 3600000
 internalQueueSize: 10000
-sensorConfig:
-  nic: eth0
-  sensorTypes:
-    - POWER_METER
-    - GAS_METER
+nic: eth0
+sensorConfigs:
+  - sensorType: POWER_PT1
+    mqttTopicConfig:
+      topic: meterbox/sensor/power/pt1
+      topicType: power
+    description: Produced power T1
+  - sensorType: POWER_PT2
+    mqttTopicConfig:
+      topic: meterbox/sensor/power/pt2
+      topicType: power
+    description: Produced power T2
+  - sensorType: POWER_CT1
+    mqttTopicConfig:
+      topic: meterbox/sensor/power/ct1
+      topicType: power
+    description: Consumed power T1
+  - sensorType: POWER_CT2
+    mqttTopicConfig:
+      topic: meterbox/sensor/power/ct2
+      topicType: power
+    description: Consumed power T2
+  - sensorType: POWER_AC
+    mqttTopicConfig:
+      topic: meterbox/sensor/power/ac
+      topicType: power
+    description: Accumulated consumed power
+  - sensorType: POWER_AP
+    mqttTopicConfig:
+      topic: meterbox/sensor/power/ap
+      topicType: power
+    description: Accumulated produced power
+  - sensorType: GAS_METER
+    mqttTopicConfig:
+      topic: meterbox/sensor/gas/c
+      topicType: gas
+    description: Consumed gas
 
-mqttConfig:
+mqttBroker:
   clientName: CS1F08_PM1
   url: tcp://localhost:1883
   userName: johndoe
   password: secret
-  topics:
-    - topic: p1/power
-      type: POWER
-    - topic: p1/gas
-      type: GAS
+  subscriptions:
+    - p1
+    - domiot
+    - config
 
 serialPort:
   p1Key: /ISK5\2M550T-1013

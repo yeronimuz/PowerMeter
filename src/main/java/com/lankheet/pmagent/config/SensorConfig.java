@@ -1,59 +1,26 @@
 package com.lankheet.pmagent.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lankheet.iot.datatypes.entities.SensorType;
+import lombok.Data;
+import org.lankheet.domiot.domotics.dto.SensorTypeDto;
+import org.lankheet.domiot.model.SensorType;
 
-import java.util.List;
+import java.util.Arrays;
 
-public class SensorConfig
-{
-   private String nic;
+@Data
+public class SensorConfig {
+    @JsonProperty
+    private SensorTypeDto sensorType;
 
-   private List<SensorType> sensorTypes;
+    @JsonProperty
+    private MqttTopicConfig mqttTopicConfig;
 
+    @JsonProperty
+    private String description;
 
-   @JsonProperty
-   public String getNic()
-   {
-      return nic;
-   }
-
-
-   @JsonProperty
-   public List<SensorType> getSensorTypes()
-   {
-      return sensorTypes;
-   }
-
-
-   /**
-    * Set nic.
-    *
-    * @param nic the nic to set
-    */
-   public void setNic(String nic)
-   {
-      this.nic = nic;
-   }
-
-
-   /**
-    * Set sensorTypes.
-    *
-    * @param sensorTypes the sensorTypes to set
-    */
-   public void setSensorTypes(List<SensorType> sensorTypes)
-   {
-      this.sensorTypes = sensorTypes;
-   }
-
-
-   /* (non-Javadoc)
-    * @see java.lang.Object#toString()
-    */
-   @Override
-   public String toString()
-   {
-      return "SensorConfig [nic=" + nic + ", sensorTypes=" + sensorTypes + "]";
-   }
+    SensorType of(String value) {
+        return Arrays.stream(SensorType.values()).
+                filter(type -> type.name().equals(value)).
+                findFirst().orElse(null);
+    }
 }

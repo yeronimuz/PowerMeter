@@ -1,13 +1,12 @@
 package com.lankheet.utils;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
 import org.junit.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(JUnitPlatform.class)
 public class NetUtilsTest {
