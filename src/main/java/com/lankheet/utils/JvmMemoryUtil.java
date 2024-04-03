@@ -17,7 +17,7 @@ public class JvmMemoryUtil {
             log.info("Memory Max {} MB, Total {} MB, Used {} MB, Free {} MB",
                     runtime.maxMemory() / 1024 / 1024,
                     runtime.totalMemory() / 1024 / 1024,
-                    runtime.totalMemory() - runtime.freeMemory(),
+                    (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024,
                     runtime.freeMemory() / 1024 / 1024);
         }
     }

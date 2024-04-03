@@ -28,8 +28,12 @@ public class P1Reader implements Runnable {
     private final DeviceDto device;
     private final BufferedReader serialBufReader;
     private final AtomicBoolean continueFlag = new AtomicBoolean(true);
+    private int nrOfDatagramsProcessed = 0;
 
-    public P1Reader(BlockingQueue<SensorValueDto> queue, String powerMeterUniqueKey, DeviceDto device, BufferedReader serialBufReader) {
+    public P1Reader(BlockingQueue<SensorValueDto> queue,
+                    String powerMeterUniqueKey,
+                    DeviceDto device,
+                    BufferedReader serialBufReader) {
         this.queue = queue;
         this.powerMeterUniqueKey = powerMeterUniqueKey;
         this.device = device;
@@ -82,11 +86,12 @@ public class P1Reader implements Runnable {
 
         JvmMemoryUtil.logMemoryStatistics();
 
-        log.debug("Putting {} values in the queue...", sensorValueList.size());
+        log.debug("DG {}: Putting {} values in the queue...", nrOfDatagramsProcessed++, sensorValueList.size());
 
         for (SensorValueDto sensorValue : sensorValueList) {
             try {
                 queue.put(sensorValue);
+                log.debug("Queue space: {}", queue.remainingCapacity());
             } catch (InterruptedException e) {
                 log.error("Putting data in queue was interrupted");
             }
