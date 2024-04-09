@@ -20,13 +20,13 @@ This project:
       capacity is 1/10th (a datagram every second)
 * Initial mqtt connection setup is done at maximum 10 times with 1 second intervals. When the connection is not
   available after 10 retries, the application will exit.
-* The NIC adapter to bind to is configurable. The MAC address of the NIC will be used to identify the sensor in the
+* The MAC address of the first NIC that returns a MAC address will be used to identify the sensor in the
   domotics system.
 * The serial port reader operates in it's own process. Next to the main thread there are two other threads, one for
   creating sensor value readings out of the P1 datagrams, the second thread is responsible for pushing the sensor values
   to the mqtt broker.
 
-## Registering
+## Registering (TODO)
 
 * The device already knows the MQTT configuration.
 * Device sends Device information and listens for config parameters on the config topic with a matching MAC address.
