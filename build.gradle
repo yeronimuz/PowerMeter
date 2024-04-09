@@ -13,7 +13,7 @@ apply plugin: 'jacoco'
 
 ext {
     baseName = 'lnb-powermeter'
-    classifier = 'SNAPSHOT'
+    classifier = 'FINAL'
 }
 
 repositories {
@@ -21,19 +21,16 @@ repositories {
     mavenCentral()
 }
 
-mainClassName = 'com.lankheet.pmagent.PowerMeterAgent'
+mainClassName = 'org.domiot.p1.pmagent.PowerMeterAgent'
+
+// version = versioning.info.full
 
 shadowJar {
+    archiveBaseName.set('powermeter')
+    archiveClassifier.set('final')
     mergeServiceFiles()
     mainClassName = mainClassName
     // exclude('logback.xml')
-}
-
-if (hasProperty('buildScan')) {
-    buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
-    }
 }
 
 jar {
@@ -54,8 +51,8 @@ jar {
 }
 
 jacoco {
-    toolVersion = "0.8.7"
-    reportsDirectory = file("$buildDir/customJacocoReportDir")
+    toolVersion = "0.8.11"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 publishing {
@@ -98,4 +95,5 @@ dependencies {
 test {
     ignoreFailures = !project.hasProperty('release')
     useJUnitPlatform()
+    finalizedBy jacocoTestReport // report is always generated after tests run
 }

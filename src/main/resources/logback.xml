@@ -20,7 +20,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.lankheet" level="info" additivity="false">
+    <logger name="org.domiot" level="info" additivity="false">
         <appender-ref ref="FILE-ROLLING"/>
     </logger>
 

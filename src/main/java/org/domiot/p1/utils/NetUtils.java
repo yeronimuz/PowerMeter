@@ -30,7 +30,7 @@ public class NetUtils {
                 for (byte b : mac) {
                     sb1.append(String.format("%02X%s", b, (i++ < mac.length - 1) ? ":" : ""));
                 }
-                log.error("Found mac address {} at {}", sb1, networkInterface.getDisplayName());
+                log.info("Found mac address {} at {}", sb1, networkInterface.getDisplayName());
                 break;
             }
         }

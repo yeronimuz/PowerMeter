@@ -22,7 +22,6 @@ public class PowerMeterShutdownHook extends Thread {
 
         log.info("Memory availabe: {}", hal.getMemory().getAvailable());
         log.info("Memory total: {}", hal.getMemory().getTotal());
-        log.info("Processor currentFreq: {}", hal.getProcessor().getCurrentFreq());
         log.info("Processor maxFreq: {}", hal.getProcessor().getMaxFreq());
         log.info("Process Id: {}", os.getCurrentProcess().getProcessID());
         log.info("Process Name: {}", os.getCurrentProcess().getName());
