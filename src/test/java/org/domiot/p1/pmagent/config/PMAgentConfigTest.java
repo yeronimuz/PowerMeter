@@ -23,7 +23,6 @@ class PMAgentConfigTest {
 
     @Test
     void testPmAgentParameters() {
-        assertEquals(3600000L, deviceConfig.getRepeatValuesAfter());
         assertEquals(10000, deviceConfig.getInternalQueueSize());
     }
 

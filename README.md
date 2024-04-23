@@ -25,6 +25,14 @@ This project:
 * The serial port reader operates in it's own process. Next to the main thread there are two other threads, one for
   creating sensor value readings out of the P1 datagrams, the second thread is responsible for pushing the sensor values
   to the mqtt broker.
+## Repeat values after time
+We don't want to flood the database with unnecessary data. We also want to visualize combined graphs. In order to do so we need regular overlapping time stamps. If multi series graphs don't have shared points on the x axis, then they will be drawn after each other instead of combined.
+So if the sensor value is a duplicate it will not have be sent, unless it is required to have a value on the repeatValuesAfter time border.
+For this reason it is important to repeat the same sensor values every period. 
+The repeatValuesAfter configuration parameter is the elapsed time after which a duplicate sensor value is sent, regardless of being a duplicate value.
+The software checks every timestamp to see if it is close enough to the boarder of the repeatValuesAfter time.
+If the timestamp of the value is within 5% margin of the repeatValuesAfter offset, then the value will be repeated.
+
 
 ## Registering (TODO)
 

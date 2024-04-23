@@ -1,5 +1,4 @@
 # PowerMeterAgent configuration file
-repeatValuesAfter: 3600000
 internalQueueSize: 10000
 nic: eth0
 sensorConfigs:

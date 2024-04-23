@@ -26,7 +26,6 @@ public class PMAgentConfig {
             throws IOException {
         Constructor constructor = new Constructor(DeviceConfig.class, new LoaderOptions());
         TypeDescription deviceConfigTypeDescription = new TypeDescription(DeviceConfig.class);
-        deviceConfigTypeDescription.addPropertyParameters("repeatValuesAfter", DeviceConfig.class);
         deviceConfigTypeDescription.addPropertyParameters("internalQueueSize", DeviceConfig.class);
         deviceConfigTypeDescription.addPropertyParameters("nic", String.class);
         deviceConfigTypeDescription.addPropertyParameters("sensorConfigs", SensorConfig.class);

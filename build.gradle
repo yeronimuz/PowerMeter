@@ -11,11 +11,6 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
-ext {
-    baseName = 'lnb-powermeter'
-    classifier = 'FINAL'
-}
-
 repositories {
     mavenLocal()
     mavenCentral()
@@ -26,8 +21,8 @@ mainClassName = 'org.domiot.p1.pmagent.PowerMeterAgent'
 // version = versioning.info.full
 
 shadowJar {
-    archiveBaseName.set('powermeter')
-    archiveClassifier.set('final')
+    archiveBaseName.set(project.name)
+    archiveClassifier.set(project.classifier)
     mergeServiceFiles()
     mainClassName = mainClassName
     // exclude('logback.xml')
@@ -38,7 +33,7 @@ jar {
         attributes(
                 'Implementation-Title': 'Powermeter Agent',
                 'Implementation-Version': archiveVersion,
-                'Implementation-Classifier': project.ext.classifier,
+                'Implementation-Classifier': project.classifier,
                 'Built-By': System.properties['user.name'],
                 'Build-Timestamp': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
                 'Build-Revision': versioning.info.commit,
@@ -58,8 +53,8 @@ jacoco {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId 'org.domiot'
-            artifactId 'p1-meter'
+            groupId group
+            artifactId project.name
             version version
 
             from components.java
@@ -72,16 +67,16 @@ dependencies {
     implementation group: 'org.lankheet.domiot', name: 'domiot-rest-api', version: '1.1.1-SNAPSHOT'
 
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.16.1'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.16.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.17.0'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.0'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.17.0-rc1'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.9'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.3'
-    implementation("com.github.oshi:oshi-core:6.4.11")
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.12'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.6'
+    implementation('com.github.oshi:oshi-core:6.5.0')
 
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
 
@@ -89,7 +84,7 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.10.2'
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.11.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
 }
 
 test {
