@@ -25,14 +25,14 @@ public class SensorValueSender implements Runnable {
     private MqttClient mqttClient;
 
     private final MqttService mqttService;
-
     private final SensorValueCache sensorValueCache = new SensorValueCache();
+
 
     /**
      * Constructor.
      *
-     * @param queue      The blocking queue that is filled with sensor values.
-     * @param mqttConfig The mqtt configuration.
+     * @param queue             The blocking queue that is filled with sensor values.
+     * @param mqttConfig        The mqtt configuration.
      */
     public SensorValueSender(BlockingQueue<SensorValueDto> queue, MqttConfig mqttConfig) throws MqttException {
         this.queue = queue;
@@ -63,7 +63,7 @@ public class SensorValueSender implements Runnable {
     }
 
     public void newSensorValue(SensorValueDto sensorValue) {
-        if (!sensorValueCache.isRepeatedValue(sensorValue)) {
+        if (!sensorValueCache.isRepeatedValue(sensorValue) || shouldRepeatValueAfterMinute(sensorValue)) {
             String mqttTopic = sensorValue.getSensor().getMqttTopic().getPath();
             boolean isConnectionOk;
             MqttMessage message = new MqttMessage();
@@ -81,6 +81,17 @@ public class SensorValueSender implements Runnable {
             }
             while (!isConnectionOk);
         }
+    }
+
+    /**
+     * Checks whether the given sensor value should be repeated or not.
+     * The repeatValuesAfter value determines the granularity of time to repeat values. See README for more explanation.
+     *
+     * @param sensorValue The sensor value to be checked.
+     * @return true if the value should be repeated, false otherwise.
+     */
+    boolean shouldRepeatValueAfterMinute(SensorValueDto sensorValue) {
+        return RepeatValidator.isValueAroundMinuteBorder(sensorValue.getTimeStamp());
     }
 
     private void reconnect() {
