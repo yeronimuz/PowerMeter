@@ -1,5 +1,6 @@
 package org.domiot.p1.pmagent;
 
+import lombok.extern.slf4j.Slf4j;
 import org.domiot.p1.pmagent.config.DeviceConfig;
 import org.domiot.p1.pmagent.config.MqttConfig;
 import org.domiot.p1.pmagent.config.PMAgentConfig;
@@ -7,14 +8,9 @@ import org.domiot.p1.pmagent.config.SerialPortConfig;
 import org.domiot.p1.pmagent.mapper.DeviceMapper;
 import org.domiot.p1.pmagent.mqtt.MqttService;
 import org.domiot.p1.pmagent.runtime.RuntimeFactory;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
-import org.lankheet.domiot.model.Device;
-import org.lankheet.domiot.utils.JsonUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -73,11 +69,13 @@ public class PowerMeterAgent {
 
     public void run(String configFileName)
             throws IOException, InterruptedException, MqttException {
+
         DeviceConfig deviceConfig = PMAgentConfig.loadConfigurationFromFile(configFileName);
         log.info("Configuration: {}", deviceConfig);
         BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(deviceConfig.getInternalQueueSize());
 
         MqttConfig mqttConfig = deviceConfig.getMqttBroker();
+        MqttService mqttService = new MqttService(mqttConfig);
         Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig));
         mqttThread.start();
 
@@ -100,7 +98,7 @@ public class PowerMeterAgent {
         // Send device config once
         DeviceDto device = DeviceMapper.map(deviceConfig);
         RuntimeFactory.addRuntimeInfo(device);
-//        registerDevice(mqttConfig, device);
+        mqttService.registerDevice(device);
         log.info("Device: {}", device);
 
         P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), device, p1Reader);
@@ -109,14 +107,5 @@ public class PowerMeterAgent {
 
         mqttThread.join();
         serialReaderThread.join();
-    }
-
-    private void registerDevice(MqttConfig mqttConfig, Device device) throws MqttException {
-        MqttService mqttService = new MqttService(mqttConfig);
-        try (MqttClient mqttClient = mqttService.connectToBroker()) {
-            MqttMessage message = new MqttMessage();
-            message.setPayload(JsonUtil.toJson(device).getBytes());
-            mqttClient.publish("register", message);
-        }
     }
 }

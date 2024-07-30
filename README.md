@@ -36,11 +36,11 @@ If the timestamp of the value is within 5% margin of the repeatValuesAfter offse
 
 ## Registering (TODO)
 
-* The device already knows the MQTT configuration.
-* Device sends Device information and listens for config parameters on the config topic with a matching MAC address.
+* The device has a WIFI connection and already knows the MQTT configuration.
+* Device publishes Device information and listens for config parameters on the 'config' topic with a matching MAC address.
 * In the remote management console application, the key user assigns a name to the device and sensors and a topic to any
   actuators and/or sensors.
-* Publish config topics for the device to read.
+* Publish the device configuration and topics for the device to read.
 * The device is then able to publish
 
 ## Wishlist:

@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.utils.JsonUtil;
 
 /**
  * Mqtt service class. Setup and Connect to MQTT broker
@@ -63,5 +66,13 @@ public class MqttService {
             throw new MqttException(MqttException.REASON_CODE_BROKER_UNAVAILABLE, new Throwable("Unable to connect"));
         }
         return this.mqttClient;
+    }
+
+    public void registerDevice(DeviceDto device) throws MqttException {
+        try (MqttClient mqttClient = connectToBroker()) {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(JsonUtil.toJson(device).getBytes());
+            mqttClient.publish("register", message);
+        }
     }
 }
