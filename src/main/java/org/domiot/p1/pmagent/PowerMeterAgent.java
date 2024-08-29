@@ -7,6 +7,8 @@ import org.domiot.p1.pmagent.config.PMAgentConfig;
 import org.domiot.p1.pmagent.config.SerialPortConfig;
 import org.domiot.p1.pmagent.mapper.DeviceMapper;
 import org.domiot.p1.pmagent.mqtt.MqttService;
+import org.domiot.p1.pmagent.mqtt.config.DeviceConfigListener;
+import org.domiot.p1.pmagent.mqtt.config.DeviceConfigUpdater;
 import org.domiot.p1.pmagent.runtime.RuntimeFactory;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
@@ -70,6 +72,8 @@ public class PowerMeterAgent {
     public void run(String configFileName)
             throws IOException, InterruptedException, MqttException {
 
+        final DeviceConfigUpdater deviceConfigUpdater = new DeviceConfigUpdater();
+
         DeviceConfig deviceConfig = PMAgentConfig.loadConfigurationFromFile(configFileName);
         log.info("Configuration: {}", deviceConfig);
         BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(deviceConfig.getInternalQueueSize());
@@ -96,12 +100,19 @@ public class PowerMeterAgent {
         BufferedReader p1Reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
         // Send device config once
-        DeviceDto device = DeviceMapper.map(deviceConfig);
-        RuntimeFactory.addRuntimeInfo(device);
-        mqttService.registerDevice(device);
-        log.info("Device: {}", device);
+        final DeviceDto[] device = {DeviceMapper.map(deviceConfig)};
+        RuntimeFactory.addRuntimeInfo(device[0]);
+        mqttService.registerDevice(device[0]);
+        deviceConfigUpdater.addListener(new DeviceConfigListener() {
+            @Override
+            public void updateConfig(DeviceDto deviceUpdated) {
+                device[0] = deviceUpdated;
+            }
+        });
 
-        P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), device, p1Reader);
+        log.info("Device: {}", device[0]);
+
+        P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), device[0], p1Reader);
         Thread serialReaderThread = new Thread(serialPortReader);
         serialReaderThread.start();
 

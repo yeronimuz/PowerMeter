@@ -1,16 +1,18 @@
 package org.domiot.p1.pmagent;
 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.domiot.p1.pmagent.mqtt.config.DeviceConfigUpdater;
+import org.eclipse.paho.client.mqttv3.*;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class PowerMeterMqttCallback implements MqttCallback {
     private static final Logger LOG = LoggerFactory.getLogger(PowerMeterMqttCallback.class);
 
+    DeviceConfigUpdater deviceConfigUpdater = new DeviceConfigUpdater();
     private final MqttClient mqttClient;
 
     public PowerMeterMqttCallback(MqttClient mqttClient) {
@@ -31,10 +33,13 @@ public class PowerMeterMqttCallback implements MqttCallback {
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage message) {
-        LOG.info("Received message, while not expected: {}", message.toString());
-        // TODO: Cmd message: Reset latch (send repeated values)
-        // * retry parameters for mqtt reconnect.
+    public void messageArrived(String topic, MqttMessage message) throws IOException {
+        if ((message != null) && topic.equals("config")) {
+            byte[] payload = message.getPayload();
+            ObjectMapper mapper = new ObjectMapper();
+
+            deviceConfigUpdater.updateConfig(mapper.readValue(payload, DeviceDto.class));
+        }
     }
 
     @Override
