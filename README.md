@@ -33,13 +33,12 @@ The repeatValuesAfter configuration parameter is the elapsed time after which a 
 The software checks every timestamp to see if it is close enough to the boarder of the repeatValuesAfter time.
 If the timestamp of the value is within 5% margin of the repeatValuesAfter offset, then the value will be repeated.
 
-
 ## Registering (TODO)
 
 * The device has a WIFI connection and already knows the MQTT configuration.
-* Device publishes Device information and listens for config parameters on the 'config' topic with a matching MAC address.
+* Device publishes Device information and listens for config parameters on the 'config' topic with a matching MAC address and sensor type.
 * In the remote management console application, the key user assigns a name to the device and sensors and a topic to any
-  actuators and/or sensors.
+  actuators and/or sensors. 
 * Publish the device configuration and topics for the device to read.
 * The device is then able to publish
 
