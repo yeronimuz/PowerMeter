@@ -79,8 +79,6 @@ public class PowerMeterAgent {
 
         MqttConfig mqttConfig = deviceConfig.getMqttBroker();
         MqttService mqttService = new MqttService(mqttConfig);
-        Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig));
-        mqttThread.start();
 
         SerialPortConfig serialPortConfig = deviceConfig.getSerialPort();
         String port = serialPortConfig.getUart();
@@ -117,6 +115,10 @@ public class PowerMeterAgent {
         while (!isConfigsLoaded[0]) {
             Thread.sleep(500);
         }
+
+        Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig, devices[0]));
+        mqttThread.start();
+
         serialReaderThread.start();
 
         mqttThread.join();

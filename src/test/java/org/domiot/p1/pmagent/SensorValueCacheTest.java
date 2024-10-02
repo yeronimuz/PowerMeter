@@ -2,47 +2,41 @@ package org.domiot.p1.pmagent;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.lankheet.domiot.domotics.dto.SensorDto;
-import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class SensorValueCacheTest {
 
     @Test
     void testRepeatedValues() {
-        SensorDto sensor = SensorDto.builder().sensorType(SensorTypeDto.GAS_METER).build();
-        SensorDto sensor2 = SensorDto.builder().sensorType(SensorTypeDto.POWER_AC).build();
         SensorValueCache svCache = new SensorValueCache();
 
         assertFalse(svCache.isRepeatedValue( SensorValueDto.builder()
-                .sensor(sensor)
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.0)
                 .build()));
         assertTrue(svCache.isRepeatedValue( SensorValueDto.builder()
-                .sensor(sensor)
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.0)
                 .build()));
-        assertEquals(3.0, svCache.getLatch().get(sensor).doubleValue());
+        assertEquals(3.0, svCache.getLatch().get(1L));
 
         assertFalse(svCache.isRepeatedValue( SensorValueDto.builder()
-                .sensor(sensor)
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.5)
                 .build()));
-        assertEquals(3.5, svCache.getLatch().get(sensor).doubleValue());
+        assertEquals(3.5, svCache.getLatch().get(1L));
 
-        assertFalse(svCache.isRepeatedValue( SensorValueDto.builder()
-                .sensor(sensor2)
+        assertTrue(svCache.isRepeatedValue( SensorValueDto.builder()
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.5)
                 .build()));
@@ -50,45 +44,41 @@ class SensorValueCacheTest {
 
     @Test
     void testDifferentSensors() {
-        SensorDto sensor = SensorDto.builder().sensorType(SensorTypeDto.GAS_METER).build();
-        SensorDto sensor2 = SensorDto.builder().sensorType(SensorTypeDto.POWER_AC).build();
         SensorValueCache svCache = new SensorValueCache();
 
         assertFalse(svCache.isRepeatedValue(SensorValueDto.builder()
-                .sensor(sensor)
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.0)
                 .build()));
         assertFalse(svCache.isRepeatedValue(SensorValueDto.builder()
-                .sensor(sensor2)
+                .sensorId(2L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.0)
                 .build()));
 
-        assertEquals(3.0, svCache.getLatch().get(sensor).doubleValue());
-        assertEquals(3.0, svCache.getLatch().get(sensor2).doubleValue());
+        assertEquals(3.0, svCache.getLatch().get(1L));
+        assertEquals(3.0, svCache.getLatch().get(2L));
     }
 
     @Test
     void testEqualSensor() {
-        SensorDto sensor = SensorDto.builder().sensorType(SensorTypeDto.GAS_METER).build();
-        SensorDto sensorClone = SensorDto.builder().sensorType(SensorTypeDto.GAS_METER).build();
         SensorValueCache svCache = new SensorValueCache();
 
         assertFalse(svCache.isRepeatedValue(SensorValueDto.builder()
-                .sensor(sensor)
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.5)
                 .build()));
         assertTrue(svCache.isRepeatedValue(SensorValueDto.builder()
-                .sensor(sensorClone)
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.5)
                 .build()));
-        assertEquals(3.5, svCache.getLatch().get(sensor).doubleValue());
+        assertEquals(3.5, svCache.getLatch().get(1L).doubleValue());
 
         assertFalse(svCache.isRepeatedValue(SensorValueDto.builder()
-                .sensor(sensor)
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(2.5)
                 .build()));

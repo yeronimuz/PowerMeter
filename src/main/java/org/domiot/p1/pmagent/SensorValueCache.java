@@ -1,7 +1,6 @@
 package org.domiot.p1.pmagent;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
 
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import java.util.Map;
  */
 @Slf4j
 public class SensorValueCache {
-    private Map<SensorDto, Double> latch = new HashMap<>();
+    private Map<Long, Double> latch = new HashMap<>();
 
     /**
      * Worker method for this class.
@@ -22,16 +21,16 @@ public class SensorValueCache {
      */
     public boolean isRepeatedValue(SensorValueDto sensorValue) {
         boolean isRepeated = false;
-        SensorDto sensor = sensorValue.getSensor();
+        Long sensorId = sensorValue.getSensorId();
 
-        if (!latch.isEmpty() && latch.containsKey(sensorValue.getSensor())) {
-            double value = latch.get(sensor);
-            if (value == sensorValue.getValue()) {
+        if (!latch.isEmpty() && latch.containsKey(sensorId)) {
+            double latchValue = latch.get(sensorId);
+            if (latchValue == sensorValue.getValue()) {
                 isRepeated = true;
             }
         }
         if (!isRepeated) {
-            latch.put(sensorValue.getSensor(), sensorValue.getValue());
+            latch.put(sensorValue.getSensorId(), sensorValue.getValue());
             log.debug("Store new latch: {}", sensorValue);
         }
         return isRepeated;
@@ -47,10 +46,7 @@ public class SensorValueCache {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        latch.keySet().forEach(sensor -> {
-            builder.append(String.format("{mac = %s, type = %s} -> ", sensor.getDeviceMac(), sensor.getSensorType()));
-            builder.append(String.format("value = %f}%n", latch.get(sensor)));
-        });
+        latch.keySet().forEach(id -> builder.append(String.format("value = %f}%n", latch.get(id))));
         return builder.toString();
     }
 
@@ -59,7 +55,7 @@ public class SensorValueCache {
      *
      * @return the latch
      */
-    public Map<SensorDto, Double> getLatch() {
+    public Map<Long, Double> getLatch() {
         return latch;
     }
 }

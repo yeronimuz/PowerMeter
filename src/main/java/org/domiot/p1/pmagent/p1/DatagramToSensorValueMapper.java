@@ -30,9 +30,8 @@ public class DatagramToSensorValueMapper {
         List<SensorValueDto> sensorValueList = new ArrayList<>();
         LocalDateTime timestamp = LocalDateTime.now();
         for (SensorDto sensor : device.getSensors()) {
-            sensor.setDeviceMac(device.getMacAddress());
             sensorValueList.add(SensorValueDto.builder()
-                    .sensor(sensor)
+                    .sensorId(sensor.getSensorId())
                     .timeStamp(timestamp)
                     .value(getValueFromDatagram(sensor, datagram))
                     .build());

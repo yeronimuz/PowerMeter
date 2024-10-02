@@ -1,11 +1,13 @@
 package org.domiot.p1.pmagent;
 
+import lombok.extern.slf4j.Slf4j;
 import org.domiot.p1.pmagent.config.MqttConfig;
 import org.domiot.p1.pmagent.mqtt.MqttService;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.lankheet.domiot.utils.JsonUtil;
 
@@ -26,17 +28,20 @@ public class SensorValueSender implements Runnable {
 
     private final MqttService mqttService;
     private final SensorValueCache sensorValueCache = new SensorValueCache();
+    private DeviceDto device;
 
 
     /**
      * Constructor.
      *
-     * @param queue             The blocking queue that is filled with sensor values.
-     * @param mqttConfig        The mqtt configuration.
+     * @param queue      The blocking queue that is filled with sensor values.
+     * @param mqttConfig The mqtt configuration.
+     * @param device
      */
-    public SensorValueSender(BlockingQueue<SensorValueDto> queue, MqttConfig mqttConfig) throws MqttException {
+    public SensorValueSender(BlockingQueue<SensorValueDto> queue, MqttConfig mqttConfig, DeviceDto device) throws MqttException {
         this.queue = queue;
         this.mqttService = new MqttService(mqttConfig);
+        this.device = device;
     }
 
     @Override
@@ -64,23 +69,38 @@ public class SensorValueSender implements Runnable {
 
     public void newSensorValue(SensorValueDto sensorValue) {
         if (!sensorValueCache.isRepeatedValue(sensorValue) || shouldRepeatValueAfterMinute(sensorValue)) {
-            String mqttTopic = sensorValue.getSensor().getMqttTopic().getPath();
-            boolean isConnectionOk;
-            MqttMessage message = new MqttMessage();
-            message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
-            log.debug("Sending Topic: {}, Msg: {}", mqttTopic, message);
-            do {
-                try {
-                    mqttClient.publish(mqttTopic, message);
-                    isConnectionOk = true;
-                } catch (Exception e) {
-                    log.error(e.getMessage());
-                    isConnectionOk = false;
-                    reconnect();
+            SensorDto sensor = findSensor(sensorValue.getSensorId());
+            String mqttTopic;
+            if (sensor != null) {
+                mqttTopic = sensor.getMqttTopic().getPath();
+                boolean isConnectionOk;
+                MqttMessage message = new MqttMessage();
+                message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
+                log.debug("Sending Topic: {}, Msg: {}", mqttTopic, message);
+                do {
+                    try {
+                        mqttClient.publish(mqttTopic, message);
+                        isConnectionOk = true;
+                    } catch (Exception e) {
+                        log.error(e.getMessage());
+                        isConnectionOk = false;
+                        reconnect();
+                    }
                 }
+                while (!isConnectionOk);
+            } else {
+                log.error("Sensor with id {} not found", sensorValue.getSensorId());
             }
-            while (!isConnectionOk);
         }
+    }
+
+    private SensorDto findSensor(long sensorId) {
+        for (SensorDto sensor : this.device.getSensors()) {
+            if (sensor.getSensorId() == sensorId) {
+                return sensor;
+            }
+        }
+        return null;
     }
 
     /**

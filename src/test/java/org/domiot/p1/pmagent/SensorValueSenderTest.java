@@ -1,16 +1,16 @@
 package org.domiot.p1.pmagent;
 
-import org.domiot.p1.pmagent.config.PMAgentConfig;
 import org.domiot.p1.pmagent.config.DeviceConfig;
+import org.domiot.p1.pmagent.config.PMAgentConfig;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.MqttTopicDto;
 import org.lankheet.domiot.domotics.dto.SensorDto;
-import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -29,8 +29,7 @@ import java.util.concurrent.BlockingQueue;
 import static org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode.TOP_DOWN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SensorValueSenderTest {
@@ -53,18 +52,19 @@ class SensorValueSenderTest {
     }
 
     @Test
-    void testSendMessage()
+    void testSendMessage(@Mock DeviceDto device, @Mock SensorDto sensor, @Mock MqttTopicDto mqttTopic)
             throws Exception {
         doNothing().when(mqttClientMock).publish(anyString(), any(MqttMessage.class));
+        when(device.getSensors()).thenReturn(List.of(sensor));
+        when(sensor.getSensorId()).thenReturn(1L);
+        when(sensor.getMqttTopic()).thenReturn(mqttTopic);
+        when(mqttTopic.getPath()).thenReturn("topic");
         BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(1000);
-        SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttBroker());
+        SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttBroker(), device);
         setField(sensorValueSender, "mqttClient", mqttClientMock);
 
         sensorValueSender.newSensorValue(SensorValueDto.builder()
-                .sensor(SensorDto.builder()
-                        .sensorType(SensorTypeDto.POWER_AC)
-                        .mqttTopic(MqttTopicDto.builder().path("/path").build())
-                        .build())
+                .sensorId(1L)
                 .timeStamp(LocalDateTime.now())
                 .value(3.5)
                 .build());
