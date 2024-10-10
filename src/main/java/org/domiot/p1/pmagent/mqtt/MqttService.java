@@ -69,10 +69,11 @@ public class MqttService {
     }
 
     public void registerDevice(DeviceDto device) throws MqttException {
-        try (MqttClient mqttClient = connectToBroker()) {
-            MqttMessage message = new MqttMessage();
-            message.setPayload(JsonUtil.toJson(device).getBytes());
-            mqttClient.publish("register", message);
+        if(!this.mqttClient.isConnected()) {
+            this.mqttClient = connectToBroker();
         }
+        MqttMessage message = new MqttMessage();
+        message.setPayload(JsonUtil.toJson(device).getBytes());
+        this.mqttClient.publish("register", message);
     }
 }
