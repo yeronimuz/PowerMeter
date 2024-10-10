@@ -100,11 +100,11 @@ public class PowerMeterAgent {
         final DeviceDto[] devices = {DeviceMapper.map(deviceConfig)};
         final boolean[] isConfigsLoaded = new boolean[]{false};
         RuntimeFactory.addRuntimeInfo(devices[0]);
-        mqttService.registerDevice(devices[0]);
         deviceConfigUpdater.addListener(deviceUpdated -> {
             devices[0] = deviceUpdated;
             isConfigsLoaded[0] = true;
         });
+        mqttService.registerDevice(devices[0]);
 
         log.info("Device: {}", devices[0]);
 
