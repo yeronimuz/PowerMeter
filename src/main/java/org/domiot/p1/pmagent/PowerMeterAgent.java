@@ -111,7 +111,7 @@ public class PowerMeterAgent {
         P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), devices[0], p1Reader);
         Thread serialReaderThread = new Thread(serialPortReader);
 
-        // Wait for config to be returned
+        // Wait for config to be returned, which contains the sensorIds
         while (!isConfigsLoaded[0]) {
             Thread.sleep(500);
         }
