@@ -63,7 +63,7 @@ publishing {
 }
 
 dependencies {
-    implementation group: 'org.lankheet.domiot', name: 'domiot-datatypes', version: '0.8.1-SNAPSHOT'
+    implementation group: 'org.lankheet.domiot', name: 'domiot-datatypes', version: '0.8.2-SNAPSHOT'
     implementation group: 'org.lankheet.domiot', name: 'domiot-rest-api', version: '1.2.0-SNAPSHOT'
 
     implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'

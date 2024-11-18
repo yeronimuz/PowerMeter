@@ -46,7 +46,10 @@ public class SensorValueCache {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        latch.keySet().forEach(id -> builder.append(String.format("value = %f}%n", latch.get(id))));
+        latch.keySet().forEach(sensorId -> {
+            builder.append(String.format("id = %d ", sensorId));
+            builder.append(String.format("value = %f}%n", latch.get(sensorId)));
+        });
         return builder.toString();
     }
 

@@ -1,6 +1,10 @@
 package org.domiot.p1.pmagent;
 
+import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.domiot.p1.pmagent.config.MqttConfig;
 import org.domiot.p1.pmagent.mqtt.MqttService;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -11,8 +15,6 @@ import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
 import org.lankheet.domiot.utils.JsonUtil;
 
-import java.util.concurrent.BlockingQueue;
-
 /**
  * Worker thread for sending SensorValue objects to an MQTT broker.<BR>
  * <ul><li>It reads SensorValues from a Queue.
@@ -21,6 +23,7 @@ import java.util.concurrent.BlockingQueue;
  */
 @Slf4j
 public class SensorValueSender implements Runnable {
+    private final DeviceDto deviceDto;
     private volatile boolean running = true;
     private final BlockingQueue<SensorValueDto> queue;
 
@@ -41,7 +44,7 @@ public class SensorValueSender implements Runnable {
     public SensorValueSender(BlockingQueue<SensorValueDto> queue, MqttConfig mqttConfig, DeviceDto device) throws MqttException {
         this.queue = queue;
         this.mqttService = new MqttService(mqttConfig);
-        this.device = device;
+        this.deviceDto = device;
     }
 
     @Override
@@ -69,10 +72,12 @@ public class SensorValueSender implements Runnable {
 
     public void newSensorValue(SensorValueDto sensorValue) {
         if (!sensorValueCache.isRepeatedValue(sensorValue) || shouldRepeatValueAfterMinute(sensorValue)) {
-            SensorDto sensor = findSensor(sensorValue.getSensorId());
-            String mqttTopic;
-            if (sensor != null) {
-                mqttTopic = sensor.getMqttTopic().getPath();
+            Optional<SensorDto> sensorDtoOptional = this.deviceDto.getSensors().stream()
+                    .filter(sensor -> sensor.getSensorId() == sensorValue.getSensorId())
+                    .findFirst();
+            String mqttTopic = null;
+            if (sensorDtoOptional.isPresent()) {
+                mqttTopic = sensorDtoOptional.get().getMqttTopic().getPath();
                 boolean isConnectionOk;
                 MqttMessage message = new MqttMessage();
                 message.setPayload(JsonUtil.toJson(sensorValue).getBytes());
@@ -88,8 +93,6 @@ public class SensorValueSender implements Runnable {
                     }
                 }
                 while (!isConnectionOk);
-            } else {
-                log.error("Sensor with id {} not found", sensorValue.getSensorId());
             }
         }
     }

@@ -1,5 +1,19 @@
 package org.domiot.p1.pmagent;
 
+import static org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode.TOP_DOWN;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import org.domiot.p1.pmagent.config.DeviceConfig;
 import org.domiot.p1.pmagent.config.PMAgentConfig;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -19,22 +33,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-
-import static org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode.TOP_DOWN;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class SensorValueSenderTest {
     @Mock
-    private LoggerFactory LoggerFactoryMock;
+    private LoggerFactory loggerFactoryMock;
     @Mock
     private MqttClient mqttClientMock;
 
@@ -44,21 +46,24 @@ class SensorValueSenderTest {
     private ArgumentCaptor<String> logMessage;
 
     private static DeviceConfig config;
+    private static DeviceDto device;
 
     @BeforeAll
     static void doSetup()
             throws IOException {
         config = PMAgentConfig.loadConfigurationFromFile("src/test/resources/application.yml");
+        device = DeviceDto.builder()
+                .sensors(Collections.singletonList(SensorDto.builder()
+                        .sensorId(1L)
+                        .mqttTopic(MqttTopicDto.builder().path("meterkast/gas").build())
+                        .build()))
+                .build();
     }
 
     @Test
-    void testSendMessage(@Mock DeviceDto device, @Mock SensorDto sensor, @Mock MqttTopicDto mqttTopic)
+    void testSendMessage()
             throws Exception {
         doNothing().when(mqttClientMock).publish(anyString(), any(MqttMessage.class));
-        when(device.getSensors()).thenReturn(List.of(sensor));
-        when(sensor.getSensorId()).thenReturn(1L);
-        when(sensor.getMqttTopic()).thenReturn(mqttTopic);
-        when(mqttTopic.getPath()).thenReturn("topic");
         BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(1000);
         SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttBroker(), device);
         setField(sensorValueSender, "mqttClient", mqttClientMock);

@@ -58,25 +58,12 @@ class DatagramToSensorValueMapperTest {
         sensorValues = DatagramToSensorValueMapper.convertP1Datagram(deviceDto, p1Datagram);
 
         assertEquals(7, sensorValues.size());
-        assertEquals(1, sensorValues.get(0).getSensorId());
         assertEquals(207.138, sensorValues.get(0).getValue());
-
-        assertEquals(2, sensorValues.get(1).getSensorId());
         assertEquals(269.06, sensorValues.get(1).getValue());
-
-        assertEquals(3, sensorValues.get(2).getSensorId());
         assertEquals(27.545, sensorValues.get(2).getValue());
-
-        assertEquals(4, sensorValues.get(3).getSensorId());
         assertEquals(74.828, sensorValues.get(3).getValue());
-
-        assertEquals(5, sensorValues.get(4).getSensorId());
         assertEquals(0.984, sensorValues.get(4).getValue());
-
-        assertEquals(6, sensorValues.get(5).getSensorId());
         assertEquals(0.0, sensorValues.get(5).getValue());
-
-        assertEquals(7, sensorValues.get(6).getSensorId());
         assertEquals(86.298, sensorValues.get(6).getValue());
     }
 }

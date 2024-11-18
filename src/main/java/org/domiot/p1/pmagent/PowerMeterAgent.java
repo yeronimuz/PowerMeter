@@ -100,6 +100,9 @@ public class PowerMeterAgent {
         final DeviceDto[] devices = {DeviceMapper.map(deviceConfig)};
         final boolean[] isConfigsLoaded = new boolean[]{false};
         RuntimeFactory.addRuntimeInfo(devices[0]);
+        Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig, devices[0]));
+        mqttThread.start();
+        mqttService.registerDevice(devices[0]);
         deviceConfigUpdater.addListener(deviceUpdated -> {
             devices[0] = deviceUpdated;
             isConfigsLoaded[0] = true;
@@ -115,10 +118,6 @@ public class PowerMeterAgent {
         while (!isConfigsLoaded[0]) {
             Thread.sleep(500);
         }
-
-        Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig, devices[0]));
-        mqttThread.start();
-
         serialReaderThread.start();
 
         mqttThread.join();
