@@ -15,7 +15,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import org.domiot.p1.pmagent.config.DeviceConfig;
-import org.domiot.p1.pmagent.config.PMAgentConfig;
+import org.domiot.p1.pmagent.config.PowerMeterConfig;
+import org.domiot.p1.sensor.SensorValueSender;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,7 +52,7 @@ class SensorValueSenderTest {
     @BeforeAll
     static void doSetup()
             throws IOException {
-        config = PMAgentConfig.loadConfigurationFromFile("src/test/resources/application.yml");
+        config = PowerMeterConfig.loadConfigurationFromFile("src/test/resources/power-meter.yml");
         device = DeviceDto.builder()
                 .sensors(Collections.singletonList(SensorDto.builder()
                         .sensorId(1L)

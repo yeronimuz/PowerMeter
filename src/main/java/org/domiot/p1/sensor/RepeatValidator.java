@@ -1,4 +1,4 @@
-package org.domiot.p1.pmagent;
+package org.domiot.p1.sensor;
 
 import java.time.LocalDateTime;
 
@@ -10,12 +10,12 @@ public class RepeatValidator {
     public static final int OFFSET_MS_DIFF = 20;
     private static final int ONE_MIN_IN_MS = 60000;
 
-    static boolean isValueAroundMinuteBorder(LocalDateTime timestamp) {
+    public static boolean isValueAroundMinuteBorder(LocalDateTime timestamp) {
         long msSinceMinuteBoarder = calculateMillisecondsSinceMinuteBorder(timestamp);
         return (msSinceMinuteBoarder <= OFFSET_MS_DIFF) || ((ONE_MIN_IN_MS - msSinceMinuteBoarder) <= OFFSET_MS_DIFF);
     }
 
     private static long calculateMillisecondsSinceMinuteBorder(LocalDateTime timestamp) {
-        return timestamp.getSecond() * 1000 + timestamp.getNano() / 1_000_000;
+        return timestamp.getSecond() * 1000 + (long) timestamp.getNano() / 1_000_000;
     }
 }

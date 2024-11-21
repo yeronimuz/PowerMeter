@@ -3,12 +3,14 @@ package org.domiot.p1.pmagent;
 import lombok.extern.slf4j.Slf4j;
 import org.domiot.p1.pmagent.config.DeviceConfig;
 import org.domiot.p1.pmagent.config.MqttConfig;
-import org.domiot.p1.pmagent.config.PMAgentConfig;
+import org.domiot.p1.pmagent.config.PowerMeterConfig;
 import org.domiot.p1.pmagent.config.SerialPortConfig;
 import org.domiot.p1.pmagent.mapper.DeviceMapper;
 import org.domiot.p1.pmagent.mqtt.MqttService;
 import org.domiot.p1.pmagent.mqtt.config.DeviceConfigUpdater;
+import org.domiot.p1.pmagent.p1.P1Reader;
 import org.domiot.p1.pmagent.runtime.RuntimeFactory;
+import org.domiot.p1.sensor.SensorValueSender;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
@@ -32,13 +34,13 @@ import java.util.jar.Manifest;
  * connection is dropped for re-establishing.
  */
 @Slf4j
-public class PowerMeterAgent {
+public class PowerMeterApplication {
     private static final String SERIAL_CMD = "cu -l %s -s %d";
     private static final int WAIT_FOR_SERIAL_DATA = 500;
 
     public static void main(String[] args)
             throws Exception {
-        InputStream is = PowerMeterAgent.class.getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF");
+        InputStream is = PowerMeterApplication.class.getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF");
         Manifest manifest = new Manifest(is);
         Attributes mainAttrs = manifest.getMainAttributes();
         String title = mainAttrs.getValue("Implementation-Title");
@@ -52,11 +54,11 @@ public class PowerMeterAgent {
             showUsage(version, classifier);
             return;
         }
-        new PowerMeterAgent().run(args[0]);
+        new PowerMeterApplication().run(args[0]);
     }
 
     private static void showBanner() {
-        String text = new Scanner(Objects.requireNonNull(PowerMeterAgent.class.getResourceAsStream("/banner.txt")),
+        String text = new Scanner(Objects.requireNonNull(PowerMeterApplication.class.getResourceAsStream("/banner.txt")),
                 StandardCharsets.UTF_8)
                 .useDelimiter("\\A").next();
         log.info("\n{}", text);
@@ -73,7 +75,7 @@ public class PowerMeterAgent {
 
         final DeviceConfigUpdater deviceConfigUpdater = new DeviceConfigUpdater();
 
-        DeviceConfig deviceConfig = PMAgentConfig.loadConfigurationFromFile(configFileName);
+        DeviceConfig deviceConfig = PowerMeterConfig.loadConfigurationFromFile(configFileName);
         log.info("Configuration: {}", deviceConfig);
         BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(deviceConfig.getInternalQueueSize());
 
@@ -106,6 +108,7 @@ public class PowerMeterAgent {
         deviceConfigUpdater.addListener(deviceUpdated -> {
             devices[0] = deviceUpdated;
             isConfigsLoaded[0] = true;
+            PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, true);
         });
         mqttService.registerDevice(devices[0]);
 

@@ -1,4 +1,4 @@
-package org.domiot.p1.pmagent;
+package org.domiot.p1.sensor;
 
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;

@@ -3,6 +3,7 @@ package org.domiot.p1.pmagent.mqtt.config;
 import lombok.Getter;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,12 @@ public class DeviceConfigUpdater implements DeviceConfigListener {
 
     @Override
     public void updateConfig(DeviceDto device) {
-        listeners.forEach(listener -> listener.updateConfig(device));
+        listeners.forEach(listener -> {
+            try {
+                listener.updateConfig(device);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

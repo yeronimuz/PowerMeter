@@ -1,7 +1,7 @@
 package org.domiot.p1.pmagent.mqtt;
 
 import lombok.extern.slf4j.Slf4j;
-import org.domiot.p1.pmagent.PowerMeterMqttCallback;
+
 import org.domiot.p1.pmagent.config.MqttConfig;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;

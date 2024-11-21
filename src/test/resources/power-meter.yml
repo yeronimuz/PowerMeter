@@ -3,36 +3,43 @@ internalQueueSize: 10000
 nic: eth0
 sensorConfigs:
   - sensorType: POWER_PT1
+    sensorId: 0
     mqttTopicConfig:
       topic: sensor/power/pt1
       topicType: power
     description: Produced power T1
   - sensorType: POWER_PT2
+    sensorId: 0
     mqttTopicConfig:
       topic: sensor/power/pt2
       topicType: power
     description: Produced power T2
   - sensorType: POWER_CT1
+    sensorId: 0
     mqttTopicConfig:
       topic: sensor/power/ct1
       topicType: power
     description: Consumed power T1
   - sensorType: POWER_CT2
+    sensorId: 0
     mqttTopicConfig:
       topic: sensor/power/ct2
       topicType: power
     description: Consumed power T2
   - sensorType: POWER_AC
+    sensorId: 0
     mqttTopicConfig:
       topic: sensor/power/ac
       topicType: power
     description: Accumulated consumed power
   - sensorType: POWER_AP
+    sensorId: 0
     mqttTopicConfig:
       topic: sensor/power/ap
       topicType: power
     description: Accumulated produced power
   - sensorType: GAS_METER
+    sensorId: 0
     mqttTopicConfig:
       topic: sensor/gas/c
       topicType: gas

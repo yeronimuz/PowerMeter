@@ -1,4 +1,4 @@
-package org.domiot.p1.pmagent;
+package org.domiot.p1.pmagent.p1;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,7 +99,6 @@ class P1ReaderTest {
 
         verify(queue, times(7)).put(sensorValueArgumentCaptor.capture());
         List<SensorValueDto> sensorValueList = sensorValueArgumentCaptor.getAllValues();
-        // TODO: check values
         verify(logger, times(0)).error(anyString());
     }
 }

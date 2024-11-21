@@ -10,6 +10,9 @@ import java.util.Arrays;
 @Data
 public class SensorConfig {
     @JsonProperty
+    private long sensorId;
+
+    @JsonProperty
     private SensorTypeDto sensorType;
 
     @JsonProperty
@@ -18,9 +21,9 @@ public class SensorConfig {
     @JsonProperty
     private String description;
 
-    SensorType of(String value) {
+    SensorType of(String typeString) {
         return Arrays.stream(SensorType.values()).
-                filter(type -> type.name().equals(value)).
+                filter(type -> type.name().equals(typeString)).
                 findFirst().orElse(null);
     }
 }

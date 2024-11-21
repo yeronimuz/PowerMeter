@@ -9,7 +9,7 @@ This project:
 * FTDI HW connection,
   see https://ic.tweakimg.net/camo/8aff4287e01cbd940a4a1aeb5b0f8aa98bd84928/?url=http%3A%2F%2Fbolneze.nl%2Frj11.jpg
 * This meter produces a p1 datagram each x seconds.
-* The data is read, parsed and pushed to an mqtt broker (configurable in application.yml)
+* The data is read, parsed and pushed to an mqtt broker (configurable in power-meter.yml)
 * Currently, only produced and consumed power are sent as well as the consumed gas
 * Repeated values for a {sensor, type} combination are ignored. A value latch is used.
 * Readings are buffered in a blocking queue. The capacity is configurable but defaults to 10000 readings. At max, 7

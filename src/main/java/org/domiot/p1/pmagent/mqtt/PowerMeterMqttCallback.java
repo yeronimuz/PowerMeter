@@ -1,4 +1,4 @@
-package org.domiot.p1.pmagent;
+package org.domiot.p1.pmagent.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.domiot.p1.pmagent.mqtt.config.DeviceConfigUpdater;
@@ -44,6 +44,6 @@ public class PowerMeterMqttCallback implements MqttCallback {
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-        LOG.debug("Delivery complete: {}", token.toString());
+        LOG.debug("Delivery complete: {}", token);
     }
 }

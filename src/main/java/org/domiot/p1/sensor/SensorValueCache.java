@@ -1,4 +1,4 @@
-package org.domiot.p1.pmagent;
+package org.domiot.p1.sensor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
