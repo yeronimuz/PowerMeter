@@ -23,7 +23,7 @@ class RepeatValidatorTest {
     @ParameterizedTest
     @MethodSource("provideTestValues")
     void testShouldRepeatValueAfter(LocalDateTime timestamp, boolean expectedResult) {
-        boolean result = RepeatValidator.isValueAroundMinuteBorder(timestamp);
+        boolean result = RepeatValidator.isValueAroundMinuteRollOver(timestamp);
         Assertions.assertEquals(expectedResult, result);
     }
 }

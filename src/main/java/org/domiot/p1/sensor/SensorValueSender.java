@@ -114,7 +114,7 @@ public class SensorValueSender implements Runnable {
      * @return true if the value should be repeated, false otherwise.
      */
     boolean shouldRepeatValueAfterMinute(SensorValueDto sensorValue) {
-        return RepeatValidator.isValueAroundMinuteBorder(sensorValue.getTimeStamp());
+        return RepeatValidator.isValueAroundMinuteRollOver(sensorValue.getTimeStamp());
     }
 
     private void reconnect() {

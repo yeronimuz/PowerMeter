@@ -1,17 +1,16 @@
 package org.domiot.p1.pmagent.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.io.IOException;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class PowerMeterConfigTest {
@@ -90,7 +89,7 @@ class PowerMeterConfigTest {
 
     @Test
     void testWriteConfig() throws IOException {
-        PowerMeterConfig.saveConfigurationToFile("application-updated.yml", deviceConfig, false);
+        PowerMeterConfig.saveConfigurationToFile("build/tmp/application-updated.yml", deviceConfig, false);
         deviceConfig = PowerMeterConfig.loadConfigurationFromFile("src/test/resources/power-meter.yml");
         assertEquals(7, deviceConfig.getSensorConfigs().size());
     }

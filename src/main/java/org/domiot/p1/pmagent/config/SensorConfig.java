@@ -6,6 +6,7 @@ import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.lankheet.domiot.model.SensorType;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Data
 public class SensorConfig {
@@ -20,6 +21,9 @@ public class SensorConfig {
 
     @JsonProperty
     private String description;
+
+    @JsonProperty
+    private List<ConfigParameter> parameters;
 
     SensorType of(String typeString) {
         return Arrays.stream(SensorType.values()).

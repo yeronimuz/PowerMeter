@@ -9,4 +9,4 @@ WORKDIR /app
 ADD power-meter.yml /app
 ADD lnb-powermeter-0.9.0-SNAPSHOT.jar /app
 
-CMD ["java", "-jar", "/app/lnb-powermeter-0.5.2-SNAPSHOT.jar", "/app/power-meter.yml"]
+CMD ["java", "-jar", "/app/lnb-powermeter-0.9.0-SNAPSHOT.jar", "/app/power-meter.yml"]
