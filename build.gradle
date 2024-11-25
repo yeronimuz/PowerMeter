@@ -11,12 +11,16 @@ apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
+
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
-mainClassName = 'org.domiot.p1.pmagent.PowerMeterAgent'
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+mainClassName = 'org.domiot.p1.pmagent.PowerMeterApplication'
 
 // version = versioning.info.full
 
@@ -31,7 +35,7 @@ shadowJar {
 jar {
     manifest {
         attributes(
-                'Implementation-Title': 'Powermeter Agent',
+                'Implementation-Title': 'Powermeter Application',
                 'Implementation-Version': archiveVersion,
                 'Implementation-Classifier': project.classifier,
                 'Built-By': System.properties['user.name'],

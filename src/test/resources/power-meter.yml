@@ -1,4 +1,13 @@
 # PowerMeterAgent configuration file
+deviceParameters:
+  - name: internalQueueSize
+    type: Integer
+    value: 10000
+    readonly: true
+  - name: nic
+    type: String
+    value: eth0
+    readonly: true
 internalQueueSize: 10000
 nic: eth0
 sensorConfigs:

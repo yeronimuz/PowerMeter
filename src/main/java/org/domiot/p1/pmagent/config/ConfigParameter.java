@@ -9,7 +9,7 @@ public class ConfigParameter {
     @JsonProperty
     private String name;
     @JsonProperty
-    private String parameterType;
+    private String type;
     @JsonProperty
     private Object value;
     @JsonProperty

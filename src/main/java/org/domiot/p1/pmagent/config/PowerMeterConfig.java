@@ -37,28 +37,27 @@ public class PowerMeterConfig {
             throws IOException {
         Constructor constructor = new Constructor(DeviceConfig.class, new LoaderOptions());
         TypeDescription deviceConfigTypeDescription = new TypeDescription(DeviceConfig.class);
-        deviceConfigTypeDescription.addPropertyParameters("internalQueueSize", Integer.class);
-        deviceConfigTypeDescription.addPropertyParameters("nic", String.class);
+        deviceConfigTypeDescription.addPropertyParameters("deviceParameters", ConfigParameter.class);
         deviceConfigTypeDescription.addPropertyParameters("sensorConfigs", SensorConfig.class);
         deviceConfigTypeDescription.addPropertyParameters("mqttBroker", MqttConfig.class);
         deviceConfigTypeDescription.addPropertyParameters("serialPort", SerialPortConfig.class);
-
-        TypeDescription sensorConfigTypeDescription = new TypeDescription(SensorConfig.class);
-        sensorConfigTypeDescription.addPropertyParameters("sensorId", Integer.class);
-        sensorConfigTypeDescription.addPropertyParameters("sensorType", SensorType.class);
-        sensorConfigTypeDescription.addPropertyParameters("description", String.class);
-        sensorConfigTypeDescription.addPropertyParameters("mqttTopic", MqttTopicConfig.class);
-        sensorConfigTypeDescription.addPropertyParameters("parameters", ConfigParameter.class);
-
-        TypeDescription mqttTopicConfigTypeDescription = new TypeDescription(MqttTopicConfig.class);
-        mqttTopicConfigTypeDescription.addPropertyParameters("topic", String.class);
-        mqttTopicConfigTypeDescription.addPropertyParameters("topicType", String.class);
 
         TypeDescription parameterConfigTypeDescription = new TypeDescription(ConfigParameter.class);
         parameterConfigTypeDescription.addPropertyParameters("name", String.class);
         parameterConfigTypeDescription.addPropertyParameters("type", String.class);
         parameterConfigTypeDescription.addPropertyParameters("value", String.class);
-        parameterConfigTypeDescription.addPropertyParameters("readOnly", Boolean.class);
+        parameterConfigTypeDescription.addPropertyParameters("readonly", Boolean.class);
+
+        TypeDescription sensorConfigTypeDescription = new TypeDescription(SensorConfig.class);
+        sensorConfigTypeDescription.addPropertyParameters("sensorId", Integer.class);
+        sensorConfigTypeDescription.addPropertyParameters("sensorType", SensorType.class);
+        sensorConfigTypeDescription.addPropertyParameters("description", String.class);
+        sensorConfigTypeDescription.addPropertyParameters("mqttTopicConfig", MqttTopicConfig.class);
+        sensorConfigTypeDescription.addPropertyParameters("parameters", ConfigParameter.class);
+
+        TypeDescription mqttTopicConfigTypeDescription = new TypeDescription(MqttTopicConfig.class);
+        mqttTopicConfigTypeDescription.addPropertyParameters("topic", String.class);
+        mqttTopicConfigTypeDescription.addPropertyParameters("topicType", String.class);
 
         TypeDescription mqttConfigTypeDescription = new TypeDescription(MqttConfig.class);
         mqttConfigTypeDescription.addPropertyParameters("subscriptions", String.class);
@@ -77,6 +76,7 @@ public class PowerMeterConfig {
         constructor.addTypeDescription(mqttConfigTypeDescription);
         constructor.addTypeDescription(serialPortConfigTypeDescription);
         constructor.addTypeDescription(mqttTopicConfigTypeDescription);
+        constructor.addTypeDescription(parameterConfigTypeDescription);
 
         Yaml yaml = new Yaml(constructor);
         InputStream inputStream = Files.newInputStream(Paths.get(configFileName));

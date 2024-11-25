@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.domiot.p1.utils.NetUtils;
 import lombok.Data;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.DomiotParameterDto;
 import org.lankheet.domiot.domotics.dto.MqttTopicDto;
 import org.lankheet.domiot.domotics.dto.SensorDto;
 
@@ -27,6 +28,9 @@ public class DeviceConfig {
 
     @JsonProperty
     private MqttConfig mqttBroker = new MqttConfig();
+
+    @JsonProperty
+    private List<DomiotParameterDto> deviceParameters;
 
     @JsonProperty
     private List<SensorConfig> sensorConfigs;

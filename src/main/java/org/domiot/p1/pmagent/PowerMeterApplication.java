@@ -67,7 +67,7 @@ public class PowerMeterApplication {
     private static void showUsage(String version, String classifier) {
         System.out.println("Missing configuration file!");
         System.out.println("Usage:");
-        System.out.println("java -jar lnb-powermeter-" + version + "-" + classifier + " config.yml");
+        System.out.println("java -jar PowerMeter-" + version + "-" + classifier + " config.yml");
     }
 
     public void run(String configFileName)
@@ -104,12 +104,12 @@ public class PowerMeterApplication {
         RuntimeFactory.addRuntimeInfo(devices[0]);
         Thread mqttThread = new Thread(new SensorValueSender(queue, mqttConfig, devices[0]));
         mqttThread.start();
-        mqttService.registerDevice(devices[0]);
         deviceConfigUpdater.addListener(deviceUpdated -> {
             devices[0] = deviceUpdated;
             isConfigsLoaded[0] = true;
             PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, true);
         });
+
         mqttService.registerDevice(devices[0]);
 
         log.info("Device: {}", devices[0]);
