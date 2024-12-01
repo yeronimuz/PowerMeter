@@ -1,53 +1,71 @@
-internalQueueSize: 10000
-nic: eth0
+# PowerMeterAgent configuration file
+deviceParameters:
+  - name: internalQueueSize
+    type: Integer
+    value: 10000
+    readonly: true
+  - name: repeatValuesAfter
+    type: Integer
+    value: 0
+    readonly: false
+  - name: nic
+    type: String
+    value: eth0
+    readonly: true
 sensorConfigs:
   - sensorType: POWER_PT1
+    sensorId: 0
     mqttTopicConfig:
-      topic: meterbox/sensor/power/pt1
+      topic: sensor/power/pt1
       topicType: power
     description: Produced power T1
   - sensorType: POWER_PT2
+    sensorId: 0
     mqttTopicConfig:
-      topic: meterbox/sensor/power/pt2
+      topic: sensor/power/pt2
       topicType: power
     description: Produced power T2
   - sensorType: POWER_CT1
+    sensorId: 0
     mqttTopicConfig:
-      topic: meterbox/sensor/power/ct1
+      topic: sensor/power/ct1
       topicType: power
     description: Consumed power T1
   - sensorType: POWER_CT2
+    sensorId: 0
     mqttTopicConfig:
-      topic: meterbox/sensor/power/ct2
+      topic: sensor/power/ct2
       topicType: power
     description: Consumed power T2
   - sensorType: POWER_AC
+    sensorId: 0
     mqttTopicConfig:
-      topic: meterbox/sensor/power/ac
+      topic: sensor/power/ac
       topicType: power
     description: Accumulated consumed power
   - sensorType: POWER_AP
+    sensorId: 0
     mqttTopicConfig:
-      topic: meterbox/sensor/power/ap
+      topic: sensor/power/ap
       topicType: power
     description: Accumulated produced power
   - sensorType: GAS_METER
+    sensorId: 0
     mqttTopicConfig:
-      topic: meterbox/sensor/gas/c
+      topic: sensor/gas/c
       topicType: gas
     description: Consumed gas
 
 mqttBroker:
-  clientName: CS1F08_PM1
+  clientName: PM_unique_client_name
   url: tcp://localhost:1883
   userName: johndoe
-  password: secret
+  password: noaccess
   subscriptions:
-    - p1
-    - domiot
     - config
+    - domiot
 
 serialPort:
-  p1Key: /ISK5\2M550T-1013
+  p1Key: /XMX5LGBBFG1009021021
   uart: /dev/ttyUSB0
   baudRate: 115200

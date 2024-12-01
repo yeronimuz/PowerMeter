@@ -1,5 +1,9 @@
 package org.domiot.p1.pmagent.mqtt;
 
+import java.util.Queue;
+import java.util.concurrent.SynchronousQueue;
+
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.domiot.p1.pmagent.config.MqttConfig;
@@ -16,13 +20,16 @@ import org.lankheet.domiot.utils.JsonUtil;
 @Slf4j
 public class MqttService {
     private static final int MQTT_RETRIES = 10;
-    private static final int MS_DELAY_BETWEEN_RETRIES = 1000;
+    private static final int MS_DELAY_BETWEEN_RETRIES = 5000;
 
+    @Getter
     private MqttClient mqttClient;
     private final MqttConnectOptions mqttConnectOptions;
+    private Queue<DeviceDto> configQueue;
 
-    public MqttService(MqttConfig mqttConfig) throws MqttException {
+    public MqttService(MqttConfig mqttConfig, Queue<DeviceDto> configQueue) throws MqttException {
         this.mqttConnectOptions = configMqttClient(mqttConfig);
+        this.configQueue = configQueue;
     }
 
     private MqttConnectOptions configMqttClient(MqttConfig mqttConfig) throws MqttException {
@@ -32,7 +39,7 @@ public class MqttService {
         mqttClient = new MqttClient(mqttConfig.getUrl(), mqttConfig.getClientName());
 
         MqttConnectOptions options = new MqttConnectOptions();
-        mqttClient.setCallback(new PowerMeterMqttCallback(mqttClient));
+        mqttClient.setCallback(new PowerMeterMqttCallback(mqttClient, configQueue));
         options.setConnectionTimeout(60);
         options.setKeepAliveInterval(60);
         options.setUserName(userName);
@@ -69,9 +76,7 @@ public class MqttService {
     }
 
     public void registerDevice(DeviceDto device) throws MqttException {
-        if(!this.mqttClient.isConnected()) {
-            this.mqttClient = connectToBroker();
-        }
+        this.mqttClient.subscribe("config");
         MqttMessage message = new MqttMessage();
         message.setPayload(JsonUtil.toJson(device).getBytes());
         this.mqttClient.publish("register", message);

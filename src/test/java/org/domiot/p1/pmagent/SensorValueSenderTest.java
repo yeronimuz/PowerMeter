@@ -16,6 +16,7 @@ import java.util.concurrent.BlockingQueue;
 
 import org.domiot.p1.pmagent.config.DeviceConfig;
 import org.domiot.p1.pmagent.config.PowerMeterConfig;
+import org.domiot.p1.pmagent.mqtt.MqttService;
 import org.domiot.p1.sensor.SensorValueSender;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -40,7 +41,8 @@ class SensorValueSenderTest {
     private LoggerFactory loggerFactoryMock;
     @Mock
     private MqttClient mqttClientMock;
-
+    @Mock
+    private MqttService mqttServiceMock;
     @Mock
     private Logger loggerMock;
     @Captor
@@ -66,7 +68,7 @@ class SensorValueSenderTest {
             throws Exception {
         doNothing().when(mqttClientMock).publish(anyString(), any(MqttMessage.class));
         BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(1000);
-        SensorValueSender sensorValueSender = new SensorValueSender(queue, config.getMqttBroker(), device);
+        SensorValueSender sensorValueSender = new SensorValueSender(queue, mqttServiceMock, device);
         setField(sensorValueSender, "mqttClient", mqttClientMock);
 
         sensorValueSender.newSensorValue(SensorValueDto.builder()

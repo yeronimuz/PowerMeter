@@ -4,12 +4,14 @@ deviceParameters:
     type: Integer
     value: 10000
     readonly: true
+  - name: repeatValuesAfter
+    type: Integer
+    value: 0
+    readonly: false
   - name: nic
     type: String
     value: eth0
     readonly: true
-internalQueueSize: 10000
-nic: eth0
 sensorConfigs:
   - sensorType: POWER_PT1
     sensorId: 0

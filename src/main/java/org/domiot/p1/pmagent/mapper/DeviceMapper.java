@@ -23,19 +23,14 @@ public class DeviceMapper {
      * @throws SocketException The active network interface list cannot be retrieved
      */
     public static DeviceDto map(DeviceConfig deviceConfig) throws SocketException {
-        DeviceDto deviceDto = DeviceDto.builder()
-                .hardwareVersion("RaspberryPi B+")
+        return DeviceDto.builder()
                 .macAddress(NetUtils.getMacAddress())
-                .sensors(deviceConfig.getSensorConfigs().stream().map(SensorMapper::map).toList()).build();
-        deviceDto.addParameter(DomiotParameterDto.builder()
-                        .name("internalQueueSize")
-                        .parameterType("NUMBER")
-                        .value(deviceConfig.getInternalQueueSize())
-                        .build())
-                .addParameter(DomiotParameterDto.builder()
-                        .name("repeatValuesAfter")
-                        .parameterType("NUMBER")
-                        .value(deviceConfig.getRepeatValuesAfter()).build());
-        return deviceDto;
+                .hardwareVersion("Raspberry Pi")
+                .firmwareVersion("3.0")
+                .modelId("1b plus")
+                .manufacturerId("Raspberry Pi Foundation")
+                .sensors(SensorMapper.mapList(deviceConfig.getSensorConfigs()))
+                .parameters(DomiotParameterMapper.mapList(deviceConfig.getDeviceParameters()))
+                .build();
     }
 }

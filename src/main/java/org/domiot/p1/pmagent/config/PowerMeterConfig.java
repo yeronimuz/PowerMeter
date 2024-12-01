@@ -6,11 +6,14 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
+import org.lankheet.domiot.domotics.dto.DeviceDto;
+import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.model.SensorType;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
@@ -24,7 +27,10 @@ import org.yaml.snakeyaml.constructor.Constructor;
 public class PowerMeterConfig {
     public static final String CONFIG_FILENAME = "power-meter.yml";
     @JsonProperty
-    private DeviceConfig deviceConfig;
+    private static DeviceConfig deviceConfig;
+
+    private PowerMeterConfig() {
+    }
 
     /**
      * Load config yaml
@@ -81,7 +87,8 @@ public class PowerMeterConfig {
         Yaml yaml = new Yaml(constructor);
         InputStream inputStream = Files.newInputStream(Paths.get(configFileName));
 
-        return yaml.load(inputStream);
+        deviceConfig = yaml.load(inputStream);
+        return deviceConfig;
     }
 
     /**
@@ -99,5 +106,37 @@ public class PowerMeterConfig {
         PrintWriter writer = new PrintWriter(new File("./" + configFileName));
         Yaml yaml = new Yaml();
         yaml.dump(deviceConfig, writer);
+    }
+
+    /**
+     * Update sensorIds in deviceConfig and save configuration file
+     *
+     * @param configFilename The config file name
+     * @param deviceConfig   The device configuration
+     * @param device         THe updated device with sensorIds added
+     * @param backupExisting Make a backup of the old configuration file
+     */
+    public static void saveConfigurationToFile(String configFilename, DeviceConfig deviceConfig, DeviceDto device, boolean backupExisting) throws IOException {
+        deviceConfig.getSensorConfigs().forEach(sensorConfig -> {
+            Optional<SensorDto> sensorDtoOptional = device.getSensors()
+                    .stream()
+                    .filter(sensorDto -> sensorDto.getSensorType().equals(sensorConfig.getSensorType()))
+                    .findFirst();
+            sensorDtoOptional.ifPresent(sensorDto -> sensorConfig.setSensorId(sensorDto.getSensorId()));
+        });
+        saveConfigurationToFile(configFilename, deviceConfig, backupExisting);
+    }
+
+    /**
+     * Validates that no sensorId is set to initial 0
+     *
+     * @return true: All sensors have Ids, false: one or more sensors are in initial state (sensorId is 0)
+     */
+    public static boolean isAllSensorsHaveIds() {
+        Optional<SensorConfig> optionalSensorConfig = deviceConfig.getSensorConfigs()
+                .stream()
+                .filter(sensorConfig -> sensorConfig.getSensorId() == 0)
+                .findFirst();
+        return optionalSensorConfig.isEmpty();
     }
 }

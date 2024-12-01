@@ -14,7 +14,7 @@ public class DomiotParameterMapper {
     private DomiotParameterMapper() {
     }
 
-    static DomiotParameterDto map(ConfigParameter config) {
+    public static DomiotParameterDto map(ConfigParameter config) {
         DomiotParameterDto dto = new DomiotParameterDto();
         dto.setName(config.getName());
         dto.setValue(config.getValue());

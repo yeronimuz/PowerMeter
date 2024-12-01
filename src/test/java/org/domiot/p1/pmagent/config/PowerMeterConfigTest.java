@@ -23,7 +23,15 @@ class PowerMeterConfigTest {
 
     @Test
     void testPmAgentParameters() {
-        assertEquals(10000, deviceConfig.getInternalQueueSize());
+
+                deviceConfig.getDeviceParameters()
+                        .stream()
+                        .filter(param -> param.getName().equals("internalQueueSize"))
+                        .findFirst()
+                        .ifPresent( configParameter -> {
+                            System.out.println(configParameter);
+                            assertEquals(10000, configParameter.getValue());
+                        });
     }
 
     @Test
@@ -92,6 +100,23 @@ class PowerMeterConfigTest {
         PowerMeterConfig.saveConfigurationToFile("build/tmp/application-updated.yml", deviceConfig, false);
         deviceConfig = PowerMeterConfig.loadConfigurationFromFile("src/test/resources/power-meter.yml");
         assertEquals(7, deviceConfig.getSensorConfigs().size());
+    }
+
+    @Test
+    void testIsAllSensorsConfigured() {
+        List<SensorConfig> sensorConfigs = getConfiguredSensors();
+        assertEquals(0, sensorConfigs.size());
+
+        deviceConfig.getSensorConfigs().get(0).setSensorId(1);
+        sensorConfigs = getConfiguredSensors();
+        assertEquals(1, sensorConfigs.size());
+    }
+
+    private static List<SensorConfig> getConfiguredSensors() {
+        return deviceConfig.getSensorConfigs()
+                .stream()
+                .filter(sensorConfig -> sensorConfig.getSensorId() > 0)
+                .toList();
     }
 
     private SensorConfig getSensorConfig(List<SensorConfig> sensorConfigs, SensorTypeDto type) {

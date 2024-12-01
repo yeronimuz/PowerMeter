@@ -5,7 +5,6 @@ import java.util.concurrent.BlockingQueue;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.domiot.p1.pmagent.config.MqttConfig;
 import org.domiot.p1.pmagent.mqtt.MqttService;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -37,24 +36,18 @@ public class SensorValueSender implements Runnable {
     /**
      * Constructor.
      *
-     * @param queue      The blocking queue that is filled with sensor values.
-     * @param mqttConfig The mqtt configuration.
-     * @param device
+     * @param queue       The blocking queue that is filled with sensor values.
+     * @param mqttService The mqtt service.
+     * @param device      The device that holds the sensors responsible for the sensor values
      */
-    public SensorValueSender(BlockingQueue<SensorValueDto> queue, MqttConfig mqttConfig, DeviceDto device) throws MqttException {
+    public SensorValueSender(BlockingQueue<SensorValueDto> queue, MqttService mqttService, DeviceDto device) {
         this.queue = queue;
-        this.mqttService = new MqttService(mqttConfig);
+        this.mqttService = mqttService;
         this.deviceDto = device;
     }
 
     @Override
     public void run() {
-        try {
-            this.mqttClient = this.mqttService.connectToBroker();
-        } catch (MqttException e) {
-            System.exit(-1);
-        }
-
         while (running) {
             try {
                 // Check line, if down, reconnect
@@ -95,15 +88,6 @@ public class SensorValueSender implements Runnable {
                 while (!isConnectionOk);
             }
         }
-    }
-
-    private SensorDto findSensor(long sensorId) {
-        for (SensorDto sensor : this.device.getSensors()) {
-            if (sensor.getSensorId() == sensorId) {
-                return sensor;
-            }
-        }
-        return null;
     }
 
     /**
