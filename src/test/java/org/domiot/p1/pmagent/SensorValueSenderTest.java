@@ -1,16 +1,14 @@
 package org.domiot.p1.pmagent;
 
-import static org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode.TOP_DOWN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -23,7 +21,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.MqttTopicDto;
 import org.lankheet.domiot.domotics.dto.SensorDto;
@@ -66,10 +63,10 @@ class SensorValueSenderTest {
     @Test
     void testSendMessage()
             throws Exception {
+        when(mqttServiceMock.getMqttClient()).thenReturn(mqttClientMock);
         doNothing().when(mqttClientMock).publish(anyString(), any(MqttMessage.class));
         BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(1000);
         SensorValueSender sensorValueSender = new SensorValueSender(queue, mqttServiceMock, device);
-        setField(sensorValueSender, "mqttClient", mqttClientMock);
 
         sensorValueSender.newSensorValue(SensorValueDto.builder()
                 .sensorId(1L)
@@ -78,13 +75,5 @@ class SensorValueSenderTest {
                 .build());
 
         verify(mqttClientMock).publish(anyString(), any(MqttMessage.class));
-    }
-
-    private void setField(SensorValueSender sensorValueSender, String fieldName, Object object)
-            throws IllegalAccessException {
-        List<Field> fields = ReflectionUtils.findFields(SensorValueSender.class, f -> f.getName().equals(fieldName), TOP_DOWN);
-        Field field = fields.get(0);
-        field.setAccessible(true);
-        field.set(sensorValueSender, object);
     }
 }

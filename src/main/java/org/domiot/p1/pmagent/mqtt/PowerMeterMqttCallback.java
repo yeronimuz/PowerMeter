@@ -17,25 +17,18 @@ import org.lankheet.domiot.domotics.dto.DeviceDto;
 
 @Slf4j
 public class PowerMeterMqttCallback implements MqttCallback {
-    private final MqttClient mqttClient;
-    private final SynchronousQueue<DeviceDto> configQueue;
+    public static final int NUMBER_OF_CONNECTION_RETRIES = 10;
+    private final MqttService mqttService;
 
-    public PowerMeterMqttCallback(MqttClient mqttClient, Queue<DeviceDto> configQueue) {
-        this.mqttClient = mqttClient;
-        this.configQueue = (SynchronousQueue<DeviceDto>) configQueue;
+    public PowerMeterMqttCallback(MqttService mqttService) {
+        this.mqttService = mqttService;
     }
 
     @Override
     public void connectionLost(Throwable cause) {
         // Probably, this method will only be called when no data is to be sent and a connection was
         // disturbed. Since we send data every second, this call will probably not be made.
-        log.error("Connection loss: {}", cause.getMessage());
-        try {
-            // TODO: How many times, and what delay?
-            mqttClient.reconnect();
-        } catch (MqttException e) {
-            log.error("Reconnection Mqtt client failed: {}", e.getMessage());
-        }
+        log.error("Connection lost: {}", cause.getMessage());
     }
 
     @Override
@@ -44,11 +37,10 @@ public class PowerMeterMqttCallback implements MqttCallback {
             log.info("Message on topic {} received: {}", topic, new String(message.getPayload()));
             byte[] payload = message.getPayload();
             ObjectMapper mapper = new ObjectMapper();
-            try {
-                configQueue.put(mapper.readValue(payload, DeviceDto.class));
-            } catch (InterruptedException e) {
-                log.error(e.getMessage());
-            }
+            log.info("Notifying main thread for config arrival...");
+            mqttService.notifyDeviceConfigListeners(mapper.readValue(payload, DeviceDto.class));
+            boolean offered = false;
+            log.info("Notifying main thread was {}successful", offered ? "": "not ");
         }
     }
 

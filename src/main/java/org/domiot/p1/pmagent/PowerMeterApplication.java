@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -20,6 +21,7 @@ import org.domiot.p1.pmagent.config.MqttConfig;
 import org.domiot.p1.pmagent.config.PowerMeterConfig;
 import org.domiot.p1.pmagent.config.SerialPortConfig;
 import org.domiot.p1.pmagent.mapper.DeviceMapper;
+import org.domiot.p1.pmagent.mqtt.MqttConfigListener;
 import org.domiot.p1.pmagent.mqtt.MqttService;
 import org.domiot.p1.pmagent.p1.P1Reader;
 import org.domiot.p1.pmagent.runtime.RuntimeFactory;
@@ -29,15 +31,13 @@ import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
 
 /**
- * The service reads datagrams from the P1 serial interface<br> It sends a series of SensorValue objects to an MQTT broker<br> The serial port reader is
- * separated from the sending thread and coupled via a queue.<br> The capacity of the queue is QUEUE_SIZE / (VALUE_LOOP * NR_VALUES_PER_LOOP *
- * LOOPS_IN_MINUTE)<br> which is 25 minutes with 7 new measurements in a 10 seconds value loop.<br> So there is at least half an hour time when the MQTT
- * connection is dropped for re-establishing.
+ * P1 Powermeter application.
  */
 @Slf4j
-public class PowerMeterApplication {
+public class PowerMeterApplication implements MqttConfigListener {
     private static final String SERIAL_CMD = "cu -l %s -s %d";
     private static final int WAIT_FOR_SERIAL_DATA = 500;
+    private CompletableFuture<DeviceDto> configFuture = new CompletableFuture<>();
 
     public static void main(String[] args)
             throws Exception {
@@ -72,18 +72,19 @@ public class PowerMeterApplication {
     }
 
     public void run(String configFileName)
-            throws IOException, InterruptedException, MqttException {
+            throws Exception {
 
         DeviceConfig deviceConfig = PowerMeterConfig.loadConfigurationFromFile(configFileName);
 
-        DeviceDto device = DeviceMapper.map(deviceConfig);
+        DeviceDto deviceDto = DeviceMapper.map(deviceConfig);
 
         log.info("Configuration loaded: {}", deviceConfig);
         BlockingQueue<SensorValueDto> queue = new ArrayBlockingQueue<>(deviceConfig.getInternalQueueSize());
-        SynchronousQueue<DeviceDto> initialConfigQueue = new SynchronousQueue<>();
 
         MqttConfig mqttConfig = deviceConfig.getMqttBroker();
-        MqttService mqttService = new MqttService(mqttConfig, initialConfigQueue);
+        MqttService mqttService = new MqttService(mqttConfig);
+
+        mqttService.addConfigUpdateListener(this);
 
         SerialPortConfig serialPortConfig = deviceConfig.getSerialPort();
         String port = serialPortConfig.getUart();
@@ -102,37 +103,31 @@ public class PowerMeterApplication {
         }
         BufferedReader p1Reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        RuntimeFactory.addRuntimeInfo(device);
-        try {
-            if (!mqttService.getMqttClient().isConnected()) {
-                mqttService.connectToBroker();
-            }
-        } catch (MqttException e) {
-            System.exit(-1);
-        }
+        RuntimeFactory.addRuntimeInfo(deviceDto);
 
-        Thread mqttThread = new Thread(new SensorValueSender(queue, mqttService, device));
-        mqttThread.start();
-
-        if (!PowerMeterConfig.isAllSensorsHaveIds()) {
+        boolean bDoRegister = !PowerMeterConfig.isAllSensorsHaveIds();
+        if (bDoRegister) {
             // Send device config once
-            mqttService.registerDevice(device);
+            mqttService.registerDevice(deviceDto);
         }
+        deviceDto = configFuture.get();
+        log.debug("Device config updated: {}", deviceDto);
+        PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, deviceDto, true);
 
+        Thread mqttThread = new Thread(new SensorValueSender(queue, mqttService, deviceDto));
 
-        P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), device, p1Reader);
+        P1Reader serialPortReader = new P1Reader(queue, deviceConfig.getSerialPort().getP1Key(), deviceDto, p1Reader);
         Thread serialReaderThread = new Thread(serialPortReader);
-        DeviceDto updatedDevice = null;
-        if (!PowerMeterConfig.isAllSensorsHaveIds()) {
-            // Wait for config to be returned, which contains the sensorIds
-            updatedDevice = initialConfigQueue.take();
-        }
-        device = updatedDevice;
-        PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, device, true);
 
+        mqttThread.start();
         serialReaderThread.start();
 
         mqttThread.join();
         serialReaderThread.join();
+    }
+
+    @Override
+    public void onUpdateDevice(DeviceDto deviceDto) {
+        configFuture.complete(deviceDto);
     }
 }

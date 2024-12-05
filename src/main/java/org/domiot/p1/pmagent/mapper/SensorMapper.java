@@ -1,7 +1,7 @@
 package org.domiot.p1.pmagent.mapper;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.domiot.p1.pmagent.config.SensorConfig;
 import org.lankheet.domiot.domotics.dto.MqttTopicDto;
@@ -33,6 +33,6 @@ public class SensorMapper {
     }
 
     public static List<SensorDto> mapList(List<SensorConfig> sensorConfigs) {
-        return sensorConfigs.stream().map(SensorMapper::map).toList();
+        return new ArrayList<>(sensorConfigs.stream().map(SensorMapper::map).toList());
     }
 }

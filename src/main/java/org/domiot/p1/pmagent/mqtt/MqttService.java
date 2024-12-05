@@ -1,7 +1,8 @@
 package org.domiot.p1.pmagent.mqtt;
 
-import java.util.Queue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +26,14 @@ public class MqttService {
     @Getter
     private MqttClient mqttClient;
     private final MqttConnectOptions mqttConnectOptions;
-    private Queue<DeviceDto> configQueue;
+    private List<MqttConfigListener> configListeners = new ArrayList<>();
 
-    public MqttService(MqttConfig mqttConfig, Queue<DeviceDto> configQueue) throws MqttException {
+    public MqttService(MqttConfig mqttConfig) throws MqttException {
         this.mqttConnectOptions = configMqttClient(mqttConfig);
-        this.configQueue = configQueue;
+    }
+
+    public void addConfigUpdateListener(MqttConfigListener listener) {
+        configListeners.add(listener);
     }
 
     private MqttConnectOptions configMqttClient(MqttConfig mqttConfig) throws MqttException {
@@ -39,7 +43,7 @@ public class MqttService {
         mqttClient = new MqttClient(mqttConfig.getUrl(), mqttConfig.getClientName());
 
         MqttConnectOptions options = new MqttConnectOptions();
-        mqttClient.setCallback(new PowerMeterMqttCallback(mqttClient, configQueue));
+        mqttClient.setCallback(new PowerMeterMqttCallback(this));
         options.setConnectionTimeout(60);
         options.setKeepAliveInterval(60);
         options.setUserName(userName);
@@ -50,10 +54,9 @@ public class MqttService {
     /**
      * Connect to the MQTT broker. Retry MQTT_RETRIES times with MS_DELAY_BETWEEN_RETRIES
      *
-     * @return The connected mqttClient
      * @throws MqttException If after the retries still no connection was established
      */
-    public MqttClient connectToBroker()
+    public void connectToBroker()
             throws MqttException {
         for (int count = 0; count < MQTT_RETRIES; count++) {
             try {
@@ -72,13 +75,21 @@ public class MqttService {
         if (!mqttClient.isConnected()) {
             throw new MqttException(MqttException.REASON_CODE_BROKER_UNAVAILABLE, new Throwable("Unable to connect"));
         }
-        return this.mqttClient;
     }
 
     public void registerDevice(DeviceDto device) throws MqttException {
+        if (!this.mqttClient.isConnected()) {
+            connectToBroker();
+        }
         this.mqttClient.subscribe("config");
         MqttMessage message = new MqttMessage();
         message.setPayload(JsonUtil.toJson(device).getBytes());
         this.mqttClient.publish("register", message);
+    }
+
+    public void notifyDeviceConfigListeners(DeviceDto deviceDto) {
+        for (MqttConfigListener listener : configListeners) {
+            listener.onUpdateDevice(deviceDto);
+        }
     }
 }

@@ -30,6 +30,6 @@ public class DomiotParameterMapper {
      * @return Converted list or empty list when parameters is null
      */
     static List<DomiotParameterDto> mapList(List<ConfigParameter> parameters) {
-        return (parameters != null) ? parameters.stream().map(DomiotParameterMapper::map).toList() : new ArrayList<>();
+        return (parameters != null) ? new ArrayList<>(parameters.stream().map(DomiotParameterMapper::map).toList()) : new ArrayList<>();
     }
 }

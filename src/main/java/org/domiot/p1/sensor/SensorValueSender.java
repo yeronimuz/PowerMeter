@@ -9,6 +9,7 @@ import org.domiot.p1.pmagent.mqtt.MqttService;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
@@ -23,15 +24,11 @@ import org.lankheet.domiot.utils.JsonUtil;
 @Slf4j
 public class SensorValueSender implements Runnable {
     private final DeviceDto deviceDto;
-    private volatile boolean running = true;
+    private static final boolean isRunning = true;
     private final BlockingQueue<SensorValueDto> queue;
-
-    private MqttClient mqttClient;
 
     private final MqttService mqttService;
     private final SensorValueCache sensorValueCache = new SensorValueCache();
-    private DeviceDto device;
-
 
     /**
      * Constructor.
@@ -48,22 +45,20 @@ public class SensorValueSender implements Runnable {
 
     @Override
     public void run() {
-        while (running) {
+        while (isRunning) {
             try {
-                // Check line, if down, reconnect
-                if (!mqttClient.isConnected()) {
-                    mqttClient = this.mqttService.connectToBroker();
-                }
                 newSensorValue(queue.take());
-            } catch (InterruptedException e) {
-                log.error("Reading queue was interrupted");
-            } catch (MqttException e) {
-                log.error("Unrecoverable error connecting to broker");
+                if (!mqttService.getMqttClient().isConnected()) {
+                    mqttService.getMqttClient().connect();
+                }
+            } catch (InterruptedException | MqttException e) {
+                throw new RuntimeException(e);
             }
         }
     }
 
-    public void newSensorValue(SensorValueDto sensorValue) {
+    public void newSensorValue(SensorValueDto sensorValue) throws MqttException {
+        log.debug("newSensorValue {}", sensorValue);
         if (!sensorValueCache.isRepeatedValue(sensorValue) || shouldRepeatValueAfterMinute(sensorValue)) {
             Optional<SensorDto> sensorDtoOptional = this.deviceDto.getSensors().stream()
                     .filter(sensor -> sensor.getSensorId() == sensorValue.getSensorId())
@@ -77,12 +72,12 @@ public class SensorValueSender implements Runnable {
                 log.debug("Sending Topic: {}, Msg: {}", mqttTopic, message);
                 do {
                     try {
-                        mqttClient.publish(mqttTopic, message);
+                        mqttService.getMqttClient().publish(mqttTopic, message);
                         isConnectionOk = true;
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         isConnectionOk = false;
-                        reconnect();
+                        mqttService.getMqttClient().reconnect();
                     }
                 }
                 while (!isConnectionOk);
@@ -99,15 +94,5 @@ public class SensorValueSender implements Runnable {
      */
     boolean shouldRepeatValueAfterMinute(SensorValueDto sensorValue) {
         return RepeatValidator.isValueAroundMinuteRollOver(sensorValue.getTimeStamp());
-    }
-
-    private void reconnect() {
-        try {
-            log.error("Attempting to reconnect to the broker");
-            mqttClient.reconnect();
-            Thread.sleep(1000);
-        } catch (MqttException | InterruptedException e) {
-            log.error("Reconnect failed: {}", e.getMessage());
-        }
     }
 }

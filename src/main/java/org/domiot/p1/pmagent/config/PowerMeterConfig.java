@@ -15,6 +15,7 @@ import lombok.Data;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorDto;
 import org.lankheet.domiot.model.SensorType;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
@@ -105,6 +106,10 @@ public class PowerMeterConfig {
         }
         PrintWriter writer = new PrintWriter(new File("./" + configFileName));
         Yaml yaml = new Yaml();
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); // Force block style
+        options.setPrettyFlow(true); // Optional: Makes the YAML more human-readable
+
         yaml.dump(deviceConfig, writer);
     }
 
