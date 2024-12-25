@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,6 +21,7 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.inspector.TagInspector;
 
 /**
  * Configuration object for PowerMeterAgent
@@ -42,7 +44,12 @@ public class PowerMeterConfig {
      */
     public static DeviceConfig loadConfigurationFromFile(String configFileName)
             throws IOException {
-        Constructor constructor = new Constructor(DeviceConfig.class, new LoaderOptions());
+        LoaderOptions loaderOptions = new LoaderOptions();
+        Constructor constructor = new Constructor(DeviceConfig.class, loaderOptions);
+        TagInspector taginspector =
+                tag -> tag.getClassName().equals(DeviceConfig.class.getName());
+        loaderOptions.setTagInspector(taginspector);
+
         TypeDescription deviceConfigTypeDescription = new TypeDescription(DeviceConfig.class);
         deviceConfigTypeDescription.addPropertyParameters("deviceParameters", ConfigParameter.class);
         deviceConfigTypeDescription.addPropertyParameters("sensorConfigs", SensorConfig.class);
@@ -102,13 +109,13 @@ public class PowerMeterConfig {
      */
     public static void saveConfigurationToFile(String configFileName, DeviceConfig deviceConfig, boolean backupExisting) throws IOException {
         if (backupExisting) {
-            Files.copy(Paths.get(CONFIG_FILENAME), Paths.get(CONFIG_FILENAME + ".org"));
+            Files.copy(Paths.get(CONFIG_FILENAME), Paths.get(CONFIG_FILENAME + LocalDateTime.now() + ".org"));
         }
-        PrintWriter writer = new PrintWriter(new File("./" + configFileName));
-        Yaml yaml = new Yaml();
         DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); // Force block style
-        options.setPrettyFlow(true); // Optional: Makes the YAML more human-readable
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); // Force YAML block style
+        options.setPrettyFlow(true);
+        PrintWriter writer = new PrintWriter("./" + configFileName);
+        Yaml yaml = new Yaml(options);
 
         yaml.dump(deviceConfig, writer);
     }

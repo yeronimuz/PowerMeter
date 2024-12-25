@@ -6,14 +6,21 @@ plugins {
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
 
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
 repositories {
-    mavenLocal()
     mavenCentral()
+    mavenLocal()
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
