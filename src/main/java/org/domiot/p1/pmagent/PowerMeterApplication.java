@@ -105,11 +105,9 @@ public class PowerMeterApplication implements MqttConfigListener {
 
         RuntimeFactory.addRuntimeInfo(deviceDto);
 
-        boolean bDoRegister = !PowerMeterConfig.isAllSensorsHaveIds();
-        if (bDoRegister) {
-            // Send device config once
-            mqttService.registerDevice(deviceDto);
-        }
+        // Send device config once
+        mqttService.registerDevice(deviceDto);
+
         deviceDto = configFuture.get();
         log.debug("Device config updated: {}", deviceDto);
         PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, deviceDto, true);
