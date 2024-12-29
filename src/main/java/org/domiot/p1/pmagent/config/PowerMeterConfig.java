@@ -137,4 +137,17 @@ public class PowerMeterConfig {
         });
         saveConfigurationToFile(configFilename, deviceConfig, backupExisting);
     }
+
+    /**
+     * Validates that no sensorId is set to initial 0
+     *
+     * @return true: All sensors have Ids, false: one or more sensors are in initial state (sensorId is 0)
+     */
+    public static boolean isAllSensorsHaveIds() {
+        Optional<SensorConfig> optionalSensorConfig = deviceConfig.getSensorConfigs()
+                .stream()
+                .filter(sensorConfig -> sensorConfig.getSensorId() == 0)
+                .findFirst();
+        return optionalSensorConfig.isEmpty();
+    }
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,7 +25,6 @@ import org.domiot.p1.pmagent.mqtt.MqttService;
 import org.domiot.p1.pmagent.p1.P1Reader;
 import org.domiot.p1.pmagent.runtime.RuntimeFactory;
 import org.domiot.p1.sensor.SensorValueSender;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorValueDto;
 
@@ -105,12 +103,17 @@ public class PowerMeterApplication implements MqttConfigListener {
 
         RuntimeFactory.addRuntimeInfo(deviceDto);
 
-        // Send device config once
-        mqttService.registerDevice(deviceDto);
-
-        deviceDto = configFuture.get();
-        log.debug("Device config updated: {}", deviceDto);
-        PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, deviceDto, true);
+        DeviceDto deviceDtoFromBackend = null;
+        if (!PowerMeterConfig.isAllSensorsHaveIds()) {
+            // Send device config once
+            mqttService.registerDevice(deviceDto);
+            deviceDtoFromBackend = configFuture.get();
+            log.debug("Device config updated: {}", deviceDto);
+        }
+        if (deviceDtoFromBackend != null && deviceDtoFromBackend.getMacAddress().equals(deviceDto.getMacAddress())) {
+            deviceDto = deviceDtoFromBackend;
+            PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, deviceDto, true);
+        }
 
         Thread mqttThread = new Thread(new SensorValueSender(queue, mqttService, deviceDto));
 

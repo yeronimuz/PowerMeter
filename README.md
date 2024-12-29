@@ -31,7 +31,7 @@ This project:
 We don't want to flood the database with unnecessary data. We also want to visualize combined graphs. In order to do so
 we need regular overlapping time stamps. If multi series graphs don't have shared points on the x axis, then they will
 be drawn after each other instead of combined.
-So if the sensor value is a duplicate it will not have be sent, unless it is required to have a value on the
+So if the sensor value is a duplicate it will not have to be sent, unless it is required to have a value on the
 repeatValuesAfter time border.
 For this reason it is important to repeat the same sensor values every period.
 The repeatValuesAfter configuration parameter is the elapsed time after which a duplicate sensor value is sent,
@@ -46,7 +46,7 @@ If the timestamp of the value is within 5% margin of the repeatValuesAfter offse
   address and sensor type.
 * The sensors are saved in the database and a sensorId is returned
 * The backend constructs an updated deviceDto and publishes it on the "config" topic.
-* The PowerMeter waits for the config and updates the sensors with the received mqtt config.
+* The PowerMeter waits for the config and updates the sensors (with sensorIds) with the received mqtt config.
 * The PowerMeter is now able to publish sensor values with sensorIds.
 * The new configuration is saved in order for the next power cycle to have the sensorIds already available.
 * It is possible to configure a new sensor in the configuration yaml file and start the powermeter. It will then
