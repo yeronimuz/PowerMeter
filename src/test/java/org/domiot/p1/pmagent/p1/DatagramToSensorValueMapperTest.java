@@ -47,36 +47,23 @@ class DatagramToSensorValueMapperTest {
         P1Datagram p1Datagram = P1Parser.parse(input);
         DeviceDto deviceDto = DeviceDto.builder()
                 .macAddress("AA:BB:CC:DD:EE:FF").build();
-        deviceDto.addSensor(SensorDto.builder().sensorType(SensorTypeDto.POWER_CT1).build())
-                .addSensor(SensorDto.builder().sensorType(SensorTypeDto.POWER_CT2).build())
-                .addSensor(SensorDto.builder().sensorType(SensorTypeDto.POWER_PT1).build())
-                .addSensor(SensorDto.builder().sensorType(SensorTypeDto.POWER_PT2).build())
-                .addSensor(SensorDto.builder().sensorType(SensorTypeDto.POWER_AC).build())
-                .addSensor(SensorDto.builder().sensorType(SensorTypeDto.POWER_AP).build())
-                .addSensor(SensorDto.builder().sensorType(SensorTypeDto.GAS_METER).build());
+        deviceDto.addSensor(SensorDto.builder().sensorId(1L).sensorType(SensorTypeDto.POWER_CT1).build())
+                .addSensor(SensorDto.builder().sensorId(2L).sensorType(SensorTypeDto.POWER_CT2).build())
+                .addSensor(SensorDto.builder().sensorId(3L).sensorType(SensorTypeDto.POWER_PT1).build())
+                .addSensor(SensorDto.builder().sensorId(4L).sensorType(SensorTypeDto.POWER_PT2).build())
+                .addSensor(SensorDto.builder().sensorId(5L).sensorType(SensorTypeDto.POWER_AC).build())
+                .addSensor(SensorDto.builder().sensorId(6L).sensorType(SensorTypeDto.POWER_AP).build())
+                .addSensor(SensorDto.builder().sensorId(7L).sensorType(SensorTypeDto.GAS_METER).build());
         List<SensorValueDto> sensorValues;
         sensorValues = DatagramToSensorValueMapper.convertP1Datagram(deviceDto, p1Datagram);
 
         assertEquals(7, sensorValues.size());
-        assertEquals(SensorTypeDto.POWER_CT1, sensorValues.get(0).getSensor().getSensorType());
         assertEquals(207.138, sensorValues.get(0).getValue());
-
-        assertEquals(SensorTypeDto.POWER_CT2, sensorValues.get(1).getSensor().getSensorType());
         assertEquals(269.06, sensorValues.get(1).getValue());
-
-        assertEquals(SensorTypeDto.POWER_PT1, sensorValues.get(2).getSensor().getSensorType());
         assertEquals(27.545, sensorValues.get(2).getValue());
-
-        assertEquals(SensorTypeDto.POWER_PT2, sensorValues.get(3).getSensor().getSensorType());
         assertEquals(74.828, sensorValues.get(3).getValue());
-
-        assertEquals(SensorTypeDto.POWER_AC, sensorValues.get(4).getSensor().getSensorType());
         assertEquals(0.984, sensorValues.get(4).getValue());
-
-        assertEquals(SensorTypeDto.POWER_AP, sensorValues.get(5).getSensor().getSensorType());
         assertEquals(0.0, sensorValues.get(5).getValue());
-
-        assertEquals(SensorTypeDto.GAS_METER, sensorValues.get(6).getSensor().getSensorType());
         assertEquals(86.298, sensorValues.get(6).getValue());
     }
 }

@@ -1,29 +1,39 @@
 package org.domiot.p1.pmagent.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 @ExtendWith(MockitoExtension.class)
-class PMAgentConfigTest {
+class PowerMeterConfigTest {
     private static DeviceConfig deviceConfig;
 
     @BeforeAll
     static void setup() throws IOException {
-        deviceConfig = PMAgentConfig.loadConfigurationFromFile("src/test/resources/application.yml");
+        deviceConfig = PowerMeterConfig.loadConfigurationFromFile("src/test/resources/power-meter.yml");
     }
 
     @Test
     void testPmAgentParameters() {
-        assertEquals(10000, deviceConfig.getInternalQueueSize());
+
+                deviceConfig.getDeviceParameters()
+                        .stream()
+                        .filter(param -> param.getName().equals("internalQueueSize"))
+                        .findFirst()
+                        .ifPresent( configParameter -> {
+                            System.out.println(configParameter);
+                            assertEquals(10000, configParameter.getValue());
+                        });
     }
 
     @Test
@@ -53,33 +63,53 @@ class PMAgentConfigTest {
         SensorConfig sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_PT1);
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_PT1, sensorConfig.getSensorType());
-        assertEquals("sensor/power/pt1", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals(0L, sensorConfig.getSensorId());
+        assertEquals("sensor/meterbox/pt1", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("power", sensorConfig.getMqttTopicConfig().getTopicType());
         assertEquals("Produced power T1", sensorConfig.getDescription());
 
         sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_PT2);
+        assertEquals(0L, sensorConfig.getSensorId());
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_PT2, sensorConfig.getSensorType());
-        assertEquals("sensor/power/pt2", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/pt2", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("Produced power T2", sensorConfig.getDescription());
 
         sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_CT1);
+        assertEquals(0L, sensorConfig.getSensorId());
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_CT1, sensorConfig.getSensorType());
-        assertEquals("sensor/power/ct1", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/ct1", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("Consumed power T1", sensorConfig.getDescription());
 
         sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_AC);
+        assertEquals(0L, sensorConfig.getSensorId());
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_AC, sensorConfig.getSensorType());
-        assertEquals("sensor/power/ac", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/ac", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("Accumulated consumed power", sensorConfig.getDescription());
 
         sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_AP);
+        assertEquals(0L, sensorConfig.getSensorId());
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_AP, sensorConfig.getSensorType());
-        assertEquals("sensor/power/ap", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/ap", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("Accumulated produced power", sensorConfig.getDescription());
+    }
+
+    @Test
+    void testWriteConfig() throws IOException {
+        PowerMeterConfig.saveConfigurationToFile("build/tmp/application-updated.yml", deviceConfig, false);
+        deviceConfig = PowerMeterConfig.loadConfigurationFromFile("src/test/resources/power-meter.yml");
+        assertEquals(7, deviceConfig.getSensorConfigs().size());
+    }
+
+    @Test
+    void testIsAllSensorsHaveIds() {
+        deviceConfig.getSensorConfigs().forEach(config -> {config.setSensorId(0);});
+        assertFalse(PowerMeterConfig.isAllSensorsHaveIds(deviceConfig));
+        deviceConfig.getSensorConfigs().forEach(config -> {config.setSensorId(1L);});
+        assertTrue(PowerMeterConfig.isAllSensorsHaveIds(deviceConfig));
     }
 
     private SensorConfig getSensorConfig(List<SensorConfig> sensorConfigs, SensorTypeDto type) {

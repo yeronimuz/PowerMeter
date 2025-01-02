@@ -1,8 +1,5 @@
-package org.domiot.p1.pmagent;
+package org.domiot.p1.pmagent.p1;
 
-import org.domiot.p1.pmagent.p1.DatagramToSensorValueMapper;
-import org.domiot.p1.pmagent.p1.P1Datagram;
-import org.domiot.p1.pmagent.p1.P1Parser;
 import org.domiot.p1.utils.JvmMemoryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lankheet.domiot.domotics.dto.DeviceDto;
@@ -90,6 +87,7 @@ public class P1Reader implements Runnable {
 
         for (SensorValueDto sensorValue : sensorValueList) {
             try {
+                log.debug("Sending data {}", sensorValue);
                 queue.put(sensorValue);
                 log.debug("Queue space: {}", queue.remainingCapacity());
             } catch (InterruptedException e) {

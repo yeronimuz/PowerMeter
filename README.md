@@ -9,7 +9,7 @@ This project:
 * FTDI HW connection,
   see https://ic.tweakimg.net/camo/8aff4287e01cbd940a4a1aeb5b0f8aa98bd84928/?url=http%3A%2F%2Fbolneze.nl%2Frj11.jpg
 * This meter produces a p1 datagram each x seconds.
-* The data is read, parsed and pushed to an mqtt broker (configurable in application.yml)
+* The data is read, parsed and pushed to an mqtt broker (configurable in power-meter.yml)
 * Currently, only produced and consumed power are sent as well as the consumed gas
 * Repeated values for a {sensor, type} combination are ignored. A value latch is used.
 * Readings are buffered in a blocking queue. The capacity is configurable but defaults to 10000 readings. At max, 7
@@ -25,40 +25,58 @@ This project:
 * The serial port reader operates in it's own process. Next to the main thread there are two other threads, one for
   creating sensor value readings out of the P1 datagrams, the second thread is responsible for pushing the sensor values
   to the mqtt broker.
+
+## Starting the power meter application
+The built jar should be started with 
+```java -jar power-meter.jar power-meter.yml```
+The config file is mandatory. Without it, a usage message will follow.
+A logback.xml with logging configuration should be present
+The logback.xml file is not packaged in the jar
+An example power-meter.yml is added to the jar
+
 ## Repeat values after time
-We don't want to flood the database with unnecessary data. We also want to visualize combined graphs. In order to do so we need regular overlapping time stamps. If multi series graphs don't have shared points on the x axis, then they will be drawn after each other instead of combined.
-So if the sensor value is a duplicate it will not have be sent, unless it is required to have a value on the repeatValuesAfter time border.
-For this reason it is important to repeat the same sensor values every period. 
-The repeatValuesAfter configuration parameter is the elapsed time after which a duplicate sensor value is sent, regardless of being a duplicate value.
+
+We don't want to flood the database with unnecessary data. We also want to visualize combined graphs. In order to do so
+we need regular overlapping time stamps. If multi series graphs don't have shared points on the x axis, then they will
+be drawn after each other instead of combined.
+So if the sensor value is a duplicate it will not have to be sent, unless it is required to have a value on the
+repeatValuesAfter time border.
+For this reason it is important to repeat the same sensor values every period.
+The repeatValuesAfter configuration parameter is the elapsed time after which a duplicate sensor value is sent,
+regardless of being a duplicate value.
 The software checks every timestamp to see if it is close enough to the boarder of the repeatValuesAfter time.
 If the timestamp of the value is within 5% margin of the repeatValuesAfter offset, then the value will be repeated.
 
+## Registering
 
-## Registering (TODO)
+* The device has a network connection and already knows the MQTT configuration. Initially, the sensorId's are not known.
+* Device publishes Device information and listens for config parameters on the 'config' topic with a matching MAC
+  address and sensor type.
+* The sensors are saved in the database and a sensorId is returned
+* The backend constructs an updated deviceDto and publishes it on the "config" topic.
+* The PowerMeter waits for the config and updates the sensors (with sensorIds) with the received mqtt config.
+* The PowerMeter is now able to publish sensor values with sensorIds.
+* The new configuration is saved in order for the next power cycle to have the sensorIds already available.
+* It is possible to configure a new sensor in the configuration yaml file and start the powermeter. It will then
+  register itself because not all sensors are known. The backend will save the new sensor and return the configuration
+  with the new sensorId.
+* All parameter values are effective after a restart of the power meter application.
 
-* The device already knows the MQTT configuration.
-* Device sends Device information and listens for config parameters on the config topic with a matching MAC address.
-* In the remote management console application, the key user assigns a name to the device and sensors and a topic to any
-  actuators and/or sensors.
-* Publish config topics for the device to read.
-* The device is then able to publish
+# Runtime configuration updates (TODO)
+* In the remote management console application, the user may configure any device, actuator and/or sensor.
+* The backend will publish the new configuration with a config topic
+* All devices listen to config topic MQTT messages and will filter by MAC address whether the configuration is for them.
 
 ## Wishlist:
 
 * report health
 * Reset policy for the latch. This latch is currently not reset by a timer loop. The timer period is
   to be configurable.
-* read configuration parameters from mqtt. The configuration is prepared for this. But there is no subscription to any
-  mqtt topic yet.
-    * Make it possible to reload operational parameters (Bootstrap process required.)
-    * Considerations:
-        * Necessary to keep the reading process running during update in order not to lose data?
-        * websocket required for reload event? or polling?
-        * Need to move to OSGi?
 * Less manual steps in the build process (a.o. versioning)
 * Use p1 properties file
 * Instead of having fixed components like serialPort, for database storage it is better to make this a generic
   component (POC)
+* Read config continuously instead of only at startup
 
 # Software upgrade considerations (by ChatGPT)
 
@@ -128,6 +146,12 @@ environment. Always prioritize security and reliability when implementing a remo
   general device. The sensor should only be identified by the MAC address of the device.
 
 ## Release notes
+0.9.0
+* Registering a device now waits for answer of the backend with the new configuration
+* Only when a sensorId is unknown, the device config is sent
+
+0.8.0
+* Changes due to backend changes
 
 0.7.0
 

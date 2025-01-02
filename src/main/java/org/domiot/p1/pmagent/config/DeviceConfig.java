@@ -1,27 +1,15 @@
 package org.domiot.p1.pmagent.config;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.domiot.p1.utils.NetUtils;
-import lombok.Data;
-import org.lankheet.domiot.domotics.dto.DeviceDto;
-import org.lankheet.domiot.domotics.dto.MqttTopicDto;
-import org.lankheet.domiot.domotics.dto.SensorDto;
-
-import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 @Data
 public class DeviceConfig {
-    @JsonProperty
-    private long repeatValuesAfter;
-
-    @JsonProperty
-    private int internalQueueSize;
-
-    @JsonProperty
-    private String nic;
-
+    private static final int DEFAULT_INTERNALQUEUE_SIZE = 100000;
     @JsonProperty
     private SerialPortConfig serialPort = new SerialPortConfig();
 
@@ -29,31 +17,20 @@ public class DeviceConfig {
     private MqttConfig mqttBroker = new MqttConfig();
 
     @JsonProperty
+    private List<ConfigParameter> deviceParameters;
+
+    @JsonProperty
     private List<SensorConfig> sensorConfigs;
 
-    public DeviceDto toDevice() throws SocketException {
-        String macAddress = NetUtils.getMacAddress();
-        return DeviceDto.builder()
-                .macAddress(macAddress)
-                .sensors(toSensorList(macAddress))
-                .build();
-    }
+    public int getInternalQueueSize() {
+        Optional<ConfigParameter> internalQueueSizeOptional = deviceParameters
+                .stream()
+                .filter(configParameter -> configParameter.getName().equals("internalQueueSize"))
+                .findFirst();
 
-    List<SensorDto> toSensorList(String macAddress) {
-        List<SensorDto> sensorList = new ArrayList<>();
-        for (SensorConfig sensorConfig : sensorConfigs) {
-            SensorDto sensor = SensorDto.builder()
-                    .sensorType(sensorConfig.getSensorType())
-                    .deviceMac(macAddress)
-                    // MqttConfigType not used
-                    .mqttTopic(MqttTopicDto.builder()
-                            .path(sensorConfig.getMqttTopicConfig().getTopic())
-                            .type(sensorConfig.getMqttTopicConfig().getTopicType())
-                            .build())
-                    .build();
-            sensorList.add(sensor);
-        }
-        return sensorList;
+        return internalQueueSizeOptional.isPresent()
+                ? ((Integer) internalQueueSizeOptional.get().getValue())
+                : DEFAULT_INTERNALQUEUE_SIZE;
     }
 
 }

@@ -1,5 +1,6 @@
 package org.domiot.p1.pmagent;
 
+import org.domiot.p1.sensor.RepeatValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -22,7 +23,7 @@ class RepeatValidatorTest {
     @ParameterizedTest
     @MethodSource("provideTestValues")
     void testShouldRepeatValueAfter(LocalDateTime timestamp, boolean expectedResult) {
-        boolean result = RepeatValidator.isValueAroundMinuteBorder(timestamp);
+        boolean result = RepeatValidator.isValueAroundMinuteRollOver(timestamp);
         Assertions.assertEquals(expectedResult, result);
     }
 }

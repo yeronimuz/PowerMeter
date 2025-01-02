@@ -6,9 +6,13 @@ import org.lankheet.domiot.domotics.dto.SensorTypeDto;
 import org.lankheet.domiot.model.SensorType;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Data
 public class SensorConfig {
+    @JsonProperty
+    private long sensorId;
+
     @JsonProperty
     private SensorTypeDto sensorType;
 
@@ -18,9 +22,12 @@ public class SensorConfig {
     @JsonProperty
     private String description;
 
-    SensorType of(String value) {
+    @JsonProperty
+    private List<ConfigParameter> parameters;
+
+    SensorType of(String typeString) {
         return Arrays.stream(SensorType.values()).
-                filter(type -> type.name().equals(value)).
+                filter(type -> type.name().equals(typeString)).
                 findFirst().orElse(null);
     }
 }
