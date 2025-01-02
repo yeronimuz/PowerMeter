@@ -104,12 +104,17 @@ public class PowerMeterApplication implements MqttConfigListener {
         RuntimeFactory.addRuntimeInfo(deviceDto);
 
         DeviceDto deviceDtoFromBackend = null;
-        if (!PowerMeterConfig.isAllSensorsHaveIds()) {
+        if (!PowerMeterConfig.isAllSensorsHaveIds(deviceConfig)) {
             // Send device config once
             mqttService.registerDevice(deviceDto);
             deviceDtoFromBackend = configFuture.get();
             log.debug("Device config updated: {}", deviceDto);
         }
+
+        if (!mqttService.getMqttClient().isConnected()) {
+            mqttService.connectToBroker();
+        }
+
         if (deviceDtoFromBackend != null && deviceDtoFromBackend.getMacAddress().equals(deviceDto.getMacAddress())) {
             deviceDto = deviceDtoFromBackend;
             PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, deviceDto, true);

@@ -24,6 +24,7 @@ public class SensorMapper {
     public static SensorDto map(SensorConfig sensorConfig) {
         return SensorDto.builder()
                 .sensorType(sensorConfig.getSensorType())
+                .sensorId(sensorConfig.getSensorId())
                 .mqttTopic(MqttTopicDto.builder()
                         .type(sensorConfig.getMqttTopicConfig().getTopicType())
                         .path(sensorConfig.getMqttTopicConfig().getTopic())

@@ -41,7 +41,7 @@ If the timestamp of the value is within 5% margin of the repeatValuesAfter offse
 
 ## Registering
 
-* The device has a WIFI connection and already knows the MQTT configuration.
+* The device has a network connection and already knows the MQTT configuration. Initially, the sensorId's are not known.
 * Device publishes Device information and listens for config parameters on the 'config' topic with a matching MAC
   address and sensor type.
 * The sensors are saved in the database and a sensorId is returned
@@ -52,6 +52,7 @@ If the timestamp of the value is within 5% margin of the repeatValuesAfter offse
 * It is possible to configure a new sensor in the configuration yaml file and start the powermeter. It will then
   register itself because not all sensors are known. The backend will save the new sensor and return the configuration
   with the new sensorId.
+* All parameter values are effective after a restart of the power meter application.
 
 # Runtime configuration updates (TODO)
 * In the remote management console application, the user may configure any device, actuator and/or sensor.
@@ -63,13 +64,6 @@ If the timestamp of the value is within 5% margin of the repeatValuesAfter offse
 * report health
 * Reset policy for the latch. This latch is currently not reset by a timer loop. The timer period is
   to be configurable.
-* read configuration parameters from mqtt. The configuration is prepared for this. But there is no subscription to any
-  mqtt topic yet.
-    * Make it possible to reload operational parameters (Bootstrap process required.)
-    * Considerations:
-        * Necessary to keep the reading process running during update in order not to lose data?
-        * websocket required for reload event? or polling?
-        * Need to move to OSGi?
 * Less manual steps in the build process (a.o. versioning)
 * Use p1 properties file
 * Instead of having fixed components like serialPort, for database storage it is better to make this a generic

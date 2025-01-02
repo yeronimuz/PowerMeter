@@ -1,7 +1,9 @@
 package org.domiot.p1.pmagent.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,7 +64,7 @@ class PowerMeterConfigTest {
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_PT1, sensorConfig.getSensorType());
         assertEquals(0L, sensorConfig.getSensorId());
-        assertEquals("sensor/power/pt1", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/pt1", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("power", sensorConfig.getMqttTopicConfig().getTopicType());
         assertEquals("Produced power T1", sensorConfig.getDescription());
 
@@ -70,28 +72,28 @@ class PowerMeterConfigTest {
         assertEquals(0L, sensorConfig.getSensorId());
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_PT2, sensorConfig.getSensorType());
-        assertEquals("sensor/power/pt2", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/pt2", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("Produced power T2", sensorConfig.getDescription());
 
         sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_CT1);
         assertEquals(0L, sensorConfig.getSensorId());
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_CT1, sensorConfig.getSensorType());
-        assertEquals("sensor/power/ct1", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/ct1", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("Consumed power T1", sensorConfig.getDescription());
 
         sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_AC);
         assertEquals(0L, sensorConfig.getSensorId());
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_AC, sensorConfig.getSensorType());
-        assertEquals("sensor/power/ac", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/ac", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("Accumulated consumed power", sensorConfig.getDescription());
 
         sensorConfig = getSensorConfig(sensorConfigs, SensorTypeDto.POWER_AP);
         assertEquals(0L, sensorConfig.getSensorId());
         assertNotNull(sensorConfig);
         assertEquals(SensorTypeDto.POWER_AP, sensorConfig.getSensorType());
-        assertEquals("sensor/power/ap", sensorConfig.getMqttTopicConfig().getTopic());
+        assertEquals("sensor/meterbox/ap", sensorConfig.getMqttTopicConfig().getTopic());
         assertEquals("Accumulated produced power", sensorConfig.getDescription());
     }
 
@@ -103,20 +105,11 @@ class PowerMeterConfigTest {
     }
 
     @Test
-    void testIsAllSensorsConfigured() {
-        List<SensorConfig> sensorConfigs = getConfiguredSensors();
-        assertEquals(0, sensorConfigs.size());
-
-        deviceConfig.getSensorConfigs().get(0).setSensorId(1);
-        sensorConfigs = getConfiguredSensors();
-        assertEquals(1, sensorConfigs.size());
-    }
-
-    private static List<SensorConfig> getConfiguredSensors() {
-        return deviceConfig.getSensorConfigs()
-                .stream()
-                .filter(sensorConfig -> sensorConfig.getSensorId() > 0)
-                .toList();
+    void testIsAllSensorsHaveIds() {
+        deviceConfig.getSensorConfigs().forEach(config -> {config.setSensorId(0);});
+        assertFalse(PowerMeterConfig.isAllSensorsHaveIds(deviceConfig));
+        deviceConfig.getSensorConfigs().forEach(config -> {config.setSensorId(1L);});
+        assertTrue(PowerMeterConfig.isAllSensorsHaveIds(deviceConfig));
     }
 
     private SensorConfig getSensorConfig(List<SensorConfig> sensorConfigs, SensorTypeDto type) {

@@ -87,6 +87,7 @@ public class P1Reader implements Runnable {
 
         for (SensorValueDto sensorValue : sensorValueList) {
             try {
+                log.debug("Sending data {}", sensorValue);
                 queue.put(sensorValue);
                 log.debug("Queue space: {}", queue.remainingCapacity());
             } catch (InterruptedException e) {

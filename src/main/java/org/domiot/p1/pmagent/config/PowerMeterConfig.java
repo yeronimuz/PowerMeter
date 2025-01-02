@@ -143,7 +143,7 @@ public class PowerMeterConfig {
      *
      * @return true: All sensors have Ids, false: one or more sensors are in initial state (sensorId is 0)
      */
-    public static boolean isAllSensorsHaveIds() {
+    public static boolean isAllSensorsHaveIds(DeviceConfig deviceConfig) {
         Optional<SensorConfig> optionalSensorConfig = deviceConfig.getSensorConfigs()
                 .stream()
                 .filter(sensorConfig -> sensorConfig.getSensorId() == 0)
