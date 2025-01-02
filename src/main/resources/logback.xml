@@ -1,0 +1,40 @@
+<configuration debug="true">
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%blue(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>log/powermeter.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>log/archived/powermeter.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- each archived file, size max 10MB -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
+            <totalSizeCap>2GB</totalSizeCap>
+            <!-- 60 days to keep -->
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d %p %C{1} [%t] %m%n\(%line\)</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.domiot" level="debug" additivity="true">
+        <appender-ref ref="FILE-ROLLING"/>
+    </logger>
+
+    <logger name="org.eclipse.paho" level="debug" additivity="true">
+        <appender-ref ref="FILE-ROLLING"/>
+    </logger>
+
+    <root level="DEBUG">
+<!--        <appender-ref ref="FILE-ROLLING"/>-->
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

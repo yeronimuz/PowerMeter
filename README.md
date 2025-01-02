@@ -26,6 +26,14 @@ This project:
   creating sensor value readings out of the P1 datagrams, the second thread is responsible for pushing the sensor values
   to the mqtt broker.
 
+## Starting the power meter application
+The built jar should be started with 
+```java -jar power-meter.jar power-meter.yml```
+The config file is mandatory. Without it, a usage message will follow.
+A logback.xml with logging configuration should be present
+The logback.xml file is not packaged in the jar
+An example power-meter.yml is added to the jar
+
 ## Repeat values after time
 
 We don't want to flood the database with unnecessary data. We also want to visualize combined graphs. In order to do so
@@ -138,6 +146,12 @@ environment. Always prioritize security and reliability when implementing a remo
   general device. The sensor should only be identified by the MAC address of the device.
 
 ## Release notes
+0.9.0
+* Registering a device now waits for answer of the backend with the new configuration
+* Only when a sensorId is unknown, the device config is sent
+
+0.8.0
+* Changes due to backend changes
 
 0.7.0
 
