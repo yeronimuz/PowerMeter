@@ -39,8 +39,6 @@ public class PowerMeterMqttCallback implements MqttCallback {
             ObjectMapper mapper = new ObjectMapper();
             log.info("Notifying main thread for config arrival...");
             mqttService.notifyDeviceConfigListeners(mapper.readValue(payload, DeviceDto.class));
-            boolean offered = false;
-            log.info("Notifying main thread was {}successful", offered ? "": "not ");
         }
     }
 

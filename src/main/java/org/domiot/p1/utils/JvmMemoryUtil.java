@@ -14,7 +14,7 @@ public class JvmMemoryUtil {
             // Print every minute
             Runtime runtime = Runtime.getRuntime();
 
-            log.info("Memory Max {} MB, Total {} MB, Used {} MB, Free {} MB",
+            log.debug("Memory Max {} MB, Total {} MB, Used {} MB, Free {} MB",
                     runtime.maxMemory() / 1024 / 1024,
                     runtime.totalMemory() / 1024 / 1024,
                     (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024,

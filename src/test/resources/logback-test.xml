@@ -2,6 +2,12 @@
 
     <property name="HOME_LOG" value="log/powermeter.log"/>
 
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${HOME_LOG}</file>
 
@@ -20,12 +26,11 @@
         </encoder>
     </appender>
 
-    <logger name="org.domiot" level="debug" additivity="false">
-        <appender-ref ref="FILE-ROLLING"/>
+    <logger name="org.domiot.p1" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="info">
-        <appender-ref ref="FILE-ROLLING"/>
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
     </root>
-
 </configuration>

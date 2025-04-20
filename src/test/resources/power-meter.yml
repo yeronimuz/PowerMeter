@@ -57,15 +57,17 @@ sensorConfigs:
     description: Consumed gas
 
 mqttBroker:
-  clientName: PM_unique_client_name
+  clientName: PM_AUT_client_name
   url: tcp://localhost:1883
   userName: johndoe
   password: noaccess
   subscriptions:
     - p1
     - domiot
+    - config
+    - update
 
 serialPort:
-  p1Key: /XMX5LGBBFG1009021021
-  uart: /dev/ttyUSB0
+  p1Key: /ISK5\2M550T-1013
+  uart: /tmp/fake-serial-pipe
   baudRate: 115200
