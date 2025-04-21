@@ -35,7 +35,7 @@ import org.lankheet.domiot.domotics.dto.SensorValueDto;
 public class PowerMeterApplication implements MqttConfigListener {
     private static final String SERIAL_CMD = "cu -l %s -s %d";
     private static final int WAIT_FOR_SERIAL_DATA = 500;
-    private CompletableFuture<DeviceDto> configFuture = new CompletableFuture<>();
+    private final CompletableFuture<DeviceDto> configFuture = new CompletableFuture<>();
 
     public static void main(String[] args)
             throws Exception {
@@ -53,7 +53,7 @@ public class PowerMeterApplication implements MqttConfigListener {
             showUsage(version, classifier);
             return;
         }
-        new PowerMeterApplication().run(args[0]);
+        new PowerMeterApplication().runPowerMeter(args[0]);
     }
 
     private static void showBanner() {
@@ -69,7 +69,7 @@ public class PowerMeterApplication implements MqttConfigListener {
         System.out.println("java -jar PowerMeter-" + version + "-" + classifier + " config.yml");
     }
 
-    public void run(String configFileName)
+    public void runPowerMeter(String configFileName)
             throws Exception {
 
         DeviceConfig deviceConfig = PowerMeterConfig.loadConfigurationFromFile(configFileName);
@@ -93,6 +93,7 @@ public class PowerMeterApplication implements MqttConfigListener {
             String command = String.format(SERIAL_CMD, port, baudRate);
             log.info(command);
             process = Runtime.getRuntime().exec(command);
+            log.info("Waiting for serial data");
             Thread.sleep(WAIT_FOR_SERIAL_DATA);
         } catch (IOException | InterruptedException e) {
             log.error("Cannot open serial port {}", port);
@@ -107,17 +108,19 @@ public class PowerMeterApplication implements MqttConfigListener {
         if (!PowerMeterConfig.isAllSensorsHaveIds(deviceConfig)) {
             // Send device config once
             mqttService.registerDevice(deviceDto);
+            log.info("Registered device, waiting for config");
             deviceDtoFromBackend = configFuture.get();
             log.debug("Device config updated: {}", deviceDto);
         }
 
         if (!mqttService.getMqttClient().isConnected()) {
+            log.info("Connecting to MQTT broker");
             mqttService.connectToBroker();
         }
 
         if (deviceDtoFromBackend != null && deviceDtoFromBackend.getMacAddress().equals(deviceDto.getMacAddress())) {
             deviceDto = deviceDtoFromBackend;
-            PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, deviceDto, true);
+            PowerMeterConfig.saveConfigurationToFile(configFileName, deviceConfig, deviceDto, true);
         }
 
         Thread mqttThread = new Thread(new SensorValueSender(queue, mqttService, deviceDto));
@@ -134,6 +137,7 @@ public class PowerMeterApplication implements MqttConfigListener {
 
     @Override
     public void onUpdateDevice(DeviceDto deviceDto) {
+        log.info("Config received, updating device");
         configFuture.complete(deviceDto);
     }
 }

@@ -41,18 +41,20 @@ class PowerMeterConfigTest {
         SerialPortConfig serialConfig = deviceConfig.getSerialPort();
         assertNotNull(serialConfig);
         assertEquals(115200, serialConfig.getBaudRate());
-        assertEquals("/dev/ttyUSB0", serialConfig.getUart());
+        assertEquals("/tmp/fake-serial-pipe", serialConfig.getUart());
     }
 
     @Test
     void testConfigMqtt() {
         MqttConfig mqttConfig = deviceConfig.getMqttBroker();
         assertNotNull(mqttConfig);
-        assertEquals("PM_unique_client_name", mqttConfig.getClientName());
+        assertEquals("PM_AUT_client_name", mqttConfig.getClientName());
         assertEquals("johndoe", mqttConfig.getUserName());
-        assertEquals(2, mqttConfig.getSubscriptions().size());
-        assertEquals("p1", mqttConfig.getSubscriptions().get(0).toLowerCase());
-        assertEquals("domiot", mqttConfig.getSubscriptions().get(1).toLowerCase());
+        assertEquals(4, mqttConfig.getSubscriptions().size());
+        assertTrue(mqttConfig.getSubscriptions().contains("config"));
+        assertTrue(mqttConfig.getSubscriptions().contains("update"));
+        assertTrue(mqttConfig.getSubscriptions().contains("p1"));
+        assertTrue(mqttConfig.getSubscriptions().contains("domiot"));
     }
 
     @Test

@@ -9,7 +9,7 @@ This project:
 * FTDI HW connection,
   see https://ic.tweakimg.net/camo/8aff4287e01cbd940a4a1aeb5b0f8aa98bd84928/?url=http%3A%2F%2Fbolneze.nl%2Frj11.jpg
 * This meter produces a p1 datagram each x seconds.
-* The data is read, parsed and pushed to an mqtt broker (configurable in power-meter.yml)
+* The data is read, parsed and pushed to an mqtt broker as a sensor value (configurable in power-meter.yml)
 * Currently, only produced and consumed power are sent as well as the consumed gas
 * Repeated values for a {sensor, type} combination are ignored. A value latch is used.
 * Readings are buffered in a blocking queue. The capacity is configurable but defaults to 10000 readings. At max, 7
@@ -22,9 +22,10 @@ This project:
   available after 10 retries, the application will exit.
 * The MAC address of the first NIC that returns a MAC address will be used to identify the sensor in the
   domotics system.
-* The serial port reader operates in it's own process. Next to the main thread there are two other threads, one for
-  creating sensor value readings out of the P1 datagrams, the second thread is responsible for pushing the sensor values
-  to the mqtt broker.
+* The serial port reader operates in it's own process, using 'cu' (which makes it Linux only). 
+* Next to the main thread there are two other threads, 
+* one for creating sensor value readings out of the P1 datagrams, 
+* the second thread is responsible for pushing the sensor values to the mqtt broker.
 
 ## Starting the power meter application
 The built jar should be started with 
@@ -181,5 +182,5 @@ environment. Always prioritize security and reliability when implementing a remo
 
 # Handy lines
 
-scp build/libs/lnb-powermeter-0.5.2-SNAPSHOT.jar jeroen@192.168.2.16:pmagent
+scp build/libs/lnb-powermeter-0.5.2-SNAPSHOT.jar username@192.168.2.16:pmagent
 

@@ -1,5 +1,6 @@
 package org.domiot.p1.pmagent.config;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import org.lankheet.domiot.domotics.dto.DeviceDto;
 import org.lankheet.domiot.domotics.dto.SensorDto;
@@ -25,6 +27,7 @@ import org.yaml.snakeyaml.inspector.TagInspector;
 /**
  * Configuration object for PowerMeterAgent
  */
+@Slf4j
 @Data
 public class PowerMeterConfig {
     public static final String CONFIG_FILENAME = "power-meter.yml";
@@ -99,16 +102,22 @@ public class PowerMeterConfig {
     }
 
     /**
-     * Save the current configuration to file for the next reload of configuration
+     * Save the current configuration to file for the next reload of configuration.
+     * <BR>Continue when the file cannot be copied
      *
-     * @param configFileName The filename to use
-     * @param deviceConfig   The device configuration to use
+     * @param configFileName The configuration file name
+     * @param deviceConfig   The device configuration to save
      * @param backupExisting Make a backup of the old configuration file
      * @throws IOException The backup file or destination file could not be written
      */
     public static void saveConfigurationToFile(String configFileName, DeviceConfig deviceConfig, boolean backupExisting) throws IOException {
         if (backupExisting) {
-            Files.copy(Paths.get(CONFIG_FILENAME), Paths.get(CONFIG_FILENAME + LocalDateTime.now() + ".org"));
+            InputStream inputStream = Files.newInputStream(Paths.get(configFileName));
+            try {
+                Files.copy(inputStream, Paths.get(configFileName + "." + LocalDateTime.now() + ".org"));
+            } catch (FileNotFoundException e) {
+                log.error(e.getMessage());
+            }
         }
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); // Force YAML block style
