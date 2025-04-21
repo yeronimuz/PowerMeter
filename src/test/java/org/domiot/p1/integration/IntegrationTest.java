@@ -12,11 +12,17 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,8 +61,13 @@ class IntegrationTest {
     static void setup() throws IOException, InterruptedException {
         Thread powerMeterThread = new Thread(() -> {
             try {
+                String configFileName = "src/test/resources/power-meter.yml";
+                String copyConfigFileName = "build/tmp/test/power-meter.yml";
+                // Copy config file, because it will be overwritten by PowerMeter
+                Files.copy(Files.newInputStream(Paths.get(configFileName)),
+                        Paths.get(copyConfigFileName), StandardCopyOption.REPLACE_EXISTING);
                 PowerMeterApplication app = new PowerMeterApplication();
-                app.runPowerMeter("src/test/resources/power-meter.yml");
+                app.runPowerMeter(copyConfigFileName);
             } catch (Exception e) {
                 log.error("PowerMeter failed to start", e);
             }
@@ -92,7 +103,7 @@ class IntegrationTest {
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(10)))
             .withLogConsumer(mosquittoLogConsumer)
             .withCreateContainerCmdModifier(cmd -> {
-                cmd.getHostConfig().withPortBindings(
+                Objects.requireNonNull(cmd.getHostConfig()).withPortBindings(
                         new com.github.dockerjava.api.model.PortBinding(
                                 com.github.dockerjava.api.model.Ports.Binding.bindPort(1883),
                                 new com.github.dockerjava.api.model.ExposedPort(1883)
@@ -120,14 +131,18 @@ class IntegrationTest {
             options.setUserName("johndoe");
             options.setPassword("noaccess".toCharArray());
             client.connect(options);
-
             log.info("client connected");
 
             CountDownLatch registerLatch = new CountDownLatch(1);
 
-            // Register device register
+            // Subscribe to device registering and get the MAC address
+            // PowerMeter will only accept config of it's own device (identified by MAC address)
+            // Therefore, we must rewrite the MAC address in the config with value of the register.
+            final String[] deviceMacAddress = new String[1];
             client.subscribe("register", (topic, msg) -> {
-                log.info("Received register data: {}", new String(msg.getPayload()));
+                String registerDevice = new String(msg.getPayload());
+                deviceMacAddress[0] = extractMacAddressFromDeviceJson(registerDevice);
+                log.info("Received register data: {}", registerDevice);
                 registerLatch.countDown();
             });
             log.info("Subscribed to register");
@@ -135,10 +150,12 @@ class IntegrationTest {
             boolean received = registerLatch.await(60, TimeUnit.SECONDS);
             assertTrue(received, "Device register not received in time");
 
+            String deviceConfigJson = Files.readString(
+                    Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("config_device.json")).toURI()));
+            deviceConfigJson = updateMacAddressFromDeviceJson(deviceConfigJson, deviceMacAddress[0]);
             // Return config
             MqttMessage mqttMessage = new MqttMessage();
-            mqttMessage.setPayload(Files.readAllBytes(
-                    Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("register_device.json")).toURI())));
+            mqttMessage.setPayload(deviceConfigJson.getBytes());
 
             client.publish("config", mqttMessage);
 
@@ -153,12 +170,39 @@ class IntegrationTest {
                 sensorLatch.countDown();
             });
             log.info("Subscribed to sensor values");
-//            Thread.sleep(5000);
             sendSerialData();
-            received = sensorLatch.await(20, TimeUnit.SECONDS);
+            received = sensorLatch.await(10, TimeUnit.SECONDS);
+            assertTrue(received, "Sensor value not received in time");
             assertEquals(7, msgCount);
             client.disconnect();
         }
+    }
+
+    private String extractMacAddressFromDeviceJson(String registerDevice) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root;
+        try {
+            root = mapper.readTree(registerDevice);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Navigate to the field
+        return root.path("macAddress").asText();
+    }
+
+    private String updateMacAddressFromDeviceJson(String configDeviceJson, String macAddress) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode;
+        try {
+            rootNode = mapper.readTree(configDeviceJson);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        if (rootNode instanceof ObjectNode) {
+            ((ObjectNode) rootNode).put("macAddress", macAddress);
+        }
+        return rootNode.toString();
     }
 
     private void sendSerialData() {

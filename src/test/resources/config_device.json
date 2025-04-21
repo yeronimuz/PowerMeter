@@ -78,7 +78,7 @@
             "deviceMac": null,
             "topic": {
                 "type": "power",
-                "path": "meterbox/sensor/power/pt1"
+                "path": "sensor/meterbox/pt1"
             },
             "type": "POWER_PT1",
             "parameters": null
@@ -88,7 +88,7 @@
             "deviceMac": null,
             "topic": {
                 "type": "power",
-                "path": "meterbox/sensor/power/pt2"
+                "path": "sensor/meterbox/pt2"
             },
             "type": "POWER_PT2",
             "parameters": null
@@ -98,7 +98,7 @@
             "deviceMac": null,
             "topic": {
                 "type": "power",
-                "path": "meterbox/sensor/power/ct1"
+                "path": "sensor/meterbox/ct1"
             },
             "type": "POWER_CT1",
             "parameters": null
@@ -108,7 +108,7 @@
             "deviceMac": null,
             "topic": {
                 "type": "power",
-                "path": "meterbox/sensor/power/ct2"
+                "path": "sensor/meterbox/ct2"
             },
             "type": "POWER_CT2",
             "parameters": null
@@ -118,7 +118,7 @@
             "deviceMac": null,
             "topic": {
                 "type": "power",
-                "path": "meterbox/sensor/power/ac"
+                "path": "sensor/meterbox/ac"
             },
             "type": "POWER_AC",
             "parameters": null
@@ -128,7 +128,7 @@
             "deviceMac": null,
             "topic": {
                 "type": "power",
-                "path": "meterbox/sensor/power/ap"
+                "path": "sensor/meterbox/ap"
             },
             "type": "POWER_AP",
             "parameters": null
@@ -138,7 +138,7 @@
             "deviceMac": null,
             "topic": {
                 "type": "gas",
-                "path": "meterbox/sensor/gas/c"
+                "path": "sensor/gas/c"
             },
             "type": "GAS_METER",
             "parameters": null

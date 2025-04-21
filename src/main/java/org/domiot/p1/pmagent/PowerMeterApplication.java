@@ -120,7 +120,7 @@ public class PowerMeterApplication implements MqttConfigListener {
 
         if (deviceDtoFromBackend != null && deviceDtoFromBackend.getMacAddress().equals(deviceDto.getMacAddress())) {
             deviceDto = deviceDtoFromBackend;
-            PowerMeterConfig.saveConfigurationToFile(PowerMeterConfig.CONFIG_FILENAME, deviceConfig, deviceDto, true);
+            PowerMeterConfig.saveConfigurationToFile(configFileName, deviceConfig, deviceDto, true);
         }
 
         Thread mqttThread = new Thread(new SensorValueSender(queue, mqttService, deviceDto));
